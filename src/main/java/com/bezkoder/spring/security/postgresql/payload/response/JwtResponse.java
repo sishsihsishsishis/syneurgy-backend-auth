@@ -8,13 +8,16 @@ public class JwtResponse {
 	private Long id;
 	private String username;
 	private String email;
+
+	private Integer step;
 	private List<String> roles;
 
-	public JwtResponse(String accessToken, Long id, String username, String email, List<String> roles) {
+	public JwtResponse(String accessToken, Long id, String username, String email, Integer step, List<String> roles) {
 		this.token = accessToken;
 		this.id = id;
 		this.username = username;
 		this.email = email;
+		this.step = step;
 		this.roles = roles;
 	}
 
@@ -61,4 +64,7 @@ public class JwtResponse {
 	public List<String> getRoles() {
 		return roles;
 	}
+
+	public Integer getStep() { return step; }
+	public void setStep(Integer step) { this.step = step; }
 }

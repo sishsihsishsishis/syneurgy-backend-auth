@@ -18,7 +18,6 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-
 	@Size(max = 20)
 	private String username;
 
@@ -27,11 +26,28 @@ public class User {
 	@Email
 	private String email;
 
+	@Size(max = 50)
+	private String firstName;
+
+	@Size(max = 50)
+	private String lastName;
+
+	@Size(max = 20)
+	private String country;
+
+	@Size(max = 20)
+	private String position;
+
+	private Integer step;
+
+	@OneToMany(targetEntity = Organization.class, mappedBy = "id", orphanRemoval = false, fetch = FetchType.LAZY)
+	private Set<Organization> organizations;
+
+	@OneToMany(targetEntity = Organization.class, mappedBy = "id", orphanRemoval = false, fetch = FetchType.LAZY)
+	private Set<Team> teams;
 	@NotBlank
 	@Size(max = 120)
 	private String password;
-
-	
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(	name = "user_roles", 
@@ -87,4 +103,25 @@ public class User {
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
+
+	public String getFirstName() { return firstName; }
+	public void setFirstName(String firstName) { this.firstName = firstName; }
+
+	public String getLastName() { return lastName; }
+	public void setLastName(String lastName) { this.lastName = lastName; }
+
+	public String getCountry() { return country; }
+	public  void setCountry(String country) { this.country = country; }
+
+	public Set<Organization> getOrganizations() { return  organizations; }
+	public void setOrganizations(Set<Organization> organizations) { this.organizations = organizations; }
+
+	public Set<Team> getTeams() { return  teams; }
+	public void setTeams(Set<Team> teams) { this.teams = teams; }
+
+	public Integer getStep() { return step; }
+	public void setStep(Integer step) { this.step = step; }
+
+	public String getPosition() { return position; }
+	public void setPosition(String position) { this.position = position; }
 }

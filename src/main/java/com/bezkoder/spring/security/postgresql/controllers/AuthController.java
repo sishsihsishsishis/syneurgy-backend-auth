@@ -70,7 +70,8 @@ public class AuthController {
 		return ResponseEntity.ok(new JwtResponse(jwt, 
 												 userDetails.getId(), 
 												 userDetails.getUsername(),
-												 userDetails.getEmail(), 
+												 userDetails.getEmail(),
+												 userDetails.getStep(),
 												 roles));
 	}
 
@@ -120,6 +121,7 @@ public class AuthController {
 					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 			roles.add(adminRole);
 
+			user.setStep(0);
 			user.setRoles(roles);
 			userRepository.save(user);
 
