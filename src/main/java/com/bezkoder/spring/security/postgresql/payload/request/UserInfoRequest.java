@@ -3,14 +3,15 @@ package com.bezkoder.spring.security.postgresql.payload.request;
 import javax.validation.constraints.NotBlank;
 
 public class UserInfoRequest {
-    @NotBlank
     private String firstName;
 
-    @NotBlank
     private String lastName;
 
-    @NotBlank
     private String country;
+
+    private String company;
+
+    private String position;
 
     public String getFirstName() {
         return firstName;
@@ -34,5 +35,21 @@ public class UserInfoRequest {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
     }
 }

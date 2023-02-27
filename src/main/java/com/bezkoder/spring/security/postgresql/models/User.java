@@ -35,6 +35,9 @@ public class User {
 	@Size(max = 20)
 	private String country;
 
+
+	@Size(max = 50)
+	private String company;
 	@Size(max = 20)
 	private String position;
 
@@ -43,8 +46,19 @@ public class User {
 	@OneToMany(targetEntity = Organization.class, mappedBy = "id", orphanRemoval = false, fetch = FetchType.LAZY)
 	private Set<Organization> organizations;
 
-	@OneToMany(targetEntity = Organization.class, mappedBy = "id", orphanRemoval = false, fetch = FetchType.LAZY)
-	private Set<Team> teams;
+//	@OneToMany(targetEntity = Organization.class, mappedBy = "id", orphanRemoval = false, fetch = FetchType.LAZY)
+//	private Set<Team> teams;
+
+	@ManyToMany(fetch = FetchType.LAZY,
+			cascade = {
+					CascadeType.PERSIST,
+					CascadeType.MERGE
+			})
+	@JoinTable(name = "user_teams",
+			joinColumns = { @JoinColumn(name = "user_id") },
+			inverseJoinColumns = { @JoinColumn(name = "team_id") })
+	private Set<Team> teams = new HashSet<>();
+
 	@NotBlank
 	@Size(max = 120)
 	private String password;
@@ -122,6 +136,22 @@ public class User {
 	public Integer getStep() { return step; }
 	public void setStep(Integer step) { this.step = step; }
 
+	public String getCompany() { return company; }
+	public  void setCompany(String company) { this.company = company; }
+
 	public String getPosition() { return position; }
 	public void setPosition(String position) { this.position = position; }
+
+	public void addTeam(Team team) {
+		this.teams.add(team);
+		team.getUsers().add(this);
+	}
+
+	public void removeTeam(long teamId) {
+		Team team = this.teams.stream().filter(t -> t.getId() == teamId).findFirst().orElse(null);
+		if (team != null) {
+			this.teams.remove(team);
+			team.getUsers().remove(this);
+		}
+	}
 }

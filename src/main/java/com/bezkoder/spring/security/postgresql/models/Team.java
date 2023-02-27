@@ -1,12 +1,16 @@
 package com.bezkoder.spring.security.postgresql.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
-@Table(name = "Team",
+@Table(name = "Teams",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "name")
         })
@@ -26,6 +30,15 @@ public class Team implements Serializable {
 //    @Fetch(FetchMode.JOIN)
 //    private User user;
 
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            },
+            mappedBy = "teams")
+    @JsonIgnore
+    private Set<User> users = new HashSet<>();
+
     public Team() {
 
     }
@@ -36,6 +49,6 @@ public class Team implements Serializable {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-//    public User getUser() { return user; }
-//    public void setUser(User user) { this.user = user; }
+    public Set<User> getUsers() { return users; }
+    public void setUsers(Set<User> users) { this.users = users; }
 }

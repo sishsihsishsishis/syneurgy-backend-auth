@@ -37,13 +37,25 @@ public class UserInfoController {
         Optional <User> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
             User user = existingUser.get();
-            user.setFirstName(userInfoRequest.getFirstName());
-            user.setLastName(userInfoRequest.getLastName());
-            user.setCountry(userInfoRequest.getCountry());
+            if (userInfoRequest.getFirstName() != null) {
+                user.setFirstName(userInfoRequest.getFirstName());
+            }
+            if (userInfoRequest.getLastName() != null) {
+                user.setLastName(userInfoRequest.getLastName());
+            }
+            if (userInfoRequest.getCountry() != null) {
+                user.setCountry(userInfoRequest.getCountry());
+            }
+            if (userInfoRequest.getCompany() != null) {
+                user.setCompany(userInfoRequest.getCompany());
+            }
+            if (userInfoRequest.getPosition() != null) {
+                user.setPosition(userInfoRequest.getPosition());
+            }
             user.setStep(1);
             userRepository.save(user);
 
-            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getStep()));
+            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCompany(), user.getPosition(), user.getStep()));
         } else {
             return ResponseEntity
                     .badRequest()
