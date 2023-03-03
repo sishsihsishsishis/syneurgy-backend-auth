@@ -120,7 +120,7 @@ public class EmailServiceImpl implements EmailService{
         StringBuffer content = new StringBuffer();
 
         try {
-            content.append(FreeMarkerTemplateUtils.processTemplateIntoString(fmConfiguration.getTemplate("email.flth"), model));
+            content.append(FreeMarkerTemplateUtils.processTemplateIntoString(fmConfiguration.getTemplate("email-template.flth"), model));
         } catch (Exception e) {
             e.printStackTrace();
         }

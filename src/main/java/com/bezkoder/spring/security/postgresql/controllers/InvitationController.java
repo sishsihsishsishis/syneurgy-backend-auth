@@ -97,12 +97,12 @@ public class InvitationController {
                 emailDetailsDTO.setRecipient(email);
                 emailDetailsDTO.setSubject("Join your team");
                 emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/confirm-invitation?token=" + newUser.getInvitationToken());
-                Map<String, Object> model = new HashMap<>();
-                model.put("firstName", currentUser.getFirstName());
-                model.put("lastName", currentUser.getLastName());
-                emailDetailsDTO.setModel(model);
-
-                emailService.sendEmailWithTemplate(emailDetailsDTO);
+//                Map<String, Object> model = new HashMap<>();
+//                model.put("firstName", currentUser.getFirstName());
+//                model.put("lastName", currentUser.getLastName());
+//                emailDetailsDTO.setModel(model);
+                emailService.sendSimpleMail(emailDetailsDTO);
+//                emailService.sendEmailWithTemplate(emailDetailsDTO);
 
             }
         }
