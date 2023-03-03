@@ -28,11 +28,8 @@ public class UserInfoController {
     private UserDetailsServiceImpl userDetailsService;
     @PutMapping("/basic")
     public ResponseEntity<?> fillBasicInfo(@Valid @RequestBody UserInfoRequest userInfoRequest, @RequestHeader (name="Authorization") String token) {
-        String tokenOnly = "";
-        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
-            tokenOnly = token.substring(7, token.length());
-        }
-        String username = jwtUtils.getUserNameFromJwtToken(tokenOnly);
+
+        String username = jwtUtils.getExistingUsername(token);
 
         Optional <User> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {

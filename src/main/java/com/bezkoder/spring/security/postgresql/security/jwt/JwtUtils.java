@@ -1,7 +1,9 @@
 package com.bezkoder.spring.security.postgresql.security.jwt;
 
 import java.util.Date;
+import java.util.Optional;
 
+import com.bezkoder.spring.security.postgresql.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.bezkoder.spring.security.postgresql.security.services.UserDetailsImpl;
 
 import io.jsonwebtoken.*;
+import org.springframework.util.StringUtils;
 
 @Component
 public class JwtUtils {
@@ -52,5 +55,16 @@ public class JwtUtils {
     }
 
     return false;
+  }
+
+  public String getExistingUsername(String token) {
+    String tokenOnly = "";
+    if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
+      tokenOnly = token.substring(7, token.length());
+    }
+
+    String username = this.getUserNameFromJwtToken(tokenOnly);
+
+    return username;
   }
 }

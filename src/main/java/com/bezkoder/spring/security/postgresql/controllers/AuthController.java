@@ -92,7 +92,7 @@ public class AuthController {
 				});
 				if (isAdmin[0]) {
 					return ResponseEntity
-							.badRequest()
+							.unprocessableEntity()
 							.body(new MessageResponse("Error: Email is already in use!"));
 
 				} else {

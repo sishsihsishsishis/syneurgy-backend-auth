@@ -14,33 +14,31 @@ import java.util.Set;
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "name")
         })
-public class Team implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Team {
 
     @Id
-    @Column
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
     private String name;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-//    @Fetch(FetchMode.JOIN)
-//    private User user;
-
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            },
-            mappedBy = "teams")
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private Set<User> users = new HashSet<>();
-
+    private Set<UserTeam> userTeams = new HashSet<>();
     public Team() {
 
+    }
+
+    public Team(String name) {
+        this.name = name;
+    }
+
+    public void setUserTeams(Set<UserTeam> userTeams) {
+        this.userTeams = userTeams;
+    }
+
+    public Set<UserTeam> getUserTeams() {
+        return userTeams;
     }
 
     public Long getId() { return id; }
@@ -49,6 +47,7 @@ public class Team implements Serializable {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public Set<User> getUsers() { return users; }
-    public void setUsers(Set<User> users) { this.users = users; }
+    public void addUserTeam(UserTeam userTeam) {
+        this.userTeams.add(userTeam);
+    }
 }

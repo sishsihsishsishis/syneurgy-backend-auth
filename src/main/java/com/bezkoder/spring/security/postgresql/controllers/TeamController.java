@@ -2,11 +2,13 @@ package com.bezkoder.spring.security.postgresql.controllers;
 
 import com.bezkoder.spring.security.postgresql.models.Team;
 import com.bezkoder.spring.security.postgresql.models.User;
+import com.bezkoder.spring.security.postgresql.models.UserTeam;
 import com.bezkoder.spring.security.postgresql.payload.request.TeamRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.TeamResponse;
 import com.bezkoder.spring.security.postgresql.repository.TeamRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
+import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -29,6 +32,9 @@ public class TeamController {
     UserRepository userRepository;
     @Autowired
     TeamRepository teamRepository;
+
+    @Autowired
+    UserTeamRepository userTeamRepository;
     @PostMapping("/team/create")
     public ResponseEntity<?> createTeam(@Valid @RequestBody TeamRequest teamRequest, @RequestHeader(name = "Authorization") String token) {
         boolean isExistingName = teamRepository.existsByName(teamRequest.getTeamName());
@@ -37,11 +43,7 @@ public class TeamController {
                     .badRequest()
                     .body(new MessageResponse("Error: This name is already in use!"));
         }
-        String tokenOnly = "";
-        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
-            tokenOnly = token.substring(7, token.length());
-        }
-        String username = jwtUtils.getUserNameFromJwtToken(tokenOnly);
+        String username = jwtUtils.getExistingUsername(token);
 
         Optional<User> existingUser = userRepository.findByUsername(username);
 
@@ -53,8 +55,13 @@ public class TeamController {
         User user = existingUser.get();
         Team team = new Team();
         team.setName(teamRequest.getTeamName());
-        Team newTeam = teamRepository.save(team);
-        user.addTeam(newTeam);
+
+        UserTeam userTeam = new UserTeam(user, team, true);
+        team.addUserTeam(userTeam);
+        teamRepository.save(team);
+
+        userTeamRepository.save(userTeam);
+        user.addUserTeam(userTeam);
         userRepository.save(user);
 
 
@@ -84,12 +91,7 @@ public class TeamController {
 
     @GetMapping("/users/teams")
     public ResponseEntity<?> getAllTeamsByUserId(@RequestHeader(name = "Authorization") String token) {
-        String tokenOnly = "";
-        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
-            tokenOnly = token.substring(7, token.length());
-        }
-        String username = jwtUtils.getUserNameFromJwtToken(tokenOnly);
-
+        String username = jwtUtils.getExistingUsername(token);
         Optional<User> existingUser = userRepository.findByUsername(username);
 
         if (!existingUser.isPresent()) {
@@ -99,7 +101,14 @@ public class TeamController {
         }
         User user = existingUser.get();
 
-        List<Team> teams = teamRepository.findTeamsByUsersId(user.getId());
+        List<Team> teams = new ArrayList<>();
+        Set<UserTeam> userTeams = user.getUserTeams();
+        for (UserTeam userTeam: userTeams
+             ) {
+            Team team = userTeam.getTeam();
+            teams.add(team);
+        }
+
         return new ResponseEntity<>(teams, HttpStatus.OK);
     }
 }

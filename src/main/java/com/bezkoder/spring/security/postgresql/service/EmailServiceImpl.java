@@ -2,22 +2,28 @@ package com.bezkoder.spring.security.postgresql.service;
 
 import com.bezkoder.spring.security.postgresql.dto.EmailDetailsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
-
+import java.util.Map;
+import freemarker.template.Configuration;
 @Service
 public class EmailServiceImpl implements EmailService{
     @Autowired
     private JavaMailSender javaMailSender;
 
+    @Qualifier("getFreeMarkerConfiguration")
+    @Autowired
+    Configuration fmConfiguration;
     @Value("${spring.mail.username}") private String sender;
 
     // Method 1
@@ -29,7 +35,7 @@ public class EmailServiceImpl implements EmailService{
         try {
 
             // Creating a simple mail message
-            SimpleMailMessage mailMessage
+                SimpleMailMessage mailMessage
                     = new SimpleMailMessage();
 
             // Setting up necessary details
@@ -92,5 +98,33 @@ public class EmailServiceImpl implements EmailService{
         }
     }
 
+    public void sendEmailWithTemplate(EmailDetailsDTO details) {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        try {
+
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+
+            mimeMessageHelper.setSubject(details.getSubject());
+            mimeMessageHelper.setFrom(sender);
+            mimeMessageHelper.setTo(details.getRecipient());
+            details.setMsgBody(geContentFromTemplate(details.getModel()));
+            mimeMessageHelper.setText(details.getMsgBody(), true);
+
+            javaMailSender.send(mimeMessageHelper.getMimeMessage());
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String geContentFromTemplate(Map<String, Object> model) {
+        StringBuffer content = new StringBuffer();
+
+        try {
+            content.append(FreeMarkerTemplateUtils.processTemplateIntoString(fmConfiguration.getTemplate("email.flth"), model));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return content.toString();
+    }
 
 }

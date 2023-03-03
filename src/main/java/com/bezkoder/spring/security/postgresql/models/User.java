@@ -18,7 +18,7 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Size(max = 20)
+	@Size(max = 50)
 	private String username;
 
 	@NotBlank
@@ -43,22 +43,9 @@ public class User {
 
 	private Integer step;
 
-	@OneToMany(targetEntity = Organization.class, mappedBy = "id", orphanRemoval = false, fetch = FetchType.LAZY)
-	private Set<Organization> organizations;
-
-//	@OneToMany(targetEntity = Organization.class, mappedBy = "id", orphanRemoval = false, fetch = FetchType.LAZY)
-//	private Set<Team> teams;
-
-	@ManyToMany(fetch = FetchType.LAZY,
-			cascade = {
-					CascadeType.PERSIST,
-					CascadeType.MERGE
-			})
-	@JoinTable(name = "user_teams",
-			joinColumns = { @JoinColumn(name = "user_id") },
-			inverseJoinColumns = { @JoinColumn(name = "team_id") })
-	private Set<Team> teams = new HashSet<>();
-
+	private String invitationToken;
+	@OneToMany(mappedBy = "user")
+	private Set<UserTeam> userTeams = new HashSet<>();
 	@NotBlank
 	@Size(max = 120)
 	private String password;
@@ -69,6 +56,8 @@ public class User {
 				inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 
+
+
 	public User() {
 	}
 
@@ -76,6 +65,14 @@ public class User {
 		this.username = username;
 		this.email = email;
 		this.password = password;
+	}
+
+	public Set<UserTeam> getUserTeams() {
+		return userTeams;
+	}
+
+	public void setUserTeams(Set<UserTeam> userTeams) {
+		this.userTeams = userTeams;
 	}
 
 	public Long getId() {
@@ -127,12 +124,6 @@ public class User {
 	public String getCountry() { return country; }
 	public  void setCountry(String country) { this.country = country; }
 
-	public Set<Organization> getOrganizations() { return  organizations; }
-	public void setOrganizations(Set<Organization> organizations) { this.organizations = organizations; }
-
-	public Set<Team> getTeams() { return  teams; }
-	public void setTeams(Set<Team> teams) { this.teams = teams; }
-
 	public Integer getStep() { return step; }
 	public void setStep(Integer step) { this.step = step; }
 
@@ -142,16 +133,26 @@ public class User {
 	public String getPosition() { return position; }
 	public void setPosition(String position) { this.position = position; }
 
-	public void addTeam(Team team) {
-		this.teams.add(team);
-		team.getUsers().add(this);
+	public void addUserTeam(UserTeam userTeam) {
+		this.userTeams.add(userTeam);
 	}
 
-	public void removeTeam(long teamId) {
-		Team team = this.teams.stream().filter(t -> t.getId() == teamId).findFirst().orElse(null);
-		if (team != null) {
-			this.teams.remove(team);
-			team.getUsers().remove(this);
+	public String getInvitationToken() {
+		return invitationToken;
+	}
+
+	public void setInvitationToken(String invitationToken) {
+		this.invitationToken = invitationToken;
+	}
+
+	public String getFullName() {
+		if (firstName.length() > 0 && lastName.length() > 0) {
+			return firstName + " " + lastName;
+		} else if (firstName.length() > 0) {
+			return firstName;
+		} else if (lastName.length() > 0) {
+			return lastName;
 		}
+		return "";
 	}
 }

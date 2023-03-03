@@ -3,6 +3,8 @@ package com.bezkoder.spring.security.postgresql.dto;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmailDetailsDTO {
@@ -12,7 +14,7 @@ public class EmailDetailsDTO {
     private String subject;
     private String attachment;
 
-    public EmailDetailsDTO() {}
+    private Map< String, Object > model;
 
     public String getRecipient() { return recipient; }
     public void setRecipient(String recipient) { this.recipient = recipient; }
@@ -25,4 +27,12 @@ public class EmailDetailsDTO {
 
     public String getAttachment() { return attachment; }
     public void setAttachment(String attachment) { this.attachment = attachment; }
+
+    public Map<String, Object> getModel() {
+        return model;
+    }
+
+    public void setModel(Map<String, Object> model) {
+        this.model = model;
+    }
 }
