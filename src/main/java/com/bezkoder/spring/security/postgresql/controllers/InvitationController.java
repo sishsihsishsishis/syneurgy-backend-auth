@@ -1,14 +1,12 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
 import com.bezkoder.spring.security.postgresql.dto.EmailDetailsDTO;
-import com.bezkoder.spring.security.postgresql.models.Team;
-import com.bezkoder.spring.security.postgresql.models.User;
-import com.bezkoder.spring.security.postgresql.models.UserTeam;
-import com.bezkoder.spring.security.postgresql.models.UserTeamId;
+import com.bezkoder.spring.security.postgresql.models.*;
+import com.bezkoder.spring.security.postgresql.payload.request.ConfirmInviteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.InviteRequest;
-import com.bezkoder.spring.security.postgresql.payload.request.TeamRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.InviteResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
+import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.TeamRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
@@ -17,10 +15,13 @@ import com.bezkoder.spring.security.postgresql.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.*;
+
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -40,6 +41,15 @@ public class InvitationController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    RoleRepository roleRepository;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    PasswordEncoder encoder;
+
     @PostMapping("/invitation/team")
     public ResponseEntity<?> inviteMembersToTeam(@Valid @RequestBody InviteRequest inviteRequest, @RequestHeader(name = "Authorization") String token) {
         String username = jwtUtils.getExistingUsername(token);
@@ -48,7 +58,7 @@ public class InvitationController {
         if (!existingUser1.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
         }
         User currentUser = existingUser1.get();
 
@@ -68,7 +78,10 @@ public class InvitationController {
                 UserTeamId userTeamId = new UserTeamId(user.getId(), team.getId());
                 Optional<UserTeam> existingUserTeam = userTeamRepository.findById(userTeamId);
                 if (existingUserTeam.isPresent()) {
-
+                    UserTeam userTeam = existingUserTeam.get();
+                    if (!userTeam.isActive()) {
+                        // Add Notification
+                    }
                 } else {
                     UserTeam userTeam = new UserTeam(user, team, false);
                     UserTeam newUserTeam = userTeamRepository.save(userTeam);
@@ -80,7 +93,7 @@ public class InvitationController {
                     teamRepository.save(team);
                 }
             } else {
-                User newUser = new User(email, email, "password");
+                User newUser = new User(email, email, encoder.encode("123456"));
                 newUser.setInvitationToken(UUID.randomUUID().toString());
                 User newUser1 = userRepository.save(newUser);
 
@@ -88,6 +101,12 @@ public class InvitationController {
                 UserTeam newUserTeam = userTeamRepository.save(userTeam);
 
                 newUser.addUserTeam(newUserTeam);
+                Set<Role> userRoles = new HashSet<>();
+                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                userRoles.add(userRole);
+                newUser.setStep(0);
+                newUser.setRoles(userRoles);
                 userRepository.save(newUser);
 
                 team.addUserTeam(newUserTeam);
@@ -119,17 +138,4 @@ public class InvitationController {
         return new ResponseEntity<>( new InviteResponse("Successfully Invited", step), HttpStatus.OK);
     }
 
-    @PostMapping("/confirm-invitation")
-    public ResponseEntity<?> confirmInvitation(@Valid @RequestBody InviteRequest inviteRequest, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser1 = userRepository.findByUsername(username);
-
-        if (!existingUser1.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-        User currentUser = existingUser1.get();
-        return new ResponseEntity<>("ited", HttpStatus.OK);
-    }
 }

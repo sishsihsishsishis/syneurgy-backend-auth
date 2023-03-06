@@ -8,19 +8,17 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.bezkoder.spring.security.postgresql.payload.request.ConfirmInviteRequest;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.bezkoder.spring.security.postgresql.models.ERole;
 import com.bezkoder.spring.security.postgresql.models.Role;
@@ -130,4 +128,36 @@ public class AuthController {
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
+
+	@PostMapping("/confirm-invitation")
+	public ResponseEntity<?> confirmInvitation(@Valid @RequestBody ConfirmInviteRequest confirmRequest) {
+
+		String token = confirmRequest.getToken();
+		Optional<User> existingUser = userRepository.findByInvitationToken(token);
+		if (!existingUser.isPresent()) {
+			return new ResponseEntity<>("The current user is not unavailable!", HttpStatus.UNPROCESSABLE_ENTITY);
+		}
+		User user = existingUser.get();
+		user.setInvitationToken("");
+		userRepository.save(user);
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(user.getEmail(), "123456"));
+
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		String jwt = jwtUtils.generateJwtToken(authentication);
+
+		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+		List<String> roles = userDetails.getAuthorities().stream()
+				.map(item -> item.getAuthority())
+				.collect(Collectors.toList());
+		return ResponseEntity.ok(new JwtResponse(jwt,
+				userDetails.getId(),
+				userDetails.getUsername(),
+				userDetails.getEmail(),
+				userDetails.getStep(),
+				roles));
+
+	}
+
+
 }
