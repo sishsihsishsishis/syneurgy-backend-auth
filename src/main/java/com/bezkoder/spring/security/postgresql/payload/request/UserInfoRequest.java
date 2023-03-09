@@ -9,6 +9,8 @@ public class UserInfoRequest {
 
     private String country;
 
+    private String countryCode;
+
     private String company;
 
     private String position;
@@ -62,5 +64,13 @@ public class UserInfoRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 }

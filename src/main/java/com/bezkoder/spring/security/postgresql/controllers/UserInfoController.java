@@ -55,10 +55,32 @@ public class UserInfoController {
             if (userInfoRequest.getPosition() != null) {
                 user.setPosition(userInfoRequest.getPosition());
             }
+
+            if (userInfoRequest.getCountryCode() != null) {
+                user.setCountryCode(userInfoRequest.getCountryCode());
+            }
+
             user.setStep(1);
             userRepository.save(user);
 
-            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCompany(), user.getPosition(), user.getStep()));
+            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCountryCode(), user.getCompany(), user.getPosition(), user.getStep()));
+        } else {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+        }
+
+    }
+
+    @GetMapping("/basic")
+    public ResponseEntity<?> getUserInfo(@RequestHeader (name="Authorization") String token) {
+
+        String username = jwtUtils.getExistingUsername(token);
+
+        Optional <User> existingUser = userRepository.findByUsername(username);
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCountryCode(), user.getCompany(), user.getPosition(), user.getStep()));
         } else {
             return ResponseEntity
                     .badRequest()

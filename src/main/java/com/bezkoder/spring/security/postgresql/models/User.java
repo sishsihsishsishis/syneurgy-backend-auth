@@ -35,6 +35,8 @@ public class User {
 	@Size(max = 20)
 	private String country;
 
+	@Size(max = 20)
+	private String countryCode;
 
 	@Size(max = 50)
 	private String company;
@@ -44,7 +46,7 @@ public class User {
 	private Integer step;
 
 	private String invitationToken;
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private Set<UserTeam> userTeams = new HashSet<>();
 	@NotBlank
 	@Size(max = 120)
@@ -143,6 +145,14 @@ public class User {
 
 	public void setInvitationToken(String invitationToken) {
 		this.invitationToken = invitationToken;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
 	public String getFullName() {

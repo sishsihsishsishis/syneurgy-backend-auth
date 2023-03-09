@@ -7,11 +7,14 @@ public class UserInfoResponse {
     private String company;
     private String position;
 
+    private String countryCode;
+
     private Integer step;
-    public UserInfoResponse(String firstName, String lastName, String country, String company, String position, Integer step) {
+    public UserInfoResponse(String firstName, String lastName, String country, String countryCode, String company, String position, Integer step) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.country = country;
+        this.countryCode = countryCode;
         this.company = company;
         this.position = position;
         this.step = step;
@@ -63,5 +66,13 @@ public class UserInfoResponse {
 
     public void setStep(Integer step) {
         this.step = step;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 }
