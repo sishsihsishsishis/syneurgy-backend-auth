@@ -9,8 +9,9 @@ public class UserInfoResponse {
 
     private String countryCode;
 
+    private String photo;
     private Integer step;
-    public UserInfoResponse(String firstName, String lastName, String country, String countryCode, String company, String position, Integer step) {
+    public UserInfoResponse(String firstName, String lastName, String country, String countryCode, String company, String position, Integer step, String photo) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.country = country;
@@ -18,6 +19,7 @@ public class UserInfoResponse {
         this.company = company;
         this.position = position;
         this.step = step;
+        this.photo = photo;
     }
 
     public String getFirstName() {
@@ -74,5 +76,13 @@ public class UserInfoResponse {
 
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 }

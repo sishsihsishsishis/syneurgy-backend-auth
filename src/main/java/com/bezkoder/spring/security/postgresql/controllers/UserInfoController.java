@@ -10,13 +10,20 @@ import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -63,7 +70,7 @@ public class UserInfoController {
             user.setStep(1);
             userRepository.save(user);
 
-            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCountryCode(), user.getCompany(), user.getPosition(), user.getStep()));
+            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCountryCode(), user.getCompany(), user.getPosition(), user.getStep(), user.getPhoto()));
         } else {
             return ResponseEntity
                     .badRequest()
@@ -80,7 +87,7 @@ public class UserInfoController {
         Optional <User> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
             User user = existingUser.get();
-            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCountryCode(), user.getCompany(), user.getPosition(), user.getStep()));
+            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCountryCode(), user.getCompany(), user.getPosition(), user.getStep(), user.getPhoto()));
         } else {
             return ResponseEntity
                     .badRequest()
@@ -109,4 +116,71 @@ public class UserInfoController {
         return new ResponseEntity<>("Password successfully updated", HttpStatus.OK);
     }
 
+    public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/src/main/upload";
+
+    @PostMapping("/photo")
+    public ResponseEntity<?> uploadProfiePhoto(@RequestParam("file") MultipartFile multipartFile, @RequestHeader(name = "Authorization") String token) throws IOException {
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser1 = userRepository.findByUsername(username);
+
+        if (!existingUser1.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+        }
+        User currentUser = existingUser1.get();
+
+        StringBuilder fileNames = new StringBuilder();
+        StringBuilder path = new StringBuilder();
+        path.append("user");
+        path.append("_");
+        path.append(currentUser.getId().toString());
+        path.append("_");
+        path.append(multipartFile.getOriginalFilename());
+        Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, path.toString());
+        fileNames.append("upload/");
+        fileNames.append("user");
+        fileNames.append("_");
+        fileNames.append(currentUser.getId().toString());
+        fileNames.append("_");
+        fileNames.append(multipartFile.getOriginalFilename());
+
+        Files.write(fileNameAndPath, multipartFile.getBytes());
+
+        String name = fileNames.toString();
+        currentUser.setPhoto(name);
+        User savedUser = userRepository.save(currentUser);
+
+        return ResponseEntity.ok(new UserInfoResponse(savedUser.getFirstName(), savedUser.getLastName(), savedUser.getCountry(), savedUser.getCountryCode(), savedUser.getCompany(), savedUser.getPosition(), savedUser.getStep(), savedUser.getPhoto()));
+    }
+
+    @GetMapping("/img/{fileName}")
+    public ResponseEntity<?> getProfilePhoto(@PathVariable String fileName, @RequestHeader(name = "Authorization") String token) throws IOException {
+        Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, fileName);
+        byte[] images = Files.readAllBytes(new File(fileNameAndPath.toUri()).toPath());
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("image/png"))
+                .body(images);
+    }
+
+    @DeleteMapping("/photo")
+    public ResponseEntity<?> DeleteProfiePhoto(@RequestHeader(name = "Authorization") String token) throws IOException {
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser1 = userRepository.findByUsername(username);
+
+        if (!existingUser1.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+        }
+        User currentUser = existingUser1.get();
+        String FILE_DIRECTORY = System.getProperty("user.dir") + "/src/main/";
+        Path fileNameAndPath = Paths.get(FILE_DIRECTORY, currentUser.getPhoto());
+        boolean isDeleted = Files.deleteIfExists(fileNameAndPath);
+        if (isDeleted) {
+            currentUser.setPhoto("");
+        }
+        User savedUser = userRepository.save(currentUser);
+        return ResponseEntity.ok(new UserInfoResponse(savedUser.getFirstName(), savedUser.getLastName(), savedUser.getCountry(), savedUser.getCountryCode(), savedUser.getCompany(), savedUser.getPosition(), savedUser.getStep(), savedUser.getPhoto()));
+    }
 }

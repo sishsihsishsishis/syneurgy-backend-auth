@@ -46,6 +46,8 @@ public class User {
 	private Integer step;
 
 	private String invitationToken;
+
+	private String photo;
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private Set<UserTeam> userTeams = new HashSet<>();
 	@NotBlank
@@ -164,5 +166,13 @@ public class User {
 			return lastName;
 		}
 		return "";
+	}
+
+	public String getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(String photo) {
+		this.photo = photo;
 	}
 }
