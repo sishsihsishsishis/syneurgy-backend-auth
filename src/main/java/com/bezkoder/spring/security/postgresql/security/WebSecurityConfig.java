@@ -92,6 +92,7 @@ public class WebSecurityConfig implements WebMvcConfigurer { // extends WebSecur
                 .authorizeRequests().antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
                 .antMatchers("/upload/**").permitAll()
+                .antMatchers("/uploads/**").permitAll()
                 .anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());
