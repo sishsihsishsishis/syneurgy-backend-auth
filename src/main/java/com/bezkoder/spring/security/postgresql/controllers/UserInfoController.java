@@ -179,6 +179,7 @@ public class UserInfoController {
         User currentUser = existingUser1.get();
         String FILE_DIRECTORY = System.getProperty("user.dir") + "/src/main/";
         Path fileNameAndPath = Paths.get(FILE_DIRECTORY, currentUser.getPhoto());
+//        Path fileNameAndPath = Paths.get(currentUser.getPhoto());
         boolean isDeleted = Files.deleteIfExists(fileNameAndPath);
         if (isDeleted) {
             currentUser.setPhoto("");
