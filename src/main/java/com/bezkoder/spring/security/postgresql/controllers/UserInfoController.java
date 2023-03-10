@@ -66,8 +66,10 @@ public class UserInfoController {
             if (userInfoRequest.getCountryCode() != null) {
                 user.setCountryCode(userInfoRequest.getCountryCode());
             }
+            if (user.getStep() < 1) {
+                user.setStep(1);
+            }
 
-            user.setStep(1);
             userRepository.save(user);
 
             return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCountryCode(), user.getCompany(), user.getPosition(), user.getStep(), user.getPhoto()));
