@@ -104,5 +104,6 @@ public class WebSecurityConfig implements WebMvcConfigurer { // extends WebSecur
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/upload/**").addResourceLocations("file://" + System.getProperty("user.dir") + "/src/main/upload/");
+//        registry.addResourceHandler("/uploads/**").addResourceLocations("file:uploads/");
     }
 }
