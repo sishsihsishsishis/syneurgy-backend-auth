@@ -118,7 +118,7 @@ public class UserInfoController {
         return new ResponseEntity<>("Password successfully updated", HttpStatus.OK);
     }
 
-    public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/src/main/upload";
+    public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/src/main/uploads";
 //    public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/uploads";
     @PostMapping("/photo")
     public ResponseEntity<?> uploadProfiePhoto(@RequestParam("file") MultipartFile multipartFile, @RequestHeader(name = "Authorization") String token) throws IOException {
@@ -140,8 +140,7 @@ public class UserInfoController {
         path.append("_");
         path.append(multipartFile.getOriginalFilename());
         Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY, path.toString());
-        fileNames.append("upload/");
-//        fileNames.append("uploads/");
+        fileNames.append("uploads/");
         fileNames.append("user");
         fileNames.append("_");
         fileNames.append(currentUser.getId().toString());
@@ -179,7 +178,8 @@ public class UserInfoController {
         User currentUser = existingUser1.get();
         String FILE_DIRECTORY = System.getProperty("user.dir") + "/src/main/";
         Path fileNameAndPath = Paths.get(FILE_DIRECTORY, currentUser.getPhoto());
-//        Path fileNameAndPath = Paths.get(currentUser.getPhoto());
+//        String FILE_DIRECTORY = System.getProperty("user.dir") + "/";
+//        Path fileNameAndPath = Paths.get(FILE_DIRECTORY, currentUser.getPhoto());
         boolean isDeleted = Files.deleteIfExists(fileNameAndPath);
         if (isDeleted) {
             currentUser.setPhoto("");

@@ -91,7 +91,6 @@ public class WebSecurityConfig implements WebMvcConfigurer { // extends WebSecur
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
-                .antMatchers("/upload/**").permitAll()
                 .antMatchers("/uploads/**").permitAll()
                 .anyRequest().authenticated();
 
@@ -104,7 +103,7 @@ public class WebSecurityConfig implements WebMvcConfigurer { // extends WebSecur
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/upload/**").addResourceLocations("file://" + System.getProperty("user.dir") + "/src/main/upload/");
+        registry.addResourceHandler("/uploads/**").addResourceLocations("file://" + System.getProperty("user.dir") + "/src/main/uploads/");
 //        registry.addResourceHandler("/uploads/**").addResourceLocations("file:uploads/");
     }
 }
