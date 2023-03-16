@@ -9,11 +9,14 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+//@Entity
+//@Table(name = "Teams",
+//        uniqueConstraints = {
+//                @UniqueConstraint(columnNames = "name")
+//        })
+
 @Entity
-@Table(name = "Teams",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "name")
-        })
+@Table(name = "Teams")
 public class Team {
 
     @Id
@@ -21,6 +24,7 @@ public class Team {
     private Long id;
 
     private String name;
+
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore

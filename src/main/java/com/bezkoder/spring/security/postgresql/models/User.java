@@ -1,5 +1,8 @@
 package com.bezkoder.spring.security.postgresql.models;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,6 +51,13 @@ public class User {
 	private String invitationToken;
 
 	private String photo;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+	private Date createdDate;
+
+	private String answers;
+
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	private Set<UserTeam> userTeams = new HashSet<>();
 	@NotBlank
@@ -174,5 +184,21 @@ public class User {
 
 	public void setPhoto(String photo) {
 		this.photo = photo;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getAnswers() {
+		return answers;
+	}
+
+	public void setAnswers(String answers) {
+		this.answers = answers;
 	}
 }

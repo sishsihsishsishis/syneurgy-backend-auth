@@ -118,6 +118,22 @@ public class UserInfoController {
         return new ResponseEntity<>("Password successfully updated", HttpStatus.OK);
     }
 
+    @PutMapping("/skip-step")
+    public ResponseEntity<?> skipStep(@RequestHeader(name = "Authorization") String token) {
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser1 = userRepository.findByUsername(username);
+
+        if (!existingUser1.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+        }
+        User currentUser = existingUser1.get();
+        currentUser.setStep(currentUser.getStep() + 1);
+        User savedUser = userRepository.save(currentUser);
+        return ResponseEntity.ok(new UserInfoResponse(savedUser.getFirstName(), savedUser.getLastName(), savedUser.getCountry(), savedUser.getCountryCode(), savedUser.getCompany(), savedUser.getPosition(), savedUser.getStep(), savedUser.getPhoto()));
+    }
+
     public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/src/main/uploads";
 //    public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/uploads";
     @PostMapping("/photo")

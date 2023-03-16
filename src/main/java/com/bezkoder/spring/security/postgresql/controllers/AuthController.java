@@ -1,9 +1,6 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -103,7 +100,7 @@ public class AuthController {
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 					userRoles.add(userRole);
 					newUser.setRoles(userRoles);
-
+					newUser.setCreatedDate(new Date());
 					userRepository.save(newUser);
 					return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 				}
@@ -118,7 +115,7 @@ public class AuthController {
 			Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
 					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 			roles.add(adminRole);
-
+			user.setCreatedDate(new Date());
 			user.setStep(0);
 			user.setRoles(roles);
 			userRepository.save(user);

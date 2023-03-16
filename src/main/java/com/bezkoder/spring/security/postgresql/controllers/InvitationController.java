@@ -2,16 +2,13 @@ package com.bezkoder.spring.security.postgresql.controllers;
 
 import com.bezkoder.spring.security.postgresql.dto.EmailDetailsDTO;
 import com.bezkoder.spring.security.postgresql.models.*;
-import com.bezkoder.spring.security.postgresql.payload.request.ConfirmInviteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.InviteRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.InviteResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
-import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
-import com.bezkoder.spring.security.postgresql.repository.TeamRepository;
-import com.bezkoder.spring.security.postgresql.repository.UserRepository;
-import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
+import com.bezkoder.spring.security.postgresql.repository.*;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.service.EmailService;
+import com.sun.mail.imap.protocol.ID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,8 +67,8 @@ public class InvitationController {
                     .body(new MessageResponse("Error: Error: The current team is not unavailable!"));
         }
         Team team = existingTeam.get();
-        for (String email: emails
-             ) {
+        for (String email : emails
+        ) {
             Optional<User> existingUser = userRepository.findByEmail(email);
             if (existingUser.isPresent()) {
                 User user = existingUser.get();
@@ -107,6 +104,7 @@ public class InvitationController {
                 userRoles.add(userRole);
                 newUser.setStep(0);
                 newUser.setRoles(userRoles);
+                newUser.setCreatedDate(new Date());
                 userRepository.save(newUser);
 
                 team.addUserTeam(newUserTeam);
@@ -127,7 +125,7 @@ public class InvitationController {
         }
 
         Integer step = inviteRequest.getStep();
-        if(step != null) {
+        if (step != null) {
             step = step + 1;
             currentUser.setStep(step);
             userRepository.save(currentUser);
@@ -135,7 +133,7 @@ public class InvitationController {
             step = -1;
         }
 
-        return new ResponseEntity<>( new InviteResponse("Successfully Invited", step), HttpStatus.OK);
+        return new ResponseEntity<>(new InviteResponse("Successfully Invited", step), HttpStatus.OK);
     }
 
 }

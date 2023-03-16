@@ -37,12 +37,7 @@ public class TeamController {
     UserTeamRepository userTeamRepository;
     @PostMapping("/team/create")
     public ResponseEntity<?> createTeam(@Valid @RequestBody TeamRequest teamRequest, @RequestHeader(name = "Authorization") String token) {
-        boolean isExistingName = teamRepository.existsByName(teamRequest.getTeamName());
-        if (isExistingName) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: This name is already in use!"));
-        }
+
         String username = jwtUtils.getExistingUsername(token);
 
         Optional<User> existingUser = userRepository.findByUsername(username);
@@ -55,10 +50,10 @@ public class TeamController {
         User user = existingUser.get();
         Team team = new Team();
         team.setName(teamRequest.getTeamName());
-
-        UserTeam userTeam = new UserTeam(user, team, true);
-        team.addUserTeam(userTeam);
-        teamRepository.save(team);
+        Team newTeam = teamRepository.save(team);
+        UserTeam userTeam = new UserTeam(user, newTeam, true);
+        newTeam.addUserTeam(userTeam);
+        teamRepository.save(newTeam);
 
         userTeamRepository.save(userTeam);
         user.addUserTeam(userTeam);
