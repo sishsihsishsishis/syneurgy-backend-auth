@@ -33,128 +33,146 @@ import com.bezkoder.spring.security.postgresql.security.services.UserDetailsImpl
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-	@Autowired
-	AuthenticationManager authenticationManager;
+    @Autowired
+    AuthenticationManager authenticationManager;
 
-	@Autowired
-	UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
-	@Autowired
-	RoleRepository roleRepository;
+    @Autowired
+    RoleRepository roleRepository;
 
-	@Autowired
-	PasswordEncoder encoder;
+    @Autowired
+    PasswordEncoder encoder;
 
-	@Autowired
-	JwtUtils jwtUtils;
+    @Autowired
+    JwtUtils jwtUtils;
 
-	@PostMapping("/signin")
-	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    @PostMapping("/signin")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = jwtUtils.generateJwtToken(authentication);
-		
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
-		List<String> roles = userDetails.getAuthorities().stream()
-				.map(item -> item.getAuthority())
-				.collect(Collectors.toList());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
 
-		return ResponseEntity.ok(new JwtResponse(jwt, 
-												 userDetails.getId(), 
-												 userDetails.getUsername(),
-												 userDetails.getEmail(),
-												 userDetails.getStep(),
-												 roles));
-	}
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
 
-	@PostMapping("/signup")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+        return ResponseEntity.ok(new JwtResponse(jwt,
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                userDetails.getStep(),
+                roles,
+                userDetails.getFirstName(),
+                userDetails.getLastName(),
+                userDetails.getCountryCode(),
+                userDetails.getCountry(),
+                userDetails.getCompany(),
+                userDetails.getPosition(),
+                userDetails.getPhoto(),
+                userDetails.getAnswers()
+        ));
+    }
 
-		boolean isExistingEmail = userRepository.existsByEmail(signUpRequest.getEmail());
-		if (isExistingEmail) {
-			Optional<User> existingUser = userRepository.findByEmail(signUpRequest.getEmail());
-			if (existingUser.isPresent()) {
-				User user = existingUser.get();
-				Set<Role> roles  = user.getRoles();
-				final boolean[] isAdmin = {false};
-				roles.forEach(role -> {
-					if (role.getName().equals(ERole.ROLE_ADMIN)) {
-						isAdmin[0] = true;
-					}
-				});
-				if (isAdmin[0]) {
-					return ResponseEntity
-							.unprocessableEntity()
-							.body(new MessageResponse("Error: Email is already in use!"));
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
-				} else {
-					User newUser = new User( signUpRequest.getEmail(),
-							signUpRequest.getEmail(),
-							encoder.encode(signUpRequest.getPassword()));
+        boolean isExistingEmail = userRepository.existsByEmail(signUpRequest.getEmail());
+        if (isExistingEmail) {
+            Optional<User> existingUser = userRepository.findByEmail(signUpRequest.getEmail());
+            if (existingUser.isPresent()) {
+                User user = existingUser.get();
+                Set<Role> roles = user.getRoles();
+                final boolean[] isAdmin = {false};
+                roles.forEach(role -> {
+                    if (role.getName().equals(ERole.ROLE_ADMIN)) {
+                        isAdmin[0] = true;
+                    }
+                });
+                if (isAdmin[0]) {
+                    return ResponseEntity
+                            .unprocessableEntity()
+                            .body(new MessageResponse("Error: Email is already in use!"));
 
-					Set<Role> userRoles = new HashSet<>();
-					Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-					userRoles.add(userRole);
-					newUser.setRoles(userRoles);
-					newUser.setCreatedDate(new Date());
-					userRepository.save(newUser);
-					return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-				}
-			}
-		} else {
-			User user = new User( signUpRequest.getEmail(),
-					signUpRequest.getEmail(),
-					encoder.encode(signUpRequest.getPassword()));
+                } else {
+                    User newUser = new User(signUpRequest.getEmail(),
+                            signUpRequest.getEmail(),
+                            encoder.encode(signUpRequest.getPassword()));
 
-			Set<Role> roles = new HashSet<>();
+                    Set<Role> userRoles = new HashSet<>();
+                    Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    userRoles.add(userRole);
+                    newUser.setRoles(userRoles);
+                    newUser.setCreatedDate(new Date());
+                    userRepository.save(newUser);
+                    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+                }
+            }
+        } else {
+            User user = new User(signUpRequest.getEmail(),
+                    signUpRequest.getEmail(),
+                    encoder.encode(signUpRequest.getPassword()));
 
-			Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			roles.add(adminRole);
-			user.setCreatedDate(new Date());
-			user.setStep(0);
-			user.setRoles(roles);
-			userRepository.save(user);
+            Set<Role> roles = new HashSet<>();
 
-			return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-		}
+            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(adminRole);
+            user.setCreatedDate(new Date());
+            user.setStep(0);
+            user.setRoles(roles);
+            userRepository.save(user);
 
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-	}
+            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        }
 
-	@PostMapping("/confirm-invitation")
-	public ResponseEntity<?> confirmInvitation(@Valid @RequestBody ConfirmInviteRequest confirmRequest) {
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
 
-		String token = confirmRequest.getToken();
-		Optional<User> existingUser = userRepository.findByInvitationToken(token);
-		if (!existingUser.isPresent()) {
-			return new ResponseEntity<>("The current user is not unavailable!", HttpStatus.UNPROCESSABLE_ENTITY);
-		}
-		User user = existingUser.get();
-		user.setInvitationToken("");
-		userRepository.save(user);
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(user.getEmail(), "123456"));
+    @PostMapping("/confirm-invitation")
+    public ResponseEntity<?> confirmInvitation(@Valid @RequestBody ConfirmInviteRequest confirmRequest) {
 
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = jwtUtils.generateJwtToken(authentication);
+        String token = confirmRequest.getToken();
+        Optional<User> existingUser = userRepository.findByInvitationToken(token);
+        if (!existingUser.isPresent()) {
+            return new ResponseEntity<>("The current user is not unavailable!", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        User user = existingUser.get();
+        user.setInvitationToken("");
+        userRepository.save(user);
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getEmail(), "123456"));
 
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-		List<String> roles = userDetails.getAuthorities().stream()
-				.map(item -> item.getAuthority())
-				.collect(Collectors.toList());
-		return ResponseEntity.ok(new JwtResponse(jwt,
-				userDetails.getId(),
-				userDetails.getUsername(),
-				userDetails.getEmail(),
-				userDetails.getStep(),
-				roles));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
 
-	}
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new JwtResponse(jwt,
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                userDetails.getStep(),
+                roles,
+                userDetails.getFirstName(),
+                userDetails.getLastName(),
+                userDetails.getCountryCode(),
+                userDetails.getCountry(),
+                userDetails.getCompany(),
+                userDetails.getPosition(),
+                userDetails.getPhoto(),
+                userDetails.getAnswers()
+        ));
+
+    }
 
 
 }

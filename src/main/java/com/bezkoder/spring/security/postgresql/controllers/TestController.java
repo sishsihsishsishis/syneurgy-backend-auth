@@ -12,6 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 	@GetMapping("/all")
 	public String allAccess() {
+
+		String sss = "1-2:2-2";
+		String[] arrAnswers = sss.split(":");
+		String answer = arrAnswers[arrAnswers.length - 1];
+		String[] questions = answer.split("-");
+		String strQuestionId = questions[0];
+		Integer questionId = Integer.valueOf(strQuestionId);
+		Integer ids = questionId / 3;
 		return "Public Content.";
 	}
 	

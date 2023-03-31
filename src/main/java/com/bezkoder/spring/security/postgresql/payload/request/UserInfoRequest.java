@@ -17,6 +17,8 @@ public class UserInfoRequest {
 
     private String password;
 
+    private Integer step;
+
 
     public String getFirstName() {
         return firstName;
@@ -72,5 +74,13 @@ public class UserInfoRequest {
 
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
+    }
+
+    public void setStep(Integer step) {
+        this.step = step;
+    }
+
+    public Integer getStep() {
+        return step;
     }
 }

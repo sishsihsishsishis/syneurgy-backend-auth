@@ -13,97 +13,191 @@ import com.bezkoder.spring.security.postgresql.models.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class UserDetailsImpl implements UserDetails {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private Long id;
+    private Long id;
 
-	private String username;
+    private String username;
 
-	private String email;
+    private String email;
 
-	private Integer step;
-	@JsonIgnore
-	private String password;
+    private Integer step;
+    @JsonIgnore
+    private String password;
 
-	private Collection<? extends GrantedAuthority> authorities;
+    private String firstName;
+    private String lastName;
+    private String country;
+    private String company;
+    private String position;
 
-	public UserDetailsImpl(Long id, String username, String email, String password, Integer step,
-			Collection<? extends GrantedAuthority> authorities) {
-		this.id = id;
-		this.username = username;
-		this.email = email;
-		this.password = password;
-		this.step = step;
-		this.authorities = authorities;
-	}
+    private String countryCode;
 
-	public static UserDetailsImpl build(User user) {
-		List<GrantedAuthority> authorities = user.getRoles().stream()
-				.map(role -> new SimpleGrantedAuthority(role.getName().name()))
-				.collect(Collectors.toList());
+    private String photo;
+    private String answers;
 
-		return new UserDetailsImpl(
-				user.getId(), 
-				user.getUsername(),
-				user.getEmail(),
-				user.getPassword(),
-				user.getStep(),
-				authorities);
-	}
+    private Collection<? extends GrantedAuthority> authorities;
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return authorities;
-	}
+    public UserDetailsImpl(Long id, String username, String email, String password, Integer step,
+                           Collection<? extends GrantedAuthority> authorities, String firstName, String lastName, String countryCode, String country, String company, String position, String photo, String answers) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.step = step;
+        this.authorities = authorities;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.countryCode = countryCode;
+        this.country = country;
+        this.company = company;
+        this.position = position;
+        this.photo = photo;
+        this.answers = answers;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public static UserDetailsImpl build(User user) {
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
 
-	public String getEmail() {
-		return email;
-	}
+        return new UserDetailsImpl(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getStep(),
+                authorities,
+                user.getFirstName(),
+                user.getLastName(),
+                user.getCountryCode(),
+                user.getCountry(),
+                user.getCompany(),
+                user.getPosition(),
+                user.getPhoto(),
+                user.getAnswers()
+        );
+    }
 
-	@Override
-	public String getPassword() {
-		return password;
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
 
-	@Override
-	public String getUsername() {
-		return username;
-	}
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
 
 
-	public  Integer getStep() { return step; }
+    public Integer getStep() {
+        return step;
+    }
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
+    public String getFirstName() {
+        return firstName;
+    }
 
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		UserDetailsImpl user = (UserDetailsImpl) o;
-		return Objects.equals(id, user.id);
-	}
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public void setAnswers(String answers) {
+        this.answers = answers;
+    }
+
+    public String getAnswers() {
+        return answers;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        UserDetailsImpl user = (UserDetailsImpl) o;
+        return Objects.equals(id, user.id);
+    }
 }

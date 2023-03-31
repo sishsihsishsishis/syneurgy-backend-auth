@@ -66,13 +66,10 @@ public class UserInfoController {
             if (userInfoRequest.getCountryCode() != null) {
                 user.setCountryCode(userInfoRequest.getCountryCode());
             }
-            if (user.getStep() < 1) {
-                user.setStep(1);
-            }
 
             userRepository.save(user);
 
-            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCountryCode(), user.getCompany(), user.getPosition(), user.getStep(), user.getPhoto()));
+            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCountryCode(), user.getCompany(), user.getPosition(), user.getStep(), user.getPhoto(), user.getAnswers()));
         } else {
             return ResponseEntity
                     .badRequest()
@@ -89,7 +86,7 @@ public class UserInfoController {
         Optional <User> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
             User user = existingUser.get();
-            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCountryCode(), user.getCompany(), user.getPosition(), user.getStep(), user.getPhoto()));
+            return ResponseEntity.ok(new UserInfoResponse(user.getFirstName(), user.getLastName(), user.getCountry(), user.getCountryCode(), user.getCompany(), user.getPosition(), user.getStep(), user.getPhoto(), user.getAnswers()));
         } else {
             return ResponseEntity
                     .badRequest()
@@ -119,7 +116,9 @@ public class UserInfoController {
     }
 
     @PutMapping("/skip-step")
-    public ResponseEntity<?> skipStep(@RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> skipStep(@Valid @RequestBody  UserInfoRequest userInfoRequest, @RequestHeader(name = "Authorization") String token) {
+
+        Integer step = userInfoRequest.getStep();
         String username = jwtUtils.getExistingUsername(token);
         Optional<User> existingUser1 = userRepository.findByUsername(username);
 
@@ -129,9 +128,14 @@ public class UserInfoController {
                     .body(new MessageResponse("Error: The current user is not unavailable!"));
         }
         User currentUser = existingUser1.get();
-        currentUser.setStep(currentUser.getStep() + 1);
+        if (step == -1) {
+            currentUser.setStep(currentUser.getStep() + 1);
+        } else {
+            currentUser.setStep(step + 1);
+        }
+
         User savedUser = userRepository.save(currentUser);
-        return ResponseEntity.ok(new UserInfoResponse(savedUser.getFirstName(), savedUser.getLastName(), savedUser.getCountry(), savedUser.getCountryCode(), savedUser.getCompany(), savedUser.getPosition(), savedUser.getStep(), savedUser.getPhoto()));
+        return ResponseEntity.ok(new UserInfoResponse(savedUser.getFirstName(), savedUser.getLastName(), savedUser.getCountry(), savedUser.getCountryCode(), savedUser.getCompany(), savedUser.getPosition(), savedUser.getStep(), savedUser.getPhoto(), savedUser.getAnswers()));
     }
 
     public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/src/main/uploads";
@@ -169,7 +173,7 @@ public class UserInfoController {
         currentUser.setPhoto(name);
         User savedUser = userRepository.save(currentUser);
 
-        return ResponseEntity.ok(new UserInfoResponse(savedUser.getFirstName(), savedUser.getLastName(), savedUser.getCountry(), savedUser.getCountryCode(), savedUser.getCompany(), savedUser.getPosition(), savedUser.getStep(), savedUser.getPhoto()));
+        return ResponseEntity.ok(new UserInfoResponse(savedUser.getFirstName(), savedUser.getLastName(), savedUser.getCountry(), savedUser.getCountryCode(), savedUser.getCompany(), savedUser.getPosition(), savedUser.getStep(), savedUser.getPhoto(), savedUser.getAnswers()));
     }
 
     @GetMapping("/img/{fileName}")
@@ -201,6 +205,6 @@ public class UserInfoController {
             currentUser.setPhoto("");
         }
         User savedUser = userRepository.save(currentUser);
-        return ResponseEntity.ok(new UserInfoResponse(savedUser.getFirstName(), savedUser.getLastName(), savedUser.getCountry(), savedUser.getCountryCode(), savedUser.getCompany(), savedUser.getPosition(), savedUser.getStep(), savedUser.getPhoto()));
+        return ResponseEntity.ok(new UserInfoResponse(savedUser.getFirstName(), savedUser.getLastName(), savedUser.getCountry(), savedUser.getCountryCode(), savedUser.getCompany(), savedUser.getPosition(), savedUser.getStep(), savedUser.getPhoto(), savedUser.getAnswers()));
     }
 }

@@ -32,6 +32,7 @@ public class QuestionController {
 
     @Autowired
     QuestionRepository questionRepository;
+
     @GetMapping("/questions")
     public ResponseEntity<?> getQuestions(@RequestHeader(name = "Authorization") String token) {
         String username = jwtUtils.getExistingUsername(token);
@@ -43,10 +44,20 @@ public class QuestionController {
                     .body(new MessageResponse("Error: The current user is not unavailable!"));
         }
         User currentUser = existingUser1.get();
-
+        String answers = currentUser.getAnswers();
+        Integer pageIndex = 0;
+        if (answers != null) {
+            String[] arrAnswers = answers.split(":");
+            String answer = arrAnswers[arrAnswers.length - 1];
+            String[] questions = answer.split("-");
+            String strQuestionId = questions[0];
+            Integer questionId = Integer.valueOf(strQuestionId);
+            Integer ids = questionId / 3;
+            pageIndex = ids * 3;
+        }
         List<Question> questions = questionRepository.findAll();
-        List <Question> questions1 =new ArrayList<>();
-        for (int i=0; i<3; i++) {
+        List<Question> questions1 = new ArrayList<>();
+        for (int i = pageIndex; i < pageIndex + 3; i++) {
             questions1.add(questions.get(i));
         }
         return new ResponseEntity<>(questions1, HttpStatus.OK);
@@ -68,15 +79,47 @@ public class QuestionController {
         String user_answer = currentUser.getAnswers();
         if (user_answer == null || user_answer.length() == 0) {
             currentUser.setAnswers(answers);
-            currentUser.setStep(currentUser.getStep() + 1);
             User newUser = userRepository.save(currentUser);
-            return ResponseEntity.ok(new UserInfoResponse(newUser.getFirstName(), newUser.getLastName(), newUser.getCountry(), newUser.getCountryCode(), newUser.getCompany(), newUser.getPosition(), newUser.getStep(), newUser.getPhoto()));
-        }
-         else {
-             user_answer = user_answer + ":" + answers;
-             currentUser.setAnswers(user_answer);
+            return ResponseEntity.ok(new UserInfoResponse(newUser.getFirstName(), newUser.getLastName(), newUser.getCountry(), newUser.getCountryCode(), newUser.getCompany(), newUser.getPosition(), newUser.getStep(), newUser.getPhoto(), newUser.getAnswers()));
+        } else {
+
+            String[] arrUserAnswers = user_answer.split(":");
+            String[] arrAnswered = answers.split("-");
+            String newQuestionId = arrAnswered[0];
+            boolean isChanged = false;
+            user_answer = "";
+            for (int i = 0; i < arrUserAnswers.length; i++) {
+                String answer = arrUserAnswers[i];
+                String[] questions = answer.split("-");
+                String questionId = questions[0];
+                if (questionId.equals(newQuestionId)) {
+
+                    isChanged = true;
+                    if (user_answer.length() == 0) {
+                        user_answer = answers;
+                    } else {
+                        user_answer = user_answer + ":" + answers;
+                    }
+                } else {
+                    if (user_answer.length() == 0) {
+                        user_answer = answer;
+                    } else {
+                        user_answer = user_answer + ":" + answer;
+                    }
+                }
+            }
+
+            if (isChanged) {
+
+
+            } else {
+                user_answer = user_answer + ":" + answers;
+            }
+
+
+            currentUser.setAnswers(user_answer);
             User newUser = userRepository.save(currentUser);
-            return ResponseEntity.ok(new UserInfoResponse(newUser.getFirstName(), newUser.getLastName(), newUser.getCountry(), newUser.getCountryCode(), newUser.getCompany(), newUser.getPosition(), newUser.getStep(), newUser.getPhoto()));
+            return ResponseEntity.ok(new UserInfoResponse(newUser.getFirstName(), newUser.getLastName(), newUser.getCountry(), newUser.getCountryCode(), newUser.getCompany(), newUser.getPosition(), newUser.getStep(), newUser.getPhoto(), newUser.getAnswers()));
         }
     }
 

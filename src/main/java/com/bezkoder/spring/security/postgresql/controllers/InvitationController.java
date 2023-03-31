@@ -8,6 +8,10 @@ import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.repository.*;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.service.EmailService;
+import com.postmarkapp.postmark.Postmark;
+import com.postmarkapp.postmark.client.ApiClient;
+import com.postmarkapp.postmark.client.data.model.message.Message;
+import com.postmarkapp.postmark.client.exception.PostmarkException;
 import com.sun.mail.imap.protocol.ID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -48,7 +53,7 @@ public class InvitationController {
     PasswordEncoder encoder;
 
     @PostMapping("/invitation/team")
-    public ResponseEntity<?> inviteMembersToTeam(@Valid @RequestBody InviteRequest inviteRequest, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> inviteMembersToTeam(@Valid @RequestBody InviteRequest inviteRequest, @RequestHeader(name = "Authorization") String token) throws PostmarkException, IOException {
         String username = jwtUtils.getExistingUsername(token);
         Optional<User> existingUser1 = userRepository.findByUsername(username);
 
@@ -60,7 +65,16 @@ public class InvitationController {
         User currentUser = existingUser1.get();
 
         List<String> emails = inviteRequest.getEmails();
-        Optional<Team> existingTeam = teamRepository.findById(inviteRequest.getTeamId());
+        Long teamId = inviteRequest.getTeamId();
+        if (teamId == null) {
+
+            Optional<UserTeam> userTeams = userTeamRepository.findByUserId(currentUser.getId());
+            if (userTeams.isPresent()) {
+                UserTeam userTeam = userTeams.get();
+                teamId = userTeam.getId().getTeamId();
+            }
+        }
+        Optional<Team> existingTeam = teamRepository.findById(teamId);
         if (!existingTeam.isPresent()) {
             return ResponseEntity
                     .badRequest()
@@ -114,26 +128,27 @@ public class InvitationController {
                 emailDetailsDTO.setRecipient(email);
                 emailDetailsDTO.setSubject("Join your team");
                 emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/confirm-invitation?token=" + newUser.getInvitationToken());
-//                Map<String, Object> model = new HashMap<>();
-//                model.put("firstName", currentUser.getFirstName());
-//                model.put("lastName", currentUser.getLastName());
-//                emailDetailsDTO.setModel(model);
                 emailService.sendSimpleMail(emailDetailsDTO);
-//                emailService.sendEmailWithTemplate(emailDetailsDTO);
+
+//                ApiClient client = Postmark.getApiClient("2274a4ca-df74-4850-8b4c-06d1da6c14a2");
+//                Message message = new Message("sender@example.com", email, "Join your team!", currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/confirm-invitation?token=" + newUser.getInvitationToken());
+//                try {
+//                    com.postmarkapp.postmark.client.data.model.message.MessageResponse response = client.deliverMessage(message);
+//
+//                    int sss = 1;
+//                } catch (PostmarkException e) {
+//                    throw new RuntimeException(e);
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
+
 
             }
         }
 
-        Integer step = inviteRequest.getStep();
-        if (step != null) {
-            step = step + 1;
-            currentUser.setStep(step);
-            userRepository.save(currentUser);
-        } else {
-            step = -1;
-        }
 
-        return new ResponseEntity<>(new InviteResponse("Successfully Invited", step), HttpStatus.OK);
+
+        return new ResponseEntity<>(new InviteResponse("Successfully Invited"), HttpStatus.OK);
     }
 
 }

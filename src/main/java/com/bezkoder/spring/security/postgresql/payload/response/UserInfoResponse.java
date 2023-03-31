@@ -11,7 +11,8 @@ public class UserInfoResponse {
 
     private String photo;
     private Integer step;
-    public UserInfoResponse(String firstName, String lastName, String country, String countryCode, String company, String position, Integer step, String photo) {
+    private String answers;
+    public UserInfoResponse(String firstName, String lastName, String country, String countryCode, String company, String position, Integer step, String photo, String answers) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.country = country;
@@ -20,6 +21,7 @@ public class UserInfoResponse {
         this.position = position;
         this.step = step;
         this.photo = photo;
+        this.answers = answers;
     }
 
     public String getFirstName() {
@@ -84,5 +86,13 @@ public class UserInfoResponse {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public String getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(String answers) {
+        this.answers = answers;
     }
 }

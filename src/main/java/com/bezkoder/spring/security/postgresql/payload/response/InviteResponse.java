@@ -6,20 +6,13 @@ import java.util.List;
 
 public class InviteResponse {
     private String msg;
-    private Integer step;
 
-    public InviteResponse(String msg, Integer step) {
+
+    public InviteResponse(String msg) {
         this.msg = msg;
-        this.step = step;
+
     }
 
-    public void setStep(Integer step) {
-        this.step = step;
-    }
-
-    public Integer getStep() {
-        return step;
-    }
 
     public String getMsg() {
         return msg;
