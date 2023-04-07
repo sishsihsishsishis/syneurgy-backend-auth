@@ -128,7 +128,7 @@ public class UserInfoController {
                     .body(new MessageResponse("Error: The current user is not unavailable!"));
         }
         User currentUser = existingUser1.get();
-        if (step == -1) {
+        if (step == -2) {
             currentUser.setStep(currentUser.getStep() + 1);
         } else {
             currentUser.setStep(step + 1);
