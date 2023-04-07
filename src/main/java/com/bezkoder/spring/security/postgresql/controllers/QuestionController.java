@@ -52,12 +52,12 @@ public class QuestionController {
             String[] questions = answer.split("-");
             String strQuestionId = questions[0];
             Integer questionId = Integer.valueOf(strQuestionId);
-            Integer ids = questionId / 3;
-            pageIndex = ids * 3;
+            Integer ids = questionId / 4;
+            pageIndex = ids * 4;
         }
         List<Question> questions = questionRepository.findAll();
         List<Question> questions1 = new ArrayList<>();
-        for (int i = pageIndex; i < pageIndex + 3; i++) {
+        for (int i = pageIndex; i < pageIndex + 4; i++) {
             questions1.add(questions.get(i));
         }
         return new ResponseEntity<>(questions1, HttpStatus.OK);
