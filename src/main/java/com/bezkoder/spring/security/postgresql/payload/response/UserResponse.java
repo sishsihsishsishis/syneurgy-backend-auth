@@ -2,7 +2,7 @@ package com.bezkoder.spring.security.postgresql.payload.response;
 
 import java.util.List;
 
-public class JwtResponse {
+public class UserResponse {
     private String token;
     private String type = "Bearer";
     private Long id;
@@ -23,7 +23,9 @@ public class JwtResponse {
     private String photo;
     private String answers;
 
-    public JwtResponse(String accessToken, Long id, String username, String email, Integer step, List<String> roles, String firstName, String lastName, String countryCode, String country, String company, String position, String photo, String answers) {
+    private Boolean isActiveForTeam;
+
+    public UserResponse(String accessToken, Long id, String username, String email, Integer step, List<String> roles, String firstName, String lastName, String countryCode, String country, String company, String position, String photo, String answers, boolean isActiveForTeam) {
         this.token = accessToken;
         this.id = id;
         this.username = username;
@@ -38,6 +40,7 @@ public class JwtResponse {
         this.position = position;
         this.photo = photo;
         this.answers = answers;
+        this.isActiveForTeam = isActiveForTeam;
     }
 
     public String getAccessToken() {
@@ -155,4 +158,13 @@ public class JwtResponse {
     public String getAnswers() {
         return answers;
     }
+
+    public void setActiveForTeam(Boolean activeForTeam) {
+        isActiveForTeam = activeForTeam;
+    }
+
+    public Boolean getActiveForTeam() {
+        return isActiveForTeam;
+    }
 }
+

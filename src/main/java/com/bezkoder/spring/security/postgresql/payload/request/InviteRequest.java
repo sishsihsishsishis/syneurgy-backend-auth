@@ -11,7 +11,7 @@ public class InviteRequest {
 
     private Long teamId;
 
-    private String token;
+    private Long userId;
 
     private Integer step;
 
@@ -31,19 +31,19 @@ public class InviteRequest {
         this.teamId = teamId;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
     public Integer getStep() {
         return step;
     }
 
     public void setStep(Integer step) {
         this.step = step;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

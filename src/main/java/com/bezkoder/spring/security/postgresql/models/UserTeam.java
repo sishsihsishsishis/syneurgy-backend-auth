@@ -35,5 +35,31 @@ public class UserTeam {
         this.isActive = isActive;
     }
 
+    public User getUser() {
+        return user;
+    }
 
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    public void setId(UserTeamId id) {
+        this.id = id;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
 }

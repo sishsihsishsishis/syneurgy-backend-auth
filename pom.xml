@@ -11,8 +11,9 @@
 	<groupId>com.bezkoder</groupId>
 	<artifactId>spring-boot-security-postgresql</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>spring-boot-security-postgresql</name>
-	<description>Spring Boot, Spring Security, PostgreSQL: JWT Authentication &amp; Authorization example</description>
+
+	<name>spring-boot-syneurgy-postgresql</name>
+	<description>Spring Boot, Spring Security, PostgreSQL: The backend of Syneurgy</description>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -69,7 +70,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.16</version>
+			<version>1.18.26</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.persistence</groupId>
@@ -83,7 +84,7 @@
 		<dependency>
 			<groupId>com.postmarkapp</groupId>
 			<artifactId>postmark</artifactId>
-			<version>1.9.0</version>
+			<version>1.10.2</version>
 		</dependency>
 	</dependencies>
 
@@ -95,5 +96,6 @@
 			</plugin>
 		</plugins>
 	</build>
+
 
 </project>

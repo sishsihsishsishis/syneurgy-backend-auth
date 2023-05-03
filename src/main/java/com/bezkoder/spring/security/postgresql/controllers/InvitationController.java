@@ -68,9 +68,9 @@ public class InvitationController {
         Long teamId = inviteRequest.getTeamId();
         if (teamId == null) {
 
-            Optional<UserTeam> userTeams = userTeamRepository.findByUserId(currentUser.getId());
-            if (userTeams.isPresent()) {
-                UserTeam userTeam = userTeams.get();
+            List<UserTeam> userTeams = userTeamRepository.findByUserId(currentUser.getId());
+            if (userTeams.size() > 0) {
+                UserTeam userTeam = userTeams.get(0);
                 teamId = userTeam.getId().getTeamId();
             }
         }
@@ -127,11 +127,11 @@ public class InvitationController {
                 EmailDetailsDTO emailDetailsDTO = new EmailDetailsDTO();
                 emailDetailsDTO.setRecipient(email);
                 emailDetailsDTO.setSubject("Join your team");
-                emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/confirm-invitation?token=" + newUser.getInvitationToken());
+                emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/confirm-invitation?token=" + newUser.getInvitationToken()+ "&id=" + team.getId());
                 emailService.sendSimpleMail(emailDetailsDTO);
 
 //                ApiClient client = Postmark.getApiClient("2274a4ca-df74-4850-8b4c-06d1da6c14a2");
-//                Message message = new Message("sender@example.com", email, "Join your team!", currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/confirm-invitation?token=" + newUser.getInvitationToken());
+//                Message message = new Message("474c883a946e97ebdcd6f21dd935319d@inbound.postmarkapp.com", email, "Join your team!", currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/confirm-invitation?token=" + newUser.getInvitationToken());
 //                try {
 //                    com.postmarkapp.postmark.client.data.model.message.MessageResponse response = client.deliverMessage(message);
 //
@@ -142,11 +142,80 @@ public class InvitationController {
 //                    throw new RuntimeException(e);
 //                }
 
-
             }
         }
 
+        return new ResponseEntity<>(new InviteResponse("Successfully Invited"), HttpStatus.OK);
+    }
 
+    @PostMapping("/reinvitation/team")
+    public ResponseEntity<?> reinviteMembers(@Valid @RequestBody InviteRequest inviteRequest, @RequestHeader(name = "Authorization") String token) throws PostmarkException, IOException {
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser1 = userRepository.findByUsername(username);
+
+        if (!existingUser1.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+        }
+        User currentUser = existingUser1.get();
+
+        Long userId = inviteRequest.getUserId();
+        Long teamId = inviteRequest.getTeamId();
+        if (teamId == null) {
+
+            List<UserTeam> userTeams = userTeamRepository.findByUserId(currentUser.getId());
+            if (userTeams.size() > 0) {
+                UserTeam userTeam = userTeams.get(0);
+                teamId = userTeam.getId().getTeamId();
+            }
+        }
+        Optional<Team> existingTeam = teamRepository.findById(teamId);
+        if (!existingTeam.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Error: The current team is not unavailable!"));
+        }
+        Team team = existingTeam.get();
+
+        Optional<User> existingUser = userRepository.findById(userId);
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+            UserTeamId userTeamId = new UserTeamId(user.getId(), team.getId());
+            Optional<UserTeam> existingUserTeam = userTeamRepository.findById(userTeamId);
+            if (existingUserTeam.isPresent()) {
+                UserTeam userTeam = existingUserTeam.get();
+                if (!userTeam.isActive()) {
+                    // Add Notification
+                }
+            } else {
+                UserTeam userTeam = new UserTeam(user, team, false);
+                UserTeam newUserTeam = userTeamRepository.save(userTeam);
+
+                user.addUserTeam(newUserTeam);
+                userRepository.save(user);
+
+                team.addUserTeam(newUserTeam);
+                teamRepository.save(team);
+            }
+
+            EmailDetailsDTO emailDetailsDTO = new EmailDetailsDTO();
+            emailDetailsDTO.setRecipient(user.getEmail());
+            emailDetailsDTO.setSubject("Join your team");
+            if (user.getInvitationToken().length() > 0 ) {
+                emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/confirm-invitation?token=" + user.getInvitationToken());
+            } else {
+                emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/resend-invitation?id=" + team.getId());
+            }
+
+            emailService.sendSimpleMail(emailDetailsDTO);
+
+        } else {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+
+        }
 
         return new ResponseEntity<>(new InviteResponse("Successfully Invited"), HttpStatus.OK);
     }

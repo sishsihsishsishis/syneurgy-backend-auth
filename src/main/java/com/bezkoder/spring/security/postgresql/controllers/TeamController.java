@@ -6,10 +6,12 @@ import com.bezkoder.spring.security.postgresql.models.UserTeam;
 import com.bezkoder.spring.security.postgresql.payload.request.TeamRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.TeamResponse;
+import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
 import com.bezkoder.spring.security.postgresql.repository.TeamRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
+import com.bezkoder.spring.security.postgresql.security.services.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -75,7 +78,7 @@ public class TeamController {
     public ResponseEntity<List<Team>> getAllTeams() {
         List<Team> teams = new ArrayList<Team>();
 
-        teamRepository.findAll().forEach(teams::add);
+        teamRepository.findAllByOrderByIdDesc().forEach(teams::add);
 
         if (teams.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -105,5 +108,58 @@ public class TeamController {
         }
 
         return new ResponseEntity<>(teams, HttpStatus.OK);
+    }
+
+    @GetMapping("/team/users/{teamId}")
+    public ResponseEntity<?> getTeamMembers(@PathVariable Long teamId, @RequestHeader(name = "Authorization") String token) {
+        String username = jwtUtils.getExistingUsername(token);
+
+        Optional<User> existingUser = userRepository.findByUsername(username);
+
+        if (!existingUser.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
+        }
+        User user = existingUser.get();
+
+
+        Optional<Team> existingTeam = teamRepository.findById(teamId);
+        if (!existingTeam.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Error: The current team is not unavailable!"));
+        }
+        Team team = existingTeam.get();
+        List<UserTeam> userTeams = userTeamRepository.findByTeamId(team.getId());
+        List<UserResponse> userResponses = new ArrayList<>();
+        if (userTeams.size() > 0) {
+            for (UserTeam userTeam: userTeams
+            ) {
+                User user1 = userTeam.getUser();
+                UserDetailsImpl userDetails = UserDetailsImpl.build(user1);
+                List<String> roles = userDetails.getAuthorities().stream()
+                        .map(item -> item.getAuthority())
+                        .collect(Collectors.toList());
+                UserResponse userResponse = new UserResponse("",
+                        userDetails.getId(),
+                        userDetails.getUsername(),
+                        userDetails.getEmail(),
+                        userDetails.getStep(),
+                        roles,
+                        userDetails.getFirstName(),
+                        userDetails.getLastName(),
+                        userDetails.getCountryCode(),
+                        userDetails.getCountry(),
+                        userDetails.getCompany(),
+                        userDetails.getPosition(),
+                        userDetails.getPhoto(),
+                        userDetails.getAnswers(),
+                        userTeam.isActive()
+                );
+                userResponses.add(userResponse);
+            }
+        }
+        return  ResponseEntity.ok(userResponses);
     }
 }

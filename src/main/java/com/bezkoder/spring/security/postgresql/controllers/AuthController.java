@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import com.bezkoder.spring.security.postgresql.payload.request.ConfirmInviteRequest;
-import org.springframework.beans.factory.ObjectProvider;
+import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +22,13 @@ import com.bezkoder.spring.security.postgresql.models.Role;
 import com.bezkoder.spring.security.postgresql.models.User;
 import com.bezkoder.spring.security.postgresql.payload.request.LoginRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.SignupRequest;
-import com.bezkoder.spring.security.postgresql.payload.response.JwtResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
+import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.UserDetailsImpl;
+import com.bezkoder.spring.security.postgresql.models.UserTeam;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -48,6 +49,9 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    UserTeamRepository userTeamRepository;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -62,7 +66,7 @@ public class AuthController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new JwtResponse(jwt,
+        return ResponseEntity.ok(new UserResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
@@ -75,7 +79,8 @@ public class AuthController {
                 userDetails.getCompany(),
                 userDetails.getPosition(),
                 userDetails.getPhoto(),
-                userDetails.getAnswers()
+                userDetails.getAnswers(),
+                true
         ));
     }
 
@@ -146,6 +151,7 @@ public class AuthController {
         User user = existingUser.get();
         user.setInvitationToken("");
         userRepository.save(user);
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getEmail(), "123456"));
 
@@ -156,7 +162,7 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(new JwtResponse(jwt,
+        return ResponseEntity.ok(new UserResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
@@ -169,7 +175,8 @@ public class AuthController {
                 userDetails.getCompany(),
                 userDetails.getPosition(),
                 userDetails.getPhoto(),
-                userDetails.getAnswers()
+                userDetails.getAnswers(),
+                true
         ));
 
     }
