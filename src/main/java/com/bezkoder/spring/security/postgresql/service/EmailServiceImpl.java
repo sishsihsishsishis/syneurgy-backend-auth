@@ -1,6 +1,12 @@
 package com.bezkoder.spring.security.postgresql.service;
 
 import com.bezkoder.spring.security.postgresql.dto.EmailDetailsDTO;
+import com.postmarkapp.postmark.Postmark;
+import com.postmarkapp.postmark.client.ApiClient;
+import com.postmarkapp.postmark.client.data.model.message.Message;
+import com.postmarkapp.postmark.client.data.model.message.MessageResponse;
+import com.postmarkapp.postmark.client.data.model.templates.TemplatedMessage;
+import com.postmarkapp.postmark.client.exception.PostmarkException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,10 +20,18 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import freemarker.template.Configuration;
 @Service
 public class EmailServiceImpl implements EmailService{
+
+    @Value("${postmark.server-token}")
+    private String serverToken;
+
+    @Value("${postmark.from-email}")
+    private String fromEmail;
     @Autowired
     private JavaMailSender javaMailSender;
 
@@ -127,4 +141,33 @@ public class EmailServiceImpl implements EmailService{
         return content.toString();
     }
 
+    public void sendTemplateEmailWithPostmark(String toEmail, Integer templateId, Object templateModel) {
+        ApiClient client = Postmark.getApiClient(serverToken);
+
+        TemplatedMessage message = new TemplatedMessage(fromEmail, toEmail);
+        message.setTemplateId(templateId);
+        message.setTemplateModel(templateModel);
+
+        try {
+            MessageResponse response = client.deliverMessageWithTemplate(message);
+        } catch (PostmarkException e) {
+            throw  new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void sendSimpleEmail(String toEmail, String subject, String content) {
+        ApiClient client = Postmark.getApiClient(serverToken);
+        Message message = new Message(fromEmail, toEmail, subject, content);
+
+        try {
+            MessageResponse response = client.deliverMessage(message);
+            int sss = 1;
+        } catch (PostmarkException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

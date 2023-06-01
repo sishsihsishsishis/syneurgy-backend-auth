@@ -12,4 +12,7 @@ public interface EmailService {
     String sendMailWithAttachment(EmailDetailsDTO details);
 
     void sendEmailWithTemplate(EmailDetailsDTO details);
+
+    void sendSimpleEmail(String toEmail, String subject, String content);
+    void sendTemplateEmailWithPostmark(String toEmail, Integer templateId, Object templateModel);
 }

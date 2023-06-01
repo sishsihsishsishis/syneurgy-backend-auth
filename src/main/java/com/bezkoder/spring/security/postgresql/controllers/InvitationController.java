@@ -1,19 +1,16 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
-import com.bezkoder.spring.security.postgresql.dto.EmailDetailsDTO;
 import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.InviteRequest;
+import com.bezkoder.spring.security.postgresql.payload.request.UserInfoRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.InviteResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.repository.*;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.service.EmailService;
-import com.postmarkapp.postmark.Postmark;
-import com.postmarkapp.postmark.client.ApiClient;
-import com.postmarkapp.postmark.client.data.model.message.Message;
 import com.postmarkapp.postmark.client.exception.PostmarkException;
-import com.sun.mail.imap.protocol.ID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,6 +48,12 @@ public class InvitationController {
 
     @Autowired
     PasswordEncoder encoder;
+
+    @Value("${postmark.invite-tempate-id}")
+    private Integer inviteTemplateID;
+
+    @Value("${frontend_base_url}")
+    private String frontendBaseUrl;
 
     @PostMapping("/invitation/team")
     public ResponseEntity<?> inviteMembersToTeam(@Valid @RequestBody InviteRequest inviteRequest, @RequestHeader(name = "Authorization") String token) throws PostmarkException, IOException {
@@ -124,23 +127,17 @@ public class InvitationController {
                 team.addUserTeam(newUserTeam);
                 teamRepository.save(team);
 
-                EmailDetailsDTO emailDetailsDTO = new EmailDetailsDTO();
-                emailDetailsDTO.setRecipient(email);
-                emailDetailsDTO.setSubject("Join your team");
-                emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/confirm-invitation?token=" + newUser.getInvitationToken()+ "&id=" + team.getId());
-                emailService.sendSimpleMail(emailDetailsDTO);
+//                EmailDetailsDTO emailDetailsDTO = new EmailDetailsDTO();
+//                emailDetailsDTO.setRecipient(email);
+//                emailDetailsDTO.setSubject("Join your team");
+//                emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n " + frontendBaseUrl + "/confirm-invitation?token=" + newUser.getInvitationToken()+ "&id=" + team.getId());
+//                emailService.sendSimpleMail(emailDetailsDTO);
 
-//                ApiClient client = Postmark.getApiClient("2274a4ca-df74-4850-8b4c-06d1da6c14a2");
-//                Message message = new Message("474c883a946e97ebdcd6f21dd935319d@inbound.postmarkapp.com", email, "Join your team!", currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/confirm-invitation?token=" + newUser.getInvitationToken());
-//                try {
-//                    com.postmarkapp.postmark.client.data.model.message.MessageResponse response = client.deliverMessage(message);
-//
-//                    int sss = 1;
-//                } catch (PostmarkException e) {
-//                    throw new RuntimeException(e);
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                }
+                HashMap<String, Object> model = new HashMap<String, Object>();
+                model.put("invite_receiver_email", email);
+                model.put("action_url", frontendBaseUrl + "/confirm-invitation?token=" + newUser.getInvitationToken()+ "&id=" + team.getId());
+
+                emailService.sendTemplateEmailWithPostmark(email, inviteTemplateID, model);
 
             }
         }
@@ -199,16 +196,25 @@ public class InvitationController {
                 teamRepository.save(team);
             }
 
-            EmailDetailsDTO emailDetailsDTO = new EmailDetailsDTO();
-            emailDetailsDTO.setRecipient(user.getEmail());
-            emailDetailsDTO.setSubject("Join your team");
-            if (user.getInvitationToken().length() > 0 ) {
-                emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/confirm-invitation?token=" + user.getInvitationToken());
-            } else {
-                emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n http://127.0.0.1:5173/resend-invitation?id=" + team.getId());
-            }
+//            EmailDetailsDTO emailDetailsDTO = new EmailDetailsDTO();
+//            emailDetailsDTO.setRecipient(user.getEmail());
+//            emailDetailsDTO.setSubject("Join your team");
+//            if (user.getInvitationToken().length() > 0 ) {
+//                emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n " + frontendBaseUrl + "/confirm-invitation?token=" + user.getInvitationToken());
+//            } else {
+//                emailDetailsDTO.setMsgBody(currentUser.getFullName() + " invited you to collaborate in " + team.getName() + " \n " + frontendBaseUrl + "/resend-invitation?id=" + team.getId());
+//            }
+//
+//            emailService.sendSimpleMail(emailDetailsDTO);
 
-            emailService.sendSimpleMail(emailDetailsDTO);
+            HashMap<String, Object> model = new HashMap<String, Object>();
+            model.put("invite_receiver_email", user.getEmail());
+            if (user.getInvitationToken().length() > 0) {
+                model.put("action_url", frontendBaseUrl + "/confirm-invitation?token=" + user.getInvitationToken()+ "&id=" + team.getId());
+            } else {
+                model.put("action_url", frontendBaseUrl + "/resend-invitation?id=" + team.getId());
+            }
+            emailService.sendTemplateEmailWithPostmark(user.getEmail(), inviteTemplateID, model);
 
         } else {
             return ResponseEntity

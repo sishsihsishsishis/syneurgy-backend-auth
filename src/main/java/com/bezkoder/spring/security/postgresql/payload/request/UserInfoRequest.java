@@ -15,11 +15,14 @@ public class UserInfoRequest {
 
     private String position;
 
+    private String email;
     private String password;
 
     private Integer step;
 
+    private String reset_password_token;
 
+    private String reset_pw_type;
     public String getFirstName() {
         return firstName;
     }
@@ -60,6 +63,14 @@ public class UserInfoRequest {
         this.position = position;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -82,5 +93,21 @@ public class UserInfoRequest {
 
     public Integer getStep() {
         return step;
+    }
+
+    public String getReset_password_token() {
+        return reset_password_token;
+    }
+
+    public void setReset_password_token(String reset_password_token) {
+        this.reset_password_token = reset_password_token;
+    }
+
+    public String getReset_pw_type() {
+        return reset_pw_type;
+    }
+
+    public void setReset_pw_type(String reset_pw_type) {
+        this.reset_pw_type = reset_pw_type;
     }
 }

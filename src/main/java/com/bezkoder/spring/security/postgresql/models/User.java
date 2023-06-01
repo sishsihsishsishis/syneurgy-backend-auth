@@ -46,6 +46,7 @@ public class User {
 	@Size(max = 20)
 	private String position;
 
+	private String resetPasswordToken;
 	private Integer step;
 
 	private String invitationToken;
@@ -200,5 +201,13 @@ public class User {
 
 	public void setAnswers(String answers) {
 		this.answers = answers;
+	}
+
+	public String getResetPasswordToken() {
+		return resetPasswordToken;
+	}
+
+	public void setResetPasswordToken(String resetPasswordToken) {
+		this.resetPasswordToken = resetPasswordToken;
 	}
 }
