@@ -224,7 +224,7 @@ public class AuthController {
         String newPassword = request.getPassword();
         User user = existingUser.get();
         user.setPassword(encoder.encode(newPassword));
-        if (resetPwType == "n") {// new password
+        if (resetPwType.equals("n")) {// new password
             user.setInvitationToken("");
         } else { // forgot password
             user.setResetPasswordToken("");
