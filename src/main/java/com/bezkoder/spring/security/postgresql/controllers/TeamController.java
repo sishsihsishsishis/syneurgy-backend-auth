@@ -88,7 +88,7 @@ public class TeamController {
     }
 
     @GetMapping("/users/teams")
-    public ResponseEntity<?> getAllTeamsByUserId(@RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> getAllTeamsByUserId(@RequestParam(required = false) String search, @RequestHeader(name = "Authorization") String token) {
         String username = jwtUtils.getExistingUsername(token);
         Optional<User> existingUser = userRepository.findByUsername(username);
 
@@ -104,7 +104,13 @@ public class TeamController {
         for (UserTeam userTeam: userTeams
              ) {
             Team team = userTeam.getTeam();
-            teams.add(team);
+            if (search != null && search.length() > 0) {
+                if (team.getName().toLowerCase().contains(search.toLowerCase())) {
+                    teams.add(team);
+                }
+            } else {
+                teams.add(team);
+            }
         }
 
         return new ResponseEntity<>(teams, HttpStatus.OK);
