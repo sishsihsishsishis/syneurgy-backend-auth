@@ -1,17 +1,24 @@
 package com.bezkoder.spring.security.postgresql.payload.response;
 
+import com.bezkoder.spring.security.postgresql.models.User;
+
+import java.util.List;
+
 public class TeamResponse {
 
     private Long id;
 
-    private String teamName;
+    private String name;
 
     private Integer step;
 
-    public TeamResponse(Long id, String teamName, Integer step) {
+    private List<UserResponse> users;
+
+    public TeamResponse(Long id, String name, Integer step, List<UserResponse> users) {
         this.id = id;
-        this.teamName = teamName;
+        this.name = name;
         this.step = step;
+        this.users = users;
     }
 
     public Long getId() {
@@ -22,12 +29,12 @@ public class TeamResponse {
         this.id = id;
     }
 
-    public String getTeamName() {
-        return teamName;
+    public String getName() {
+        return name;
     }
 
-    public void setTeamName(String teamName) {
-        this.teamName = teamName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Integer getStep() {
@@ -38,4 +45,11 @@ public class TeamResponse {
         this.step = step;
     }
 
+    public List<UserResponse> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<UserResponse> users) {
+        this.users = users;
+    }
 }

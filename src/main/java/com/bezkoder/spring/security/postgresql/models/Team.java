@@ -25,7 +25,7 @@ public class Team {
 
     private String name;
 
-
+    private Boolean isDeleted;
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<UserTeam> userTeams = new HashSet<>();
@@ -53,5 +53,13 @@ public class Team {
 
     public void addUserTeam(UserTeam userTeam) {
         this.userTeams.add(userTeam);
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
     }
 }

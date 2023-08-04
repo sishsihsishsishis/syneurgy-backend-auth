@@ -64,14 +64,12 @@ public class TeamController {
 
 
         Integer step = teamRequest.getStep();
-        if(step != null) {
+        if(step != null && step != -1) {
             step = step + 1;
             user.setStep(step);
             userRepository.save(user);
-        } else {
-            step = -1;
         }
-        return ResponseEntity.ok(new TeamResponse(team.getId(), team.getName(), step));
+        return ResponseEntity.ok(new TeamResponse(team.getId(), team.getName(), step, null));
     }
 
     @GetMapping("/teams")
@@ -99,21 +97,161 @@ public class TeamController {
         }
         User user = existingUser.get();
 
-        List<Team> teams = new ArrayList<>();
+        List<TeamResponse> teams = new ArrayList<>();
         Set<UserTeam> userTeams = user.getUserTeams();
         for (UserTeam userTeam: userTeams
              ) {
             Team team = userTeam.getTeam();
+            Boolean getDeleted = team.getDeleted();
+            Boolean isDeleted = false;
+            if (getDeleted == null) {
+                isDeleted = false;
+            } else {
+                if (getDeleted == true) {
+                    isDeleted = true;
+                }
+            }
+            if (isDeleted == true) {
+                continue;
+            }
             if (search != null && search.length() > 0) {
                 if (team.getName().toLowerCase().contains(search.toLowerCase())) {
-                    teams.add(team);
+                    Set<UserTeam> userTeams1 = team.getUserTeams();
+                    List<UserResponse> userResponses = new ArrayList<>();
+                    for (UserTeam userTeam1: userTeams1) {
+                        User user1 = userTeam1.getUser();
+                        UserDetailsImpl userDetails = UserDetailsImpl.build(user1);
+                        List<String> roles = userDetails.getAuthorities().stream()
+                                .map(item -> item.getAuthority())
+                                .collect(Collectors.toList());
+                        UserResponse userResponse = new UserResponse("",
+                                userDetails.getId(),
+                                userDetails.getUsername(),
+                                userDetails.getEmail(),
+                                userDetails.getStep(),
+                                roles,
+                                userDetails.getFirstName(),
+                                userDetails.getLastName(),
+                                userDetails.getCountryCode(),
+                                userDetails.getCountry(),
+                                userDetails.getCompany(),
+                                userDetails.getPosition(),
+                                userDetails.getPhoto(),
+                                userDetails.getAnswers(),
+                                userTeam.isActive()
+                        );
+
+                        userResponses.add(userResponse);
+                    }
+                    TeamResponse teamResponse = new TeamResponse(team.getId(), team.getName(), -1, userResponses);
+                    teams.add(teamResponse);
                 }
             } else {
-                teams.add(team);
+                Set<UserTeam> userTeams1 = team.getUserTeams();
+                List<UserResponse> userResponses = new ArrayList<>();
+                for (UserTeam userTeam1: userTeams1) {
+                    User user1 = userTeam1.getUser();
+                    UserDetailsImpl userDetails = UserDetailsImpl.build(user1);
+                    List<String> roles = userDetails.getAuthorities().stream()
+                            .map(item -> item.getAuthority())
+                            .collect(Collectors.toList());
+                    UserResponse userResponse = new UserResponse("",
+                            userDetails.getId(),
+                            userDetails.getUsername(),
+                            userDetails.getEmail(),
+                            userDetails.getStep(),
+                            roles,
+                            userDetails.getFirstName(),
+                            userDetails.getLastName(),
+                            userDetails.getCountryCode(),
+                            userDetails.getCountry(),
+                            userDetails.getCompany(),
+                            userDetails.getPosition(),
+                            userDetails.getPhoto(),
+                            userDetails.getAnswers(),
+                            userTeam.isActive()
+                    );
+                    userResponses.add(userResponse);
+                }
+                TeamResponse teamResponse = new TeamResponse(team.getId(), team.getName(), -1, userResponses);
+                teams.add(teamResponse);
             }
         }
 
         return new ResponseEntity<>(teams, HttpStatus.OK);
+    }
+
+    @PostMapping("/users/teams")
+    public ResponseEntity<?> updateTeamName(@Valid @RequestBody TeamRequest teamRequest, @RequestHeader(name = "Authorization") String token) {
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser1 = userRepository.findByUsername(username);
+
+        if (!existingUser1.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+        }
+        User currentUser = existingUser1.get();
+
+        Set<UserTeam> userTeams = currentUser.getUserTeams();
+
+        Team teamUpdate = null;
+        Long teamId = teamRequest.getTeamId();
+        for (UserTeam userTeam: userTeams) {
+            Team team = userTeam.getTeam();
+            if (team.getId() == teamId) {
+                teamUpdate = team;
+                break;
+            }
+        }
+
+        if (teamUpdate == null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The team is not your team!"));
+        }
+
+        String newTeamName = teamRequest.getTeamName();
+        teamUpdate.setName(newTeamName);
+        teamRepository.save(teamUpdate);
+
+        return ResponseEntity.ok("Team Name is updated successfully.");
+
+    }
+
+    @DeleteMapping("/users/teams")
+    public ResponseEntity<?> deleteTeam(@RequestParam(required = false) Long teamId, @RequestHeader(name = "Authorization") String token) {
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser1 = userRepository.findByUsername(username);
+
+        if (!existingUser1.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+        }
+        User currentUser = existingUser1.get();
+
+        Set<UserTeam> userTeams = currentUser.getUserTeams();
+
+        Team teamUpdate = null;
+
+        for (UserTeam userTeam: userTeams) {
+            Team team = userTeam.getTeam();
+            if (team.getId() == teamId) {
+                teamUpdate = team;
+                break;
+            }
+        }
+
+        if (teamUpdate == null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The team is not your team!"));
+        }
+
+        teamUpdate.setDeleted(true);
+        teamRepository.save(teamUpdate);
+        return ResponseEntity.ok("Team is deleted successfully.");
     }
 
     @GetMapping("/team/users/{teamId}")

@@ -8,6 +8,8 @@ public class TeamRequest {
 
     private Integer step;
 
+    private Long teamId;
+
     public String getTeamName() {
         return teamName;
     }
@@ -22,5 +24,13 @@ public class TeamRequest {
 
     public void setStep(Integer step) {
         this.step = step;
+    }
+
+    public Long getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
     }
 }
