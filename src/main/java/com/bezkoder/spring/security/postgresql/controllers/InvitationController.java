@@ -86,7 +86,7 @@ public class InvitationController {
         Team team = existingTeam.get();
         for (String email : emails
         ) {
-            Optional<User> existingUser = userRepository.findByEmail(email);
+            Optional<User> existingUser = userRepository.findByEmail(email.toLowerCase());
             if (existingUser.isPresent()) {
                 User user = existingUser.get();
                 UserTeamId userTeamId = new UserTeamId(user.getId(), team.getId());
@@ -107,7 +107,7 @@ public class InvitationController {
                     teamRepository.save(team);
                 }
             } else {
-                User newUser = new User(email, email, encoder.encode("123456"));
+                User newUser = new User(email.toLowerCase(), email.toLowerCase(), encoder.encode("123456"));
                 newUser.setInvitationToken(UUID.randomUUID().toString());
                 User newUser1 = userRepository.save(newUser);
 
@@ -208,13 +208,13 @@ public class InvitationController {
 //            emailService.sendSimpleMail(emailDetailsDTO);
 
             HashMap<String, Object> model = new HashMap<String, Object>();
-            model.put("invite_receiver_email", user.getEmail());
+            model.put("invite_receiver_email", user.getEmail().toLowerCase());
             if (user.getInvitationToken().length() > 0) {
                 model.put("action_url", frontendBaseUrl + "/confirm-invitation?token=" + user.getInvitationToken()+ "&id=" + team.getId());
             } else {
                 model.put("action_url", frontendBaseUrl + "/resend-invitation?id=" + team.getId());
             }
-            emailService.sendTemplateEmailWithPostmark(user.getEmail(), inviteTemplateID, model);
+            emailService.sendTemplateEmailWithPostmark(user.getEmail().toLowerCase(), inviteTemplateID, model);
 
         } else {
             return ResponseEntity

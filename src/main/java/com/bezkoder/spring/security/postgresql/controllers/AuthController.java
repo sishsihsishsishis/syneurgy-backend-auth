@@ -62,7 +62,7 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserInfoRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail().toLowerCase(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
@@ -75,7 +75,7 @@ public class AuthController {
         return ResponseEntity.ok(new UserResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
-                userDetails.getEmail(),
+                userDetails.getEmail().toLowerCase(),
                 userDetails.getStep(),
                 roles,
                 userDetails.getFirstName(),
@@ -93,9 +93,9 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserInfoRequest signUpRequest) {
 
-        boolean isExistingEmail = userRepository.existsByEmail(signUpRequest.getEmail());
+        boolean isExistingEmail = userRepository.existsByEmail(signUpRequest.getEmail().toLowerCase());
         if (isExistingEmail) {
-            Optional<User> existingUser = userRepository.findByEmail(signUpRequest.getEmail());
+            Optional<User> existingUser = userRepository.findByEmail(signUpRequest.getEmail().toLowerCase());
             if (existingUser.isPresent()) {
                 User user = existingUser.get();
                 Set<Role> roles = user.getRoles();
@@ -111,8 +111,8 @@ public class AuthController {
                             .body(new MessageResponse("Error: Email is already in use!"));
 
                 } else {
-                    User newUser = new User(signUpRequest.getEmail(),
-                            signUpRequest.getEmail(),
+                    User newUser = new User(signUpRequest.getEmail().toLowerCase(),
+                            signUpRequest.getEmail().toLowerCase(),
                             encoder.encode(signUpRequest.getPassword()));
 
                     Set<Role> userRoles = new HashSet<>();
@@ -126,8 +126,8 @@ public class AuthController {
                 }
             }
         } else {
-            User user = new User(signUpRequest.getEmail(),
-                    signUpRequest.getEmail(),
+            User user = new User(signUpRequest.getEmail().toLowerCase(),
+                    signUpRequest.getEmail().toLowerCase(),
                     encoder.encode(signUpRequest.getPassword()));
 
             Set<Role> roles = new HashSet<>();
@@ -159,7 +159,7 @@ public class AuthController {
         userRepository.save(user);
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), "123456"));
+                new UsernamePasswordAuthenticationToken(user.getEmail().toLowerCase(), "123456"));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
@@ -171,7 +171,7 @@ public class AuthController {
         return ResponseEntity.ok(new UserResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
-                userDetails.getEmail(),
+                userDetails.getEmail().toLowerCase(),
                 userDetails.getStep(),
                 roles,
                 userDetails.getFirstName(),
@@ -188,13 +188,13 @@ public class AuthController {
 
     @PostMapping("/token-forgotPW")
     public ResponseEntity<?> generateTokenForgotPW(@Valid @RequestBody UserInfoRequest request) {
-        String email = request.getEmail();
+        String email = request.getEmail().toLowerCase();
         Optional<User> existingUser = userRepository.findByEmail(email);
         if (!existingUser.isPresent()) {
             return new ResponseEntity<>("The current user is not unavailable!", HttpStatus.NOT_FOUND);
         }
         User user = existingUser.get();
-        if (user.getInvitationToken().length() > 0) {
+        if (user.getInvitationToken() != null && user.getInvitationToken().length() > 0) {
             return new ResponseEntity<>("The current user was already invited by the other team leader. Please check your email again or ask your team leader to invite again.", HttpStatus.NOT_FOUND);
         }
         String resetPWToken = UUID.randomUUID().toString();
