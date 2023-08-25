@@ -4,7 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "supoerpowers")
+@Table(name = "superpowers")
 public class Superpower {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
