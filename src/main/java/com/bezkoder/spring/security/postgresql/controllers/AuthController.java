@@ -108,9 +108,13 @@ public class AuthController {
                 if (isAdmin[0]) {
                     return ResponseEntity
                             .unprocessableEntity()
-                            .body(new MessageResponse("Error: Email is already in use!"));
+                            .body(new MessageResponse("Email is already in use! Please try to use another email."));
 
                 } else {
+                    String invitationToken = user.getInvitationToken();
+                    if (invitationToken != null && invitationToken.length() > 0) {
+                        return ResponseEntity.badRequest().body(new MessageResponse(("You were already invited. Please check your inbox or junk.")));
+                    }
                     User newUser = new User(signUpRequest.getEmail().toLowerCase(),
                             signUpRequest.getEmail().toLowerCase(),
                             encoder.encode(signUpRequest.getPassword()));
