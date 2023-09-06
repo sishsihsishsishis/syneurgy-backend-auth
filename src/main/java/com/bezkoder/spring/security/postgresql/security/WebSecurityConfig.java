@@ -107,11 +107,7 @@ public class WebSecurityConfig implements WebMvcConfigurer { // extends WebSecur
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**").addResourceLocations("file://" + System.getProperty("user.dir") + "/src/main/uploads/");
-        registry.addResourceHandler("swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
 
-        registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
 //        registry.addResourceHandler("/uploads/**").addResourceLocations("file:uploads/");
     }
 }

@@ -3,6 +3,7 @@ package com.bezkoder.spring.security.postgresql.controllers;
 import com.bezkoder.spring.security.postgresql.models.Team;
 import com.bezkoder.spring.security.postgresql.models.User;
 import com.bezkoder.spring.security.postgresql.models.UserTeam;
+import com.bezkoder.spring.security.postgresql.models.UserTeamId;
 import com.bezkoder.spring.security.postgresql.payload.request.TeamRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.TeamResponse;
@@ -252,6 +253,29 @@ public class TeamController {
         teamUpdate.setDeleted(true);
         teamRepository.save(teamUpdate);
         return ResponseEntity.ok("Team is deleted successfully.");
+    }
+
+    @DeleteMapping("/users/userteam")
+    public ResponseEntity<?> deleteUserTeam(@RequestParam(required = false) Long teamId, @RequestParam(required = false) Long userId, @RequestHeader(name = "Authorization") String token) {
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser = userRepository.findByUsername(username);
+
+        if (!existingUser.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+        }
+
+        UserTeam userTeam = userTeamRepository.findByUserIdAndTeamId(userId, teamId);
+        if (userTeam == null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The team is not your team!"));
+        }
+
+
+        userTeamRepository.deleteById(userTeam.getId());
+        return ResponseEntity.ok("Team Member is deleted successfully.");
     }
 
     @GetMapping("/team/users/{teamId}")

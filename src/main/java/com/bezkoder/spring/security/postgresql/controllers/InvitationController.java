@@ -171,7 +171,7 @@ public class InvitationController {
         if (!existingTeam.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Error: The current team is not unavailable!"));
+                    .body(new MessageResponse("Error: The current team is not unavailable!"));
         }
         Team team = existingTeam.get();
 

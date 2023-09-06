@@ -29,17 +29,17 @@ public class TestController {
     @GetMapping("/all")
     public String allAccess() {
 
-        ApiClient client = Postmark.getApiClient("2274a4ca-df74-4850-8b4c-06d1da6c14a2");
-        Message message = new Message("notifications@syneurgy.com", "anbraun117@gmail.com", "Join your team!", " invited you to collaborate in " + " \n http://127.0.0.1:5173/confirm-invitation?token=");
-        try {
-            com.postmarkapp.postmark.client.data.model.message.MessageResponse response = client.deliverMessage(message);
-
-            int sss = 1;
-        } catch (PostmarkException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        ApiClient client = Postmark.getApiClient("2274a4ca-df74-4850-8b4c-06d1da6c14a2");
+//        Message message = new Message("notifications@syneurgy.com", "anbraun117@gmail.com", "Join your team!", " invited you to collaborate in " + " \n http://127.0.0.1:5173/confirm-invitation?token=");
+//        try {
+//            com.postmarkapp.postmark.client.data.model.message.MessageResponse response = client.deliverMessage(message);
+//
+//            int sss = 1;
+//        } catch (PostmarkException e) {
+//            throw new RuntimeException(e);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         return "Public Content.";
     }
 
