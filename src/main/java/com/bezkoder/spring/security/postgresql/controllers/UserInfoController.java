@@ -8,6 +8,7 @@ import com.bezkoder.spring.security.postgresql.payload.response.UserInfoResponse
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.UserDetailsServiceImpl;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +30,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/userinfo")
+@Api(tags = "User Information")
 public class UserInfoController {
     @Autowired
     private JwtUtils jwtUtils;

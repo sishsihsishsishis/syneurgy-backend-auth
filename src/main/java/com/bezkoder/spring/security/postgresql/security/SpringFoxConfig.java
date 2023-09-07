@@ -1,5 +1,6 @@
 package com.bezkoder.spring.security.postgresql.security;
 
+import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
@@ -14,8 +15,9 @@ public class SpringFoxConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .ignoredParameterTypes(BasicErrorController.class)
                 .select()
-                .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage("com.bezkoder.spring.security.postgresql.controllers"))
                 .paths(PathSelectors.any())
                 .build();
     }

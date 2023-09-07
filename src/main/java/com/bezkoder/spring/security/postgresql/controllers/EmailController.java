@@ -2,12 +2,14 @@ package com.bezkoder.spring.security.postgresql.controllers;
 
 import com.bezkoder.spring.security.postgresql.dto.EmailDetailsDTO;
 import com.bezkoder.spring.security.postgresql.service.EmailService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Api(tags = "Email")
 public class EmailController {
 
     @Autowired

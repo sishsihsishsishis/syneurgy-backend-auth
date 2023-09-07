@@ -9,6 +9,7 @@ import com.bezkoder.spring.security.postgresql.repository.*;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.service.EmailService;
 import com.postmarkapp.postmark.client.exception.PostmarkException;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import java.util.*;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api")
+@Api(tags = "Invitation")
 public class InvitationController {
     @Autowired
     private JwtUtils jwtUtils;

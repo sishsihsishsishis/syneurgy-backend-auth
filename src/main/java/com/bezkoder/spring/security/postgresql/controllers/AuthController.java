@@ -9,6 +9,7 @@ import com.bezkoder.spring.security.postgresql.payload.request.ConfirmInviteRequ
 import com.bezkoder.spring.security.postgresql.payload.request.UserInfoRequest;
 import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
 import com.bezkoder.spring.security.postgresql.service.EmailService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,7 @@ import com.bezkoder.spring.security.postgresql.security.services.UserDetailsImpl
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
+@Api(tags = "Auth")
 public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;

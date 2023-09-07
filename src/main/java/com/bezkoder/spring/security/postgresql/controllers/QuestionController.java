@@ -11,6 +11,7 @@ import com.bezkoder.spring.security.postgresql.payload.response.UserInfoResponse
 import com.bezkoder.spring.security.postgresql.repository.QuestionRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.Optional;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api")
+@Api(tags = "Question")
 public class QuestionController {
     @Autowired
     private JwtUtils jwtUtils;
