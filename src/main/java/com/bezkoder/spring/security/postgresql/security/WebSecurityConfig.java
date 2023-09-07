@@ -29,7 +29,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         // securedEnabled = true,
         // jsr250Enabled = true,
         prePostEnabled = true)
-public class WebSecurityConfig implements WebMvcConfigurer { // extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
@@ -92,9 +92,11 @@ public class WebSecurityConfig implements WebMvcConfigurer { // extends WebSecur
                 .authorizeRequests().antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/test/**").permitAll()
                 .antMatchers("/uploads/**").permitAll()
-                .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security",
-                        "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagger-ui.html",
-                        "/swagger-resources/configuration/security", "/swagger-ui/").permitAll()
+                .antMatchers("/v2/api-docs").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/swagger-ui/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
                 .anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());
@@ -104,10 +106,5 @@ public class WebSecurityConfig implements WebMvcConfigurer { // extends WebSecur
         return http.build();
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/**").addResourceLocations("file://" + System.getProperty("user.dir") + "/src/main/uploads/");
 
-//        registry.addResourceHandler("/uploads/**").addResourceLocations("file:uploads/");
-    }
 }

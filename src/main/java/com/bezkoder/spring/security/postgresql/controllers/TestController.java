@@ -12,10 +12,12 @@ import com.postmarkapp.postmark.client.data.model.message.Message;
 import com.postmarkapp.postmark.client.data.model.message.MessageResponse;
 import com.postmarkapp.postmark.client.data.model.templates.TemplatedMessage;
 import com.postmarkapp.postmark.client.exception.PostmarkException;
+import io.sentry.Sentry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -24,6 +26,7 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
+@ApiIgnore
 @RequestMapping("/api/test")
 public class TestController {
     @GetMapping("/all")
@@ -40,6 +43,12 @@ public class TestController {
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
+        try {
+            throw new Exception("This is a test");
+        } catch (Exception e) {
+            Sentry.captureException(e);
+        }
+
         return "Public Content.";
     }
 

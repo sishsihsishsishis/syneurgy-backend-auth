@@ -89,6 +89,12 @@
 
 		<dependency>
 			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
 			<artifactId>springfox-boot-starter</artifactId>
 			<version>3.0.0</version>
 		</dependency>
@@ -98,6 +104,26 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>3.0.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>io.sentry</groupId>
+			<artifactId>sentry-spring-boot-starter</artifactId>
+			<version>6.29.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.sentry</groupId>
+			<artifactId>sentry-logback</artifactId>
+			<version>6.29.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>5.7.3</version>
+		</dependency>
+
+
+
 	</dependencies>
 
 	<build>
@@ -106,8 +132,45 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<plugin>
+				<groupId>io.sentry</groupId>
+				<artifactId>sentry-maven-plugin</artifactId>
+				<version>0.0.3</version>
+				<configuration>
+					<!-- for showing output of sentry-cli -->
+					<debugSentryCli>true</debugSentryCli>
+
+					<!-- download the latest sentry-cli and provide path to it here -->
+					<!-- download it here: https://github.com/getsentry/sentry-cli/releases -->
+					<!-- minimum required version is 2.17.3 -->
+					<sentryCliExecutablePath>/path/to/sentry-cli</sentryCliExecutablePath>
+
+					<org>techsquads-4da59e71f</org>
+
+					<project>java-spring-boot</project>
+
+					<!-- in case you're self hosting, provide the URL here -->
+					<!--<url>http://localhost:8000/</url>-->
+
+					<!-- provide your auth token via SENTRY_AUTH_TOKEN environment variable -->
+					<!-- you can find it in Sentry UI: Settings > Account > API > Auth Tokens -->
+					<authToken>env.SENTRY_AUTH_TOKEN}</authToken>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>uploadSourceBundle</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
+
+
 
 
 </project>
