@@ -1,18 +1,8 @@
-package com.bezkoder.spring.security.postgresql.models;
+package com.bezkoder.spring.security.postgresql.payload.request;
 
-
-import javax.persistence.*;
-
-
-@Entity
-@Table( name = "challenges")
-public class Challenge {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ChallengeRequest {
     private Long id;
-
     private String name;
-
     private String description;
 
     public Long getId() {
@@ -31,11 +21,11 @@ public class Challenge {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

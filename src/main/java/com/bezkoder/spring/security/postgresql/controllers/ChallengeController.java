@@ -33,7 +33,7 @@ public class ChallengeController {
 
     @GetMapping
     @ApiOperation("Get All Challenges, required user token")
-    public ResponseEntity<?> getAllChallenges(@RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> getAllChallenges(@RequestParam(required = false) String search, @RequestHeader(name = "Authorization") String token) {
         String username = jwtUtils.getExistingUsername(token);
         Optional<User> existingUser = userRepository.findByUsername(username);
 
@@ -44,7 +44,12 @@ public class ChallengeController {
         }
 
         List<Challenge> challenges = new ArrayList<>();
-        challengeRepository.findAllByOrderByIdDesc().forEach(challenges::add);
+        challengeRepository.findAllByOrderByIdAsc().forEach(challenges::add);
+        if (search != null && !search.isEmpty()) {
+            challenges = challenges.stream()
+                    .filter(challenge -> challenge.getName().toLowerCase().contains(search.toLowerCase()))
+                    .toList(); // Requires Java 16 or later; use toList() from Collectors in earlier versions
+        }
         if (challenges.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }

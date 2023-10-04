@@ -26,7 +26,6 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@ApiIgnore
 @RequestMapping("/api/test")
 public class TestController {
     @GetMapping("/all")
