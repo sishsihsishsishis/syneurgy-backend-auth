@@ -5,6 +5,9 @@ public class ChallengeRequest {
     private String name;
     private String description;
 
+    private Long uChallengeId;
+
+    private Long[] meetingTimes;
     public Long getId() {
         return id;
     }
@@ -27,5 +30,21 @@ public class ChallengeRequest {
 
     public String getDescription() {
         return description;
+    }
+
+    public Long getuChallengeId() {
+        return uChallengeId;
+    }
+
+    public void setuChallengeId(Long uChallengeId) {
+        this.uChallengeId = uChallengeId;
+    }
+
+    public Long[] getMeetingTimes() {
+        return meetingTimes;
+    }
+
+    public void setMeetingTimes(Long[] meetingTimes) {
+        this.meetingTimes = meetingTimes;
     }
 }
