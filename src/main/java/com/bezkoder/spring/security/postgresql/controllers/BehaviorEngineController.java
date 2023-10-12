@@ -6,6 +6,7 @@ import com.bezkoder.spring.security.postgresql.models.Meeting;
 import com.bezkoder.spring.security.postgresql.models.User;
 import com.bezkoder.spring.security.postgresql.models.UserChallenge;
 import com.bezkoder.spring.security.postgresql.payload.request.ChallengeRequest;
+import com.bezkoder.spring.security.postgresql.payload.request.UserChallengeRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.UserChallengeResponse;
 import com.bezkoder.spring.security.postgresql.repository.ChallengeRepository;
@@ -108,7 +109,7 @@ public class BehaviorEngineController {
     }
 
     @PostMapping("/challenge_meetings")
-    public ResponseEntity<?> postMeetingTimes(@Valid @RequestBody ChallengeRequest challengeRequest, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> postMeetingTimes(@Valid @RequestBody UserChallengeRequest userChallengeRequest, @RequestHeader(name = "Authorization") String token) {
         String username = jwtUtils.getExistingUsername(token);
         Optional<User> existingUser = userRepository.findByUsername(username);
 
@@ -118,7 +119,7 @@ public class BehaviorEngineController {
                     .body(new MessageResponse("Error: The current user is not unavailable!"));
         }
 
-        Long uChallenge_id = challengeRequest.getuChallengeId();
+        Long uChallenge_id = userChallengeRequest.getId();
 
         Optional<UserChallenge> userChallenge = userChallengeRepository.findById(uChallenge_id);
         if (!userChallenge.isPresent()) {
@@ -129,7 +130,7 @@ public class BehaviorEngineController {
 
         UserChallenge uChallenge = userChallenge.get();
 
-        Long[] meetingTimes = challengeRequest.getMeetingTimes();
+        Long[] meetingTimes = userChallengeRequest.getMeetingTimes();
         if (meetingTimes.length == 0) {
             return ResponseEntity
                     .badRequest()
