@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface HabitRepository extends JpaRepository<Habit, Long> {
     List<Habit> findAllByOrderByIdDesc();
+    List<Habit> findByCategory(Long category);
 }

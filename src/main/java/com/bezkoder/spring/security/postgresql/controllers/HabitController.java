@@ -51,6 +51,21 @@ public class HabitController {
         return new ResponseEntity<>(habits, HttpStatus.OK);
     }
 
+    @GetMapping("/byCategory/{category}")
+    public ResponseEntity<?> getHabitsByCategory(@PathVariable Long category, @RequestHeader(name = "Authorization") String token) {
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser = userRepository.findByUsername(username);
+
+        if (!existingUser.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
+        }
+
+        List<Habit> habits = habitRepository.findByCategory(category);
+        return ResponseEntity.ok(habits);
+    }
+
     @GetMapping("/{id}")
     @ApiOperation("Get habit by id, required user token")
     public ResponseEntity<?> getHabitById(@PathVariable Long id, @RequestHeader(name = "Authorization") String token) {

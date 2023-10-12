@@ -10,8 +10,8 @@ public class Habit {
     private Long id;
     private String title;
     private String description;
-    private String category;
-    private Long score;
+    private Long category;
+
 
     public void setId(Long id) {
         this.id = id;
@@ -37,19 +37,13 @@ public class Habit {
         return description;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Long category) {
         this.category = category;
     }
 
-    public String getCategory() {
+    public Long getCategory() {
         return category;
     }
 
-    public void setScore(Long score) {
-        this.score = score;
-    }
 
-    public Long getScore() {
-        return score;
-    }
 }

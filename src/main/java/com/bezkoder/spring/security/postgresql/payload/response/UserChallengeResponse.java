@@ -2,13 +2,13 @@ package com.bezkoder.spring.security.postgresql.payload.response;
 
 public class UserChallengeResponse {
     private Long id;
-    private Long challengeId;
+    private Long challengeCategoryId;
 
     private Long userId;
 
-    public UserChallengeResponse(Long id, Long challengeId, Long userId) {
+    public UserChallengeResponse(Long id, Long challengeCategoryId, Long userId) {
         this.id = id;
-        this.challengeId = challengeId;
+        this.challengeCategoryId = challengeCategoryId;
         this.userId = userId;
     }
 
@@ -20,12 +20,12 @@ public class UserChallengeResponse {
         return id;
     }
 
-    public Long getChallengeId() {
-        return challengeId;
+    public Long getChallengeCategoryId() {
+        return challengeCategoryId;
     }
 
-    public void setChallengeId(Long challengeId) {
-        this.challengeId = challengeId;
+    public void setChallengeCategoryId(Long challengeCategoryId) {
+        this.challengeCategoryId = challengeCategoryId;
     }
 
     public Long getUserId() {
