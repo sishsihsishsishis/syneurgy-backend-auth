@@ -1,6 +1,7 @@
 package com.bezkoder.spring.security.postgresql.service;
 
 import com.bezkoder.spring.security.postgresql.models.Meeting;
+import com.bezkoder.spring.security.postgresql.models.UserChallenge;
 import com.bezkoder.spring.security.postgresql.repository.MeetingRepository;
 import com.postmarkapp.postmark.Postmark;
 import com.postmarkapp.postmark.client.ApiClient;
@@ -31,19 +32,22 @@ public class MeetingSchedulerService {
         // You can inject necessary services or components here
 
         Date nowDate = new Date();
-        List<Meeting> meetingList = meetingRepository.findByMeetingTimeAfterAndIsSentIsFalse(nowDate);
+        List<Meeting> meetingList = meetingRepository.findByMeetingStartTimeAfterAndIsSentIsFalse(nowDate);
 
         LocalDateTime now = LocalDateTime.now();
 
         if (meetingList.size() > 0) {
             for (int i = 0; i < meetingList.size(); i++) {
                 Meeting existingMeeting = meetingList.get(i);
-                LocalDateTime meetingTime = DateToLocalDateTimeConverter.convertDateToLocalDateTime(existingMeeting.getMeetingTime());
+                LocalDateTime meetingTime = DateToLocalDateTimeConverter.convertDateToLocalDateTime(existingMeeting.getMeetingStartTime());
                 long mins = Duration.between(now, meetingTime).toMinutes();
                 if (mins == 30) {
-
+                    UserChallenge userChallenge = existingMeeting.getUserChallenge();
+                    String userEmail = userChallenge.getUser().getEmail();
+                    String userName = userChallenge.getUser().getFullName();
                     ApiClient client = Postmark.getApiClient("2274a4ca-df74-4850-8b4c-06d1da6c14a2");
-                    Message message = new Message("notifications@syneurgy.com", "carlos.guzman@techsquads.com", "It's time for your habit.", "Hi, Carlos. You have meetings in 30minutes. Please prepare something to grow your habits." );
+
+                    Message message = new Message("notifications@syneurgy.com", userEmail, "It's time for your habit.", "Hi, " + userName + ". You have meetings in 30minutes. Please prepare something to grow your habits." );
 
                     try {
                         com.postmarkapp.postmark.client.data.model.message.MessageResponse response = client.deliverMessage(message);

@@ -22,16 +22,20 @@ public class Meeting {
     private  UserChallenge userChallenge;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date meetingTime;
+    private Date meetingStartTime;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date meetingEndTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
     private Boolean isSent;
 
-    public  Meeting(UserChallenge userChallenge, long meetingTime) {
+    public  Meeting(UserChallenge userChallenge, long meetingStartTime, long meetingEndTime) {
         this.userChallenge = userChallenge;
-        this.meetingTime = new Date(meetingTime);
+        this.meetingStartTime = new Date(meetingStartTime);
+        this.meetingEndTime = new Date(meetingEndTime);
         this.isSent = false;
         this.createdDate = new Date();
     }
@@ -60,12 +64,20 @@ public class Meeting {
         this.userChallenge = userChallenge;
     }
 
-    public Date getMeetingTime() {
-        return meetingTime;
+    public Date getMeetingStartTime() {
+        return meetingStartTime;
     }
 
-    public void setMeetingTime(Date meetingTime) {
-        this.meetingTime = meetingTime;
+    public void setMeetingStartTime(Date meetingStartTime) {
+        this.meetingStartTime = meetingStartTime;
+    }
+
+    public Date getMeetingEndTime() {
+        return meetingEndTime;
+    }
+
+    public void setMeetingEndTime(Date meetingEndTime) {
+        this.meetingEndTime = meetingEndTime;
     }
 
     public Boolean getSent() {

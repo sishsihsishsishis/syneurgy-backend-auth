@@ -8,8 +8,8 @@ import java.util.Date;
 import java.util.List;
 
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
-    @Query("SELECT m FROM Meeting m WHERE m.meetingTime > CURRENT_TIMESTAMP")
+    @Query("SELECT m FROM Meeting m WHERE m.meetingStartTime > CURRENT_TIMESTAMP")
     List<Meeting> findMeetingsAfterNow();
 
-    List<Meeting> findByMeetingTimeAfterAndIsSentIsFalse(Date meetingTime);
+    List<Meeting> findByMeetingStartTimeAfterAndIsSentIsFalse(Date meetingTime);
 }

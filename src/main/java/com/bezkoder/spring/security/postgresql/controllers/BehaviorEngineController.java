@@ -3,6 +3,7 @@ package com.bezkoder.spring.security.postgresql.controllers;
 
 import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.ChallengeRequest;
+import com.bezkoder.spring.security.postgresql.payload.request.TimeRange;
 import com.bezkoder.spring.security.postgresql.payload.request.UserChallengeHabitRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.UserChallengeRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
@@ -51,7 +52,7 @@ public class BehaviorEngineController {
                     .body(new MessageResponse("Error: The current user is not unavailable!"));
         }
 
-        Long uChallenge_id = userChallengeRequest.getId();
+        Long uChallenge_id = userChallengeRequest.getUser_challenge_id();
 
         Optional<UserChallenge> userChallenge = userChallengeRepository.findById(uChallenge_id);
         if (!userChallenge.isPresent()) {
@@ -62,14 +63,14 @@ public class BehaviorEngineController {
 
         UserChallenge uChallenge = userChallenge.get();
 
-        Long[] meetingTimes = userChallengeRequest.getMeetingTimes();
+        TimeRange[] meetingTimes = userChallengeRequest.getMeetingTimes();
         if (meetingTimes.length == 0) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Meeting Times are not selected"));
         }
-        for (Long meetingTime: meetingTimes) {
-            Meeting meeting = new Meeting(uChallenge, meetingTime);
+        for (TimeRange meetingTime: meetingTimes) {
+            Meeting meeting = new Meeting(uChallenge, meetingTime.getStartTime(), meetingTime.getEndTime());
             meetingRepository.save(meeting);
         }
 
