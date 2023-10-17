@@ -1,31 +1,40 @@
 package com.bezkoder.spring.security.postgresql.payload.request;
 
 public class TimeRange {
-    private Long startTime;
-    private Long endTime;
+    private Long start;
+    private Long end;
 
     // Constructors, getters, and setters
 
     // Constructor
-    public TimeRange(Long startTime, Long endTime) {
-        this.startTime = startTime;
-        this.endTime = endTime;
+    public TimeRange(Long start, Long end) {
+        this.start = start;
+        this.end = end;
     }
 
     // Getters and setters
-    public Long getStartTime() {
-        return startTime;
+
+    public Long getStart() {
+        return start;
     }
 
-    public void setStartTime(Long startTime) {
-        this.startTime = startTime;
+    public void setStart(Long start) {
+        this.start = start;
     }
 
-    public Long getEndTime() {
-        return endTime;
+    public Long getEnd() {
+        return end;
     }
 
-    public void setEndTime(Long endTime) {
-        this.endTime = endTime;
+    public void setEnd(Long end) {
+        this.end = end;
+    }
+
+    public boolean isStartNull() {
+        return start == null;
+    }
+
+    public boolean isEndNull() {
+        return end == null;
     }
 }

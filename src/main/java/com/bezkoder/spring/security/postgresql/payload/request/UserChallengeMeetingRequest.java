@@ -1,8 +1,8 @@
 package com.bezkoder.spring.security.postgresql.payload.request;
 
-public class UserChallengeRequest {
+public class UserChallengeMeetingRequest {
     private Long user_challenge_id;
-    private TimeRange[] meetingTimes;
+    private MeetingRequest[] meetings;
 
     public void setUser_challenge_id(Long user_challenge_id) {
         this.user_challenge_id = user_challenge_id;
@@ -12,11 +12,11 @@ public class UserChallengeRequest {
         return user_challenge_id;
     }
 
-    public TimeRange[] getMeetingTimes() {
-        return meetingTimes;
+    public MeetingRequest[] getMeetings() {
+        return meetings;
     }
 
-    public void setMeetingTimes(TimeRange[] meetingTimes) {
-        this.meetingTimes = meetingTimes;
+    public void setMeetings(MeetingRequest[] meetings) {
+        this.meetings = meetings;
     }
 }

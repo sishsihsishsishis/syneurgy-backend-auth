@@ -2,27 +2,20 @@ package com.bezkoder.spring.security.postgresql.controllers;
 
 
 import com.bezkoder.spring.security.postgresql.models.*;
-import com.bezkoder.spring.security.postgresql.payload.request.ChallengeRequest;
+import com.bezkoder.spring.security.postgresql.payload.request.MeetingRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.TimeRange;
-import com.bezkoder.spring.security.postgresql.payload.request.UserChallengeHabitRequest;
-import com.bezkoder.spring.security.postgresql.payload.request.UserChallengeRequest;
+import com.bezkoder.spring.security.postgresql.payload.request.UserChallengeMeetingRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
-import com.bezkoder.spring.security.postgresql.payload.response.UserChallengeResponse;
-import com.bezkoder.spring.security.postgresql.repository.ChallengeRepository;
 import com.bezkoder.spring.security.postgresql.repository.MeetingRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserChallengeRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -42,7 +35,7 @@ public class BehaviorEngineController {
     JwtUtils jwtUtils;
 
     @PostMapping("/challenge_meetings")
-    public ResponseEntity<?> postMeetingTimes(@Valid @RequestBody UserChallengeRequest userChallengeRequest, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> postMeetingTimes(@Valid @RequestBody UserChallengeMeetingRequest userChallengeMeetingRequest, @RequestHeader(name = "Authorization") String token) {
         String username = jwtUtils.getExistingUsername(token);
         Optional<User> existingUser = userRepository.findByUsername(username);
 
@@ -52,7 +45,7 @@ public class BehaviorEngineController {
                     .body(new MessageResponse("Error: The current user is not unavailable!"));
         }
 
-        Long uChallenge_id = userChallengeRequest.getUser_challenge_id();
+        Long uChallenge_id = userChallengeMeetingRequest.getUser_challenge_id();
 
         Optional<UserChallenge> userChallenge = userChallengeRepository.findById(uChallenge_id);
         if (!userChallenge.isPresent()) {
@@ -63,14 +56,35 @@ public class BehaviorEngineController {
 
         UserChallenge uChallenge = userChallenge.get();
 
-        TimeRange[] meetingTimes = userChallengeRequest.getMeetingTimes();
-        if (meetingTimes.length == 0) {
+        MeetingRequest[] meetings = userChallengeMeetingRequest.getMeetings();
+
+        if (meetings.length == 0) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Meeting Times are not selected"));
         }
-        for (TimeRange meetingTime: meetingTimes) {
-            Meeting meeting = new Meeting(uChallenge, meetingTime.getStartTime(), meetingTime.getEndTime());
+        for (MeetingRequest meetingRequest: meetings) {
+            TimeRange timeRange = meetingRequest.getTime();
+            Long startTime = 0L;
+            Long endTime = 0L;
+            if (timeRange != null) {
+
+                if(timeRange.isStartNull() == false) {
+                    startTime = timeRange.getStart();
+                }
+                if (!timeRange.isEndNull() == false) {
+                    endTime = timeRange.getEnd();
+                }
+            }
+            String meetingId = "";
+            if (meetingRequest.isIdNull() == false) {
+                meetingId = meetingRequest.getId();
+            }
+            String meetingTitle = meetingRequest.getTitle();
+            Boolean isCustom = meetingRequest.getCustom();
+            Long totalConcurrentEvents = meetingRequest.getTotalConcurrentEvents();
+
+            Meeting meeting = new Meeting(uChallenge, startTime, endTime, meetingId, meetingTitle, isCustom, totalConcurrentEvents);
             meetingRepository.save(meeting);
         }
 

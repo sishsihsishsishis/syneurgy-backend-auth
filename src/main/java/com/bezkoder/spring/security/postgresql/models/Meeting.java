@@ -17,7 +17,12 @@ public class Meeting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String meetingId;
 
+    private String meetingTitle;
+
+    private Boolean isCustom;
+    private Long totalConcurrentEvents;
     @ManyToOne
     private  UserChallenge userChallenge;
 
@@ -32,11 +37,15 @@ public class Meeting {
 
     private Boolean isSent;
 
-    public  Meeting(UserChallenge userChallenge, long meetingStartTime, long meetingEndTime) {
+    public  Meeting(UserChallenge userChallenge, long meetingStartTime, long meetingEndTime, String meetingId, String meetingTitle, Boolean isCustom, Long totalConcurrentEvents) {
         this.userChallenge = userChallenge;
         this.meetingStartTime = new Date(meetingStartTime);
         this.meetingEndTime = new Date(meetingEndTime);
         this.isSent = false;
+        this.meetingId = meetingId;
+        this.meetingTitle = meetingTitle;
+        this.isCustom = isCustom;
+        this.totalConcurrentEvents = totalConcurrentEvents;
         this.createdDate = new Date();
     }
 
@@ -86,5 +95,37 @@ public class Meeting {
 
     public void setSent(Boolean sent) {
         isSent = sent;
+    }
+
+    public String getMeetingId() {
+        return meetingId;
+    }
+
+    public void setMeetingId(String meetingId) {
+        this.meetingId = meetingId;
+    }
+
+    public String getMeetingTitle() {
+        return meetingTitle;
+    }
+
+    public void setMeetingTitle(String meetingTitle) {
+        this.meetingTitle = meetingTitle;
+    }
+
+    public boolean isCustom() {
+        return isCustom;
+    }
+
+    public void setCustom(boolean custom) {
+        isCustom = custom;
+    }
+
+    public Long getTotalConcurrentEvents() {
+        return totalConcurrentEvents;
+    }
+
+    public void setTotalConcurrentEvents(Long totalConcurrentEvents) {
+        this.totalConcurrentEvents = totalConcurrentEvents;
     }
 }
