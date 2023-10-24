@@ -113,7 +113,7 @@ public class Meeting {
         this.meetingTitle = meetingTitle;
     }
 
-    public boolean isCustom() {
+    public Boolean getCustom() {
         return isCustom;
     }
 

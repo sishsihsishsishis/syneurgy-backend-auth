@@ -72,7 +72,7 @@ public class BehaviorEngineController {
                 if(timeRange.isStartNull() == false) {
                     startTime = timeRange.getStart();
                 }
-                if (!timeRange.isEndNull() == false) {
+                if (timeRange.isEndNull() == false) {
                     endTime = timeRange.getEnd();
                 }
             }

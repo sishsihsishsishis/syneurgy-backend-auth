@@ -57,11 +57,12 @@ public class MeetingSchedulerService {
                         throw new RuntimeException(e);
                     }
                     existingMeeting.setSent(true);
+                    meetingRepository.save(existingMeeting);
                     meetingList.set(i, existingMeeting);
                 }
             }
 
-            meetingRepository.saveAll(meetingList);
+
         }
 
     }
