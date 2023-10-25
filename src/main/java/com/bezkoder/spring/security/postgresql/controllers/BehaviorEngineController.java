@@ -83,8 +83,8 @@ public class BehaviorEngineController {
             String meetingTitle = meetingRequest.getTitle();
             Boolean isCustom = meetingRequest.getCustom();
             Long totalConcurrentEvents = meetingRequest.getTotalConcurrentEvents();
-
-            Meeting meeting = new Meeting(uChallenge, startTime, endTime, meetingId, meetingTitle, isCustom, totalConcurrentEvents);
+            int meetingReminderTime = meetingRequest.getMeetingReminderTime();
+            Meeting meeting = new Meeting(uChallenge, startTime, endTime, meetingId, meetingTitle, isCustom, totalConcurrentEvents, meetingReminderTime);
             meetingRepository.save(meeting);
         }
 

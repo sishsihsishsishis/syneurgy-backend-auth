@@ -23,6 +23,8 @@ public class Meeting {
 
     private Boolean isCustom;
     private Long totalConcurrentEvents;
+
+    private int meetingReminderTime;
     @ManyToOne
     private  UserChallenge userChallenge;
 
@@ -37,7 +39,7 @@ public class Meeting {
 
     private Boolean isSent;
 
-    public  Meeting(UserChallenge userChallenge, long meetingStartTime, long meetingEndTime, String meetingId, String meetingTitle, Boolean isCustom, Long totalConcurrentEvents) {
+    public  Meeting(UserChallenge userChallenge, long meetingStartTime, long meetingEndTime, String meetingId, String meetingTitle, Boolean isCustom, Long totalConcurrentEvents, int meetingReminderTime) {
         this.userChallenge = userChallenge;
         this.meetingStartTime = new Date(meetingStartTime);
         this.meetingEndTime = new Date(meetingEndTime);
@@ -47,6 +49,7 @@ public class Meeting {
         this.isCustom = isCustom;
         this.totalConcurrentEvents = totalConcurrentEvents;
         this.createdDate = new Date();
+        this.meetingReminderTime = meetingReminderTime;
     }
 
     public void setId(Long id) {
@@ -127,5 +130,13 @@ public class Meeting {
 
     public void setTotalConcurrentEvents(Long totalConcurrentEvents) {
         this.totalConcurrentEvents = totalConcurrentEvents;
+    }
+
+    public int getMeetingReminderTime() {
+        return meetingReminderTime;
+    }
+
+    public void setMeetingReminderTime(int meetingReminderTime) {
+        this.meetingReminderTime = meetingReminderTime;
     }
 }

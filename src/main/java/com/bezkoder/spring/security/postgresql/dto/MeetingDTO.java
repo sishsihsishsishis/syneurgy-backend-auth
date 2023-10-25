@@ -1,6 +1,7 @@
 package com.bezkoder.spring.security.postgresql.dto;
 
 import com.bezkoder.spring.security.postgresql.models.Meeting;
+
 import java.util.Date;
 
 // MeetingDTO

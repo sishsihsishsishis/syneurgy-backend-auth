@@ -95,4 +95,23 @@ public class UserChallengeController {
         return ResponseEntity.ok(new UserChallengeResponse(updatedUserChallenge.getId(), updatedUserChallenge.getChallenge().getId(), updatedUserChallenge.getUser().getId()));
 
     }
+
+    @GetMapping
+    @ApiOperation("Get User Challenges of the user")
+    public ResponseEntity<?> getUserChallenges(@RequestHeader(name = "Authorization") String token) {
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser = userRepository.findByUsername(username);
+
+        if (!existingUser.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+        }
+
+        User currentUser = existingUser.get();
+        List<UserChallenge> userChallenges = userChallengeRepository.findByUserId(currentUser.getId());
+        int count = userChallenges.size();
+
+        return ResponseEntity.ok(count);
+    }
 }

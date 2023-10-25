@@ -6,8 +6,6 @@ import com.bezkoder.spring.security.postgresql.repository.MeetingRepository;
 import com.postmarkapp.postmark.Postmark;
 import com.postmarkapp.postmark.client.ApiClient;
 import com.postmarkapp.postmark.client.data.model.message.Message;
-import com.postmarkapp.postmark.client.data.model.message.MessageResponse;
-import com.postmarkapp.postmark.client.data.model.templates.TemplatedMessage;
 import com.postmarkapp.postmark.client.exception.PostmarkException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -41,7 +39,11 @@ public class MeetingSchedulerService {
                 Meeting existingMeeting = meetingList.get(i);
                 LocalDateTime meetingTime = DateToLocalDateTimeConverter.convertDateToLocalDateTime(existingMeeting.getMeetingStartTime());
                 long mins = Duration.between(now, meetingTime).toMinutes();
-                if (mins == 30) {
+                int meetingReminderTime = existingMeeting.getMeetingReminderTime();
+                if (meetingReminderTime == 0) {
+                    meetingReminderTime = 30;
+                }
+                if (mins == meetingReminderTime) {
                     UserChallenge userChallenge = existingMeeting.getUserChallenge();
                     String userEmail = userChallenge.getUser().getEmail();
                     String userName = userChallenge.getUser().getFullName();

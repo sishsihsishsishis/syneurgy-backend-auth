@@ -7,6 +7,8 @@ public class MeetingRequest {
     private Boolean isCustom;
     private Long totalConcurrentEvents;
 
+    private int meetingReminderTime;
+
     public String getId() {
         return id;
     }
@@ -49,5 +51,13 @@ public class MeetingRequest {
 
     public Long getTotalConcurrentEvents() {
         return totalConcurrentEvents;
+    }
+
+    public void setMeetingReminderTime(int meetingReminderTime) {
+        this.meetingReminderTime = meetingReminderTime;
+    }
+
+    public int getMeetingReminderTime() {
+        return meetingReminderTime;
     }
 }

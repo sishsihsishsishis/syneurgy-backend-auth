@@ -112,4 +112,22 @@ public class MeetingController {
     }
 
 
+    @GetMapping("/percentage")
+    @ApiOperation("Get percentage of past meetings")
+    public ResponseEntity<?> getPercentageOfMeetings(@RequestHeader(name = "Authorization") String token) {
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser = userRepository.findByUsername(username);
+
+        if (!existingUser.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("The current user is not unavailable!"));
+        }
+
+        User currentUser = existingUser.get();
+
+        int percentage = meetingService.calculateMeetingPercentageForUser(currentUser.getId());
+        return ResponseEntity.ok(percentage);
+    }
+
 }

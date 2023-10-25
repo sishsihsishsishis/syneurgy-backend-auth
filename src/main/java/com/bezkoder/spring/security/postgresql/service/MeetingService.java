@@ -89,4 +89,19 @@ public class MeetingService {
 
         return meetingCountsByWeek;
     }
+
+    public int calculateMeetingPercentageForUser(Long userId) {
+        List<Meeting> allMeetings = meetingRepository.findByUserId(userId);
+        List<Meeting> pastMeetings = meetingRepository.findPastMeetingsByUserId(userId);
+
+        int allMeetingsCount = allMeetings.size();
+        int pastMeetingsCount = pastMeetings.size();
+
+        if (allMeetingsCount == 0) {
+            return 0; // Avoid division by zero
+        }
+
+        return (pastMeetingsCount * 100) / allMeetingsCount;
+    }
+
 }
