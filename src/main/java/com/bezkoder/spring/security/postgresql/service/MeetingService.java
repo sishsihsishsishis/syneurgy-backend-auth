@@ -39,8 +39,8 @@ public class MeetingService {
             Habit habit = new Habit();
             habit.setId(-1L);
             habit.setCategory(0L);
-            habit.setDescription("Empty Description");
-            habit.setTitle("Empty Title");
+            habit.setDescription("");
+            habit.setTitle("");
             return meetings.stream()
                     .map(meeting -> new MeetingDTO(meeting, new HabitDTO(habit)))
                     .collect(Collectors.toList());
@@ -50,8 +50,8 @@ public class MeetingService {
             Habit habit = new Habit();
             habit.setId(-1L);
             habit.setCategory(0L);
-            habit.setDescription("Empty Description");
-            habit.setTitle("Empty Title");
+            habit.setDescription("");
+            habit.setTitle("");
             return meetings.stream()
                     .map(meeting -> new MeetingDTO(meeting, new HabitDTO(habit)))
                     .collect(Collectors.toList());
