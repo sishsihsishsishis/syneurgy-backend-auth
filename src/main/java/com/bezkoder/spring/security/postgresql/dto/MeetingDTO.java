@@ -1,6 +1,7 @@
 package com.bezkoder.spring.security.postgresql.dto;
 
 import com.bezkoder.spring.security.postgresql.models.Meeting;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
@@ -25,6 +26,21 @@ public class MeetingDTO {
     private String habit_title;
     private String habit_description;
     private Long habit_category;
+
+    @JsonProperty("meetingStartTime")
+    public Long getMeetingStartTimeTimestamp() {
+        return meetingStartTime != null ? meetingStartTime.getTime() : null;
+    }
+
+    @JsonProperty("meetingEndTime")
+    public Long getMeetingEndTimeTimestamp() {
+        return meetingEndTime != null ? meetingEndTime.getTime() : null;
+    }
+
+    @JsonProperty("createdDate")
+    public Long getCreatedDateTimestamp() {
+        return createdDate != null ? createdDate.getTime() : null;
+    }
 
     public MeetingDTO(Meeting meeting, HabitDTO habit) {
         this.id = meeting.getId();

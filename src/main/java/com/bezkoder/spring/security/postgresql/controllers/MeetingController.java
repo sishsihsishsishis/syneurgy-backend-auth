@@ -69,6 +69,13 @@ public class MeetingController {
             }
 
         });
+
+        // Convert Date to timestamp for meetingStartTime
+        results.forEach(meetingDTO -> {
+            meetingDTO.getMeetingStartTimeTimestamp();
+            meetingDTO.getMeetingEndTimeTimestamp();
+            meetingDTO.getCreatedDateTimestamp();
+        });
         return new ResponseEntity<>(results, HttpStatus.OK);
 
     }
