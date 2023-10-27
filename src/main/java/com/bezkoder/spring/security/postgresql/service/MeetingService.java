@@ -83,7 +83,7 @@ public class MeetingService {
             LocalDate meetingDate = meeting.getMeetingStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             int weekIndex = meetingDate.get(weekFields.weekOfMonth());
 
-            String weekKey = "week " + weekIndex;
+            String weekKey = "Week " + weekIndex;
             meetingCountsByWeek.computeIfAbsent(weekKey, k -> new ArrayList<>()).add(meeting.getId()); // Counting meetings by ID
 
         }
