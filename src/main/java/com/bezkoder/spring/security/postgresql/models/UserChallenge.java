@@ -26,10 +26,12 @@ public class UserChallenge {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
+    private int percent;
     public UserChallenge(User user, Challenge challenge) {
         this.user = user;
         this.challenge = challenge;
         this.createdDate = new Date();
+        this.percent = 0;
     }
 
     public Long getId() {
@@ -62,5 +64,13 @@ public class UserChallenge {
 
     public Date getCreatedDate() {
         return createdDate;
+    }
+
+    public int getPercent() {
+        return percent;
+    }
+
+    public void setPercent(int percent) {
+        this.percent = percent;
     }
 }

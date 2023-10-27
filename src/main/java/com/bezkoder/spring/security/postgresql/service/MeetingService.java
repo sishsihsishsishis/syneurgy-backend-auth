@@ -8,6 +8,7 @@ import com.bezkoder.spring.security.postgresql.models.UserChallengeHabit;
 import com.bezkoder.spring.security.postgresql.repository.HabitRepository;
 import com.bezkoder.spring.security.postgresql.repository.MeetingRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserChallengeHabitRepository;
+import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,9 @@ public class MeetingService {
 
     @Autowired
     private UserChallengeHabitRepository userChallengeHabitRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<MeetingDTO> getNextMeetingsByUserChallengeId(Long userChallengeId) {
         Date nowDate = new Date();

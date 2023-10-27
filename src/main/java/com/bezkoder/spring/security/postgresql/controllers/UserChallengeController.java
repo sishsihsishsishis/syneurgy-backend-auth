@@ -63,15 +63,7 @@ public class UserChallengeController {
 
     @PutMapping("/{id}")
     @ApiOperation("Update User Challenge By id")
-    public ResponseEntity<?> updateChallenge(@PathVariable Long id, @RequestBody ChallengeRequest challengeRequest, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
-        }
+    public ResponseEntity<?> updateChallenge(@PathVariable Long id, @RequestBody ChallengeRequest challengeRequest) {
 
         Optional<UserChallenge> userChallenge = userChallengeRepository.findById(id);
         if (!userChallenge.isPresent()) {

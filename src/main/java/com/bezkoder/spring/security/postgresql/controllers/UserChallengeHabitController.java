@@ -41,16 +41,7 @@ public class UserChallengeHabitController {
 
     @PostMapping
     @ApiOperation("Create User Challenge Habit, required user token")
-    public ResponseEntity<?> createUserChallengeHabit(@RequestBody UserChallengeHabitRequest userChallengeHabitRequest, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> createUserChallengeHabit(@RequestBody UserChallengeHabitRequest userChallengeHabitRequest) {
         Long uChallenge_id = userChallengeHabitRequest.getuChallenge_id();
 
         Optional<UserChallenge> userChallenge = userChallengeRepository.findById(uChallenge_id);
@@ -78,16 +69,7 @@ public class UserChallengeHabitController {
 
     @GetMapping("/by-user-challenge/{userChallengeId}")
     @ApiOperation("Get userChallengeHabit by userChallenge Id, required user token")
-    public ResponseEntity<?> getUserChallengeHabitByuChallengeId(@PathVariable Long userChallengeId, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> getUserChallengeHabitByuChallengeId(@PathVariable Long userChallengeId) {
         List<UserChallengeHabit> ucHabits = userChallengeHabitRepository.findByUserChallengeId(userChallengeId);
         List<UserChallengeHabitResponse> responses = new ArrayList<>();
         ucHabits.forEach(ucHabit -> {

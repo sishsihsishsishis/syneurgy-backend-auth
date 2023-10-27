@@ -32,15 +32,7 @@ public class HabitController {
 
     @GetMapping
     @ApiOperation("Get All Habits, required user token")
-    public ResponseEntity<?> getAllHabits(@RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
+    public ResponseEntity<?> getAllHabits() {
 
         List<Habit> habits = new ArrayList<>();
         habitRepository.findAllByOrderByIdDesc().forEach(habits::add);
@@ -52,15 +44,8 @@ public class HabitController {
     }
 
     @GetMapping("/byCategory/{category}")
-    public ResponseEntity<?> getHabitsByCategory(@PathVariable Long category, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
+    public ResponseEntity<?> getHabitsByCategory(@PathVariable Long category) {
 
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
 
         List<Habit> habits = habitRepository.findByCategory(category);
         return ResponseEntity.ok(habits);
@@ -68,16 +53,7 @@ public class HabitController {
 
     @GetMapping("/{id}")
     @ApiOperation("Get habit by id, required user token")
-    public ResponseEntity<?> getHabitById(@PathVariable Long id, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> getHabitById(@PathVariable Long id) {
         Optional<Habit> habit = habitRepository.findById(id);
         return habit.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -85,31 +61,13 @@ public class HabitController {
 
     @PostMapping
     @ApiOperation("Create habit")
-    public ResponseEntity<?> createHabit(@RequestBody Habit habit, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> createHabit(@RequestBody Habit habit) {
         return ResponseEntity.ok(habitRepository.save(habit));
     }
 
     @PutMapping("/{id}")
     @ApiOperation("Update challenge by id")
-    public ResponseEntity<?> updateHabit(@PathVariable Long id, @RequestBody Habit updatedHabit, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> updateHabit(@PathVariable Long id, @RequestBody Habit updatedHabit) {
         Optional<Habit> existingHabit = habitRepository.findById(id);
         if (existingHabit.isPresent()) {
             updatedHabit.setId(id);
@@ -121,16 +79,7 @@ public class HabitController {
 
     @DeleteMapping("/{id}")
     @ApiOperation("Delete Challenge by id, required user token")
-    public ResponseEntity<?> deleteHabit(@PathVariable Long id, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> deleteHabit(@PathVariable Long id) {
         Optional<Habit> habit = habitRepository.findById(id);
         if (habit.isPresent()) {
             habitRepository.deleteById(id);

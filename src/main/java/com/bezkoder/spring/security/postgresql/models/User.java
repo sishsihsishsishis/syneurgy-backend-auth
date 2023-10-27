@@ -169,11 +169,11 @@ public class User {
 	}
 
 	public String getFullName() {
-		if (firstName.length() > 0 && lastName.length() > 0) {
+		if (firstName != null && firstName.length() > 0 && lastName != null && lastName.length() > 0) {
 			return firstName + " " + lastName;
-		} else if (firstName.length() > 0) {
+		} else if (firstName != null && firstName.length() > 0) {
 			return firstName;
-		} else if (lastName.length() > 0) {
+		} else if (lastName != null && lastName.length() > 0) {
 			return lastName;
 		}
 		return "";

@@ -32,15 +32,7 @@ public class SuperpowerController {
 
     @GetMapping
     @ApiOperation("Get all superpowers, required user token")
-    public ResponseEntity<?> getAllSuperpowers(@RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
+    public ResponseEntity<?> getAllSuperpowers() {
 
         List<Superpower> superpowers = new ArrayList<>();
         superpowerRepository.findAllByOrderByIdDesc().forEach(superpowers::add);
@@ -52,16 +44,7 @@ public class SuperpowerController {
 
     @GetMapping("/{id}")
     @ApiOperation("Get superpower by id, required user token")
-    public ResponseEntity<?> getSuperpowerById(@PathVariable Long id, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> getSuperpowerById(@PathVariable Long id) {
         Optional<Superpower> superpower = superpowerRepository.findById(id);
         return superpower.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -69,31 +52,13 @@ public class SuperpowerController {
 
     @PostMapping
     @ApiOperation("Create superpower, required user token")
-    public ResponseEntity<?> createSuperpower(@RequestBody Superpower superpower, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> createSuperpower(@RequestBody Superpower superpower) {
         return ResponseEntity.ok(superpowerRepository.save(superpower));
     }
 
     @PutMapping("/{id}")
     @ApiOperation("Update superpower by id, required user token")
-    public ResponseEntity<?> updateSuperpower(@PathVariable Long id, @RequestBody Superpower updatedSuperpower, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> updateSuperpower(@PathVariable Long id, @RequestBody Superpower updatedSuperpower) {
         Optional<Superpower> existingSuperpower = superpowerRepository.findById(id);
         if (existingSuperpower.isPresent()) {
             updatedSuperpower.setId(id);
@@ -105,16 +70,7 @@ public class SuperpowerController {
 
     @DeleteMapping("/{id}")
     @ApiOperation("Delete superpower by id, required user token")
-    public ResponseEntity<?> deleteSuperpower(@PathVariable Long id, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> deleteSuperpower(@PathVariable Long id) {
         Optional<Superpower> superpower = superpowerRepository.findById(id);
         if (superpower.isPresent()) {
             superpowerRepository.deleteById(id);

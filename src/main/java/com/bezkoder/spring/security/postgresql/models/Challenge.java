@@ -1,9 +1,23 @@
 package com.bezkoder.spring.security.postgresql.models;
 
 
+import com.bezkoder.spring.security.postgresql.dto.ChallengeWithUsersDto;
+
 import javax.persistence.*;
 
 
+@SqlResultSetMapping(
+        name = "ChallengeWithUsersMapping",
+        classes = @ConstructorResult(
+                targetClass = ChallengeWithUsersDto.class,
+                columns = {
+                        @ColumnResult(name = "challenge_id", type = Long.class),
+                        @ColumnResult(name = "challenge_name", type = String.class),
+                        @ColumnResult(name = "challenge_description", type = String.class),
+                        @ColumnResult(name = "users", type = String.class) // Adjust the type as needed
+                }
+        )
+)
 @Entity
 @Table( name = "challenges")
 public class Challenge {

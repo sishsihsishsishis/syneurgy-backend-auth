@@ -1,11 +1,13 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
+import com.bezkoder.spring.security.postgresql.dto.ChallengeWithUsersDto;
 import com.bezkoder.spring.security.postgresql.models.Challenge;
 import com.bezkoder.spring.security.postgresql.models.User;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.repository.ChallengeRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
+import com.bezkoder.spring.security.postgresql.service.ChallengeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,19 +31,11 @@ public class ChallengeController {
     ChallengeRepository challengeRepository;
 
     @Autowired
-    UserRepository userRepository;
+    ChallengeService challengeService;
 
     @GetMapping
-    @ApiOperation("Get All Challenges, required user token")
-    public ResponseEntity<?> getAllChallenges(@RequestParam(required = false) String search, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
+    @ApiOperation("Get All Challenges")
+    public ResponseEntity<?> getAllChallenges(@RequestParam(required = false) String search) {
 
         List<Challenge> challenges = new ArrayList<>();
         challengeRepository.findAllByOrderByIdAsc().forEach(challenges::add);
@@ -58,15 +52,7 @@ public class ChallengeController {
 
     @GetMapping("/{id}")
     @ApiOperation("Get challenge by id. required user token")
-    public ResponseEntity<?> getChallengeById(@PathVariable Long id, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
+    public ResponseEntity<?> getChallengeById(@PathVariable Long id) {
 
         Optional<Challenge> challenge = challengeRepository.findById(id);
         return challenge.map(ResponseEntity::ok)
@@ -75,30 +61,13 @@ public class ChallengeController {
 
     @PostMapping
     @ApiOperation("Create Challenge")
-    public ResponseEntity<?> createChallenge(@RequestBody Challenge challenge, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> createChallenge(@RequestBody Challenge challenge) {
         return ResponseEntity.ok(challengeRepository.save(challenge));
     }
 
     @PutMapping("/{id}")
     @ApiOperation("Update challenge by id")
-    public ResponseEntity<?> updateChallenge(@PathVariable Long id, @RequestBody Challenge updatedChallenge, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
+    public ResponseEntity<?> updateChallenge(@PathVariable Long id, @RequestBody Challenge updatedChallenge) {
 
         Optional<Challenge> existingChallenge = challengeRepository.findById(id);
         if (existingChallenge.isPresent()) {
@@ -111,15 +80,7 @@ public class ChallengeController {
 
     @DeleteMapping("/{id}")
     @ApiOperation("Delete Challenge By id")
-    public ResponseEntity<?> deleteChallenge(@PathVariable Long id, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
+    public ResponseEntity<?> deleteChallenge(@PathVariable Long id) {
 
         Optional<Challenge> challenge = challengeRepository.findById(id);
         if (challenge.isPresent()) {
@@ -130,5 +91,10 @@ public class ChallengeController {
         }
     }
 
-
+    @GetMapping("/users")
+    @ApiOperation("Get All Challenges with users list")
+    public ResponseEntity<?> getAllChallengesWithUsersList() {
+        List<ChallengeWithUsersDto> challengeDTOS = challengeService.getChallengesWithUsers();
+        return ResponseEntity.ok(challengeDTOS);
+    }
 }

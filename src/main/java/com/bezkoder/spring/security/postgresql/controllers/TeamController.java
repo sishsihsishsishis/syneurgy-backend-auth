@@ -258,16 +258,7 @@ public class TeamController {
     }
 
     @DeleteMapping("/users/userteam")
-    public ResponseEntity<?> deleteUserTeam(@RequestParam(required = false) Long teamId, @RequestParam(required = false) Long userId, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
-        }
-
+    public ResponseEntity<?> deleteUserTeam(@RequestParam(required = false) Long teamId, @RequestParam(required = false) Long userId) {
         UserTeam userTeam = userTeamRepository.findByUserIdAndTeamId(userId, teamId);
         if (userTeam == null) {
             return ResponseEntity
@@ -281,18 +272,7 @@ public class TeamController {
     }
 
     @GetMapping("/team/users/{teamId}")
-    public ResponseEntity<?> getTeamMembers(@PathVariable Long teamId, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
-        User user = existingUser.get();
-
+    public ResponseEntity<?> getTeamMembers(@PathVariable Long teamId) {
 
         Optional<Team> existingTeam = teamRepository.findById(teamId);
         if (!existingTeam.isPresent()) {

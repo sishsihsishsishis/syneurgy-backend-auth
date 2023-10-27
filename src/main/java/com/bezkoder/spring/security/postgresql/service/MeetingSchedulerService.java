@@ -8,6 +8,7 @@ import com.postmarkapp.postmark.client.ApiClient;
 import com.postmarkapp.postmark.client.data.model.message.Message;
 import com.postmarkapp.postmark.client.exception.PostmarkException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,10 @@ public class MeetingSchedulerService {
 
     @Autowired
     MeetingRepository meetingRepository;
+
+    @Value("${meeting_reminder_time}")
+    private int defaultMeetingReminderTime;
+
     @Scheduled(fixedRate = 30000) // Run every 30 seconds (adjust as needed)
     public void checkUpcomingMeetings() {
         // Add logic to check and notify users about upcoming meetings
@@ -41,7 +46,7 @@ public class MeetingSchedulerService {
                 long mins = Duration.between(now, meetingTime).toMinutes();
                 int meetingReminderTime = existingMeeting.getMeetingReminderTime();
                 if (meetingReminderTime == 0) {
-                    meetingReminderTime = 30;
+                    meetingReminderTime = defaultMeetingReminderTime;
                 }
                 if (mins == meetingReminderTime) {
                     UserChallenge userChallenge = existingMeeting.getUserChallenge();

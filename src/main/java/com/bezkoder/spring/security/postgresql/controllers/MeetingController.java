@@ -125,8 +125,13 @@ public class MeetingController {
         }
 
         User currentUser = existingUser.get();
+        List<UserChallenge> userChallenges = userChallengeRepository.findByUserIdOrderByCreatedDateDesc(currentUser.getId());
+        int percentage = 0;
+        if (userChallenges.size() > 0) {
+            UserChallenge userChallenge = userChallenges.get(0);
+            percentage = userChallenge.getPercent();
+        }
 
-        int percentage = meetingService.calculateMeetingPercentageForUser(currentUser.getId());
         return ResponseEntity.ok(percentage);
     }
 

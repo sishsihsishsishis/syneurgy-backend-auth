@@ -82,15 +82,8 @@ public class GoogleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getGoogleParamsWithId(@PathVariable Long id, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
+    public ResponseEntity<?> getGoogleParamsWithId(@PathVariable Long id) {
 
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
 
         Optional<GCParam> gcParam = gcParamRepository.findById(id);
         return gcParam.map(ResponseEntity::ok)
@@ -98,15 +91,8 @@ public class GoogleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateGoogleParamsWithId(@PathVariable Long id, @Valid @RequestBody GCRequest gcRequest, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
+    public ResponseEntity<?> updateGoogleParamsWithId(@PathVariable Long id, @Valid @RequestBody GCRequest gcRequest) {
 
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
         Optional<GCParam> gcParam = gcParamRepository.findById(id);
 
         if (gcParam.isPresent()) {
@@ -133,15 +119,8 @@ public class GoogleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteGoogleParamsWithId(@PathVariable Long id, @RequestHeader(name = "Authorization") String token) {
-        String username = jwtUtils.getExistingUsername(token);
-        Optional<User> existingUser = userRepository.findByUsername(username);
+    public ResponseEntity<?> deleteGoogleParamsWithId(@PathVariable Long id) {
 
-        if (!existingUser.isPresent()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
-        }
         Optional<GCParam> gcParam = gcParamRepository.findById(id);
 
         if (gcParam.isPresent()) {
