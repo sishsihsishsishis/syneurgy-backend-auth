@@ -47,7 +47,18 @@ public class BehaviorEngineController {
     private UserChallengeService userChallengeService;
 
     @PostMapping("/challenge_meetings")
-    public ResponseEntity<?> postMeetingTimes(@Valid @RequestBody UserChallengeMeetingRequest userChallengeMeetingRequest) {
+    public ResponseEntity<?> postMeetingTimes(@Valid @RequestBody UserChallengeMeetingRequest userChallengeMeetingRequest, @RequestHeader(name = "Authorization") String token) {
+
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser = userRepository.findByUsername(username);
+
+        if (!existingUser.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+        }
+
+        User currentUser = existingUser.get();
 
         Long uChallenge_id = userChallengeMeetingRequest.getUser_challenge_id();
 
@@ -59,6 +70,11 @@ public class BehaviorEngineController {
         }
 
         UserChallenge uChallenge = userChallenge.get();
+        if (currentUser.getId() != uChallenge.getUser().getId()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user Challenge is not unavailable!"));
+        }
 
         MeetingRequest[] meetings = userChallengeMeetingRequest.getMeetings();
 
@@ -93,20 +109,22 @@ public class BehaviorEngineController {
         }
 
         int percent = meetingService.calculateMeetingPercentageForUser(uChallenge.getUser().getId());
-        uChallenge.setPercent(percent);
+        User user = uChallenge.getUser();
+        user.setPercent(percent);
+        uChallenge.setUser(userRepository.save(user));
         userChallengeRepository.save(uChallenge);
         return ResponseEntity.ok("Meetings are anchored successfully");
     }
 
     @GetMapping("/topUsers")
     public ResponseEntity<?> getTopFiveUsersAndPercent() {
-        List<UserChallenge> userChallenges = userChallengeService.getTopFiveUC();
         List<TopPerformanceUserResponse> topPerformanceUserResponses = new ArrayList<>();
-        userChallenges.forEach(userChallenge -> {
-            User user = userChallenge.getUser();
-            TopPerformanceUserResponse topPerformanceUserResponse = new TopPerformanceUserResponse(user.getFullName(), user.getPhoto(), userChallenge.getPercent(), user.getId());
+        List<User> users = userRepository.findTop5ByFirstNameIsNotNullOrderByPercentDesc();
+        users.forEach(user -> {
+            TopPerformanceUserResponse topPerformanceUserResponse = new TopPerformanceUserResponse(user.getFullName(), user.getPhoto(), user.getPercent(), user.getId());
             topPerformanceUserResponses.add(topPerformanceUserResponse);
         });
+
         return ResponseEntity.ok(topPerformanceUserResponses);
     }
 }

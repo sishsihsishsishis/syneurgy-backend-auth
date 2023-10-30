@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
   Boolean existsByEmail(String email);
 
   List<User> findUsersByUserTeamsId(Long userTeamId);
+
+  List<User> findTop5ByFirstNameIsNotNullOrderByPercentDesc();
 }

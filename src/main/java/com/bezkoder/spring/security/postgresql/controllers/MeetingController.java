@@ -136,7 +136,7 @@ public class MeetingController {
         int percentage = 0;
         if (userChallenges.size() > 0) {
             UserChallenge userChallenge = userChallenges.get(0);
-            percentage = userChallenge.getPercent();
+            percentage = userChallenge.getUser().getPercent();
         }
 
         return ResponseEntity.ok(percentage);
