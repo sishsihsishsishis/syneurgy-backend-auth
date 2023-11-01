@@ -1,10 +1,13 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.bezkoder.spring.security.postgresql.payload.request.AuthRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.ConfirmInviteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.UserInfoRequest;
 import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
@@ -12,13 +15,14 @@ import com.bezkoder.spring.security.postgresql.service.EmailService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import com.bezkoder.spring.security.postgresql.models.ERole;
@@ -30,6 +34,8 @@ import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.UserDetailsImpl;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -59,6 +65,18 @@ public class AuthController {
 
     @Value("${frontend_base_url}")
     private String frontendBaseUrl;
+
+    @Value("${client_id}")
+    private String clientId;
+
+    @Value("${client_secret}")
+    private String clientSecret;
+
+    @Value("${redirect_uri}")
+    private String redirectUri;
+
+    @Value("${grant_type}")
+    private String grantType;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserInfoRequest loginRequest) {
@@ -240,4 +258,38 @@ public class AuthController {
 
         return ResponseEntity.ok(new MessageResponse("Password is updated successfully"));
     }
+
+    @PostMapping("/exchangeToken")
+    public ResponseEntity<String> exchangeToken(@RequestBody AuthRequest authRequest) {
+        String tokenUrl = "https://oauth2.googleapis.com/token";
+
+        MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
+        data.add("code", authRequest.getCode().trim());
+        data.add("client_id", clientId);
+        data.add("client_secret", clientSecret);
+        data.add("redirect_uri", redirectUri);
+        data.add("grant_type", grantType);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(data, headers);
+
+        try {
+            // Use WebClient instead of RestTemplate in newer versions of Spring
+            ResponseEntity<String> response = new RestTemplate().postForEntity(tokenUrl, request, String.class);
+
+            // Log request and response details for debugging
+            System.out.println("Request: " + request);
+            System.out.println("Response: " + response);
+
+            // Process the response, save tokens, and return a suitable response to the frontend.
+            return response;
+        } catch (HttpClientErrorException.BadRequest badRequestException) {
+            // Log additional details for Bad Request exception
+            System.err.println("Bad Request Exception Details: " + badRequestException.getResponseBodyAsString());
+            throw badRequestException;
+        }
+    }
+
 }
