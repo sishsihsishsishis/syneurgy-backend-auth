@@ -66,18 +66,6 @@ public class AuthController {
     @Value("${frontend_base_url}")
     private String frontendBaseUrl;
 
-    @Value("${client_id}")
-    private String clientId;
-
-    @Value("${client_secret}")
-    private String clientSecret;
-
-    @Value("${redirect_uri}")
-    private String redirectUri;
-
-    @Value("${grant_type}")
-    private String grantType;
-
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserInfoRequest loginRequest) {
 
@@ -259,37 +247,6 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("Password is updated successfully"));
     }
 
-    @PostMapping("/exchangeToken")
-    public ResponseEntity<String> exchangeToken(@RequestBody AuthRequest authRequest) {
-        String tokenUrl = "https://oauth2.googleapis.com/token";
 
-        MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
-        data.add("code", authRequest.getCode().trim());
-        data.add("client_id", clientId);
-        data.add("client_secret", clientSecret);
-        data.add("redirect_uri", redirectUri);
-        data.add("grant_type", grantType);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(data, headers);
-
-        try {
-            // Use WebClient instead of RestTemplate in newer versions of Spring
-            ResponseEntity<String> response = new RestTemplate().postForEntity(tokenUrl, request, String.class);
-
-            // Log request and response details for debugging
-            System.out.println("Request: " + request);
-            System.out.println("Response: " + response);
-
-            // Process the response, save tokens, and return a suitable response to the frontend.
-            return response;
-        } catch (HttpClientErrorException.BadRequest badRequestException) {
-            // Log additional details for Bad Request exception
-            System.err.println("Bad Request Exception Details: " + badRequestException.getResponseBodyAsString());
-            throw badRequestException;
-        }
-    }
 
 }
