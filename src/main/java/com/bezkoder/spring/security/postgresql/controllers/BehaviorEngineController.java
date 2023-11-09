@@ -181,4 +181,38 @@ public class BehaviorEngineController {
             throw badRequestException;
         }
     }
+
+    @PostMapping("/GoogleRefreshToken")
+    public ResponseEntity<String> refreshToken(@RequestBody AuthRequest authRequest) {
+        String tokenUrl = "https://oauth2.googleapis.com/token";
+
+        MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
+        data.add("grant_type", "refresh_token");
+        data.add("refresh_token", authRequest.getRefresh_token());
+        data.add("client_id", clientId);
+        data.add("client_secret", clientSecret);
+        data.add("redirect_uri", redirectUri);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(data, headers);
+
+        try {
+            // Use WebClient instead of RestTemplate in newer versions of Spring
+            ResponseEntity<String> response = new RestTemplate().postForEntity(tokenUrl, request, String.class);
+
+            // Log request and response details for debugging
+            System.out.println("Request: " + request);
+            System.out.println("Response: " + response);
+
+            // Process the response, save tokens, and return a suitable response to the frontend.
+            return response;
+        } catch (HttpClientErrorException.BadRequest badRequestException) {
+            // Log additional details for Bad Request exception
+            System.err.println("Bad Request Exception Details: " + badRequestException.getResponseBodyAsString());
+            throw badRequestException;
+        }
+    }
 }

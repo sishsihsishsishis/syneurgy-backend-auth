@@ -1,11 +1,13 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
+import com.bezkoder.spring.security.postgresql.models.Habit;
 import com.bezkoder.spring.security.postgresql.models.User;
 import com.bezkoder.spring.security.postgresql.models.UserChallenge;
 import com.bezkoder.spring.security.postgresql.models.UserChallengeHabit;
 import com.bezkoder.spring.security.postgresql.payload.request.UserChallengeHabitRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.UserChallengeHabitResponse;
+import com.bezkoder.spring.security.postgresql.repository.HabitRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserChallengeHabitRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserChallengeRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.List;
 
@@ -38,6 +41,8 @@ public class UserChallengeHabitController {
     @Autowired
     UserChallengeHabitRepository userChallengeHabitRepository;
 
+    @Autowired
+    HabitRepository habitRepository;
 
     @PostMapping
     @ApiOperation("Create User Challenge Habit, required user token")
@@ -72,10 +77,12 @@ public class UserChallengeHabitController {
     public ResponseEntity<?> getUserChallengeHabitByuChallengeId(@PathVariable Long userChallengeId) {
         List<UserChallengeHabit> ucHabits = userChallengeHabitRepository.findByUserChallengeId(userChallengeId);
         List<UserChallengeHabitResponse> responses = new ArrayList<>();
-        ucHabits.forEach(ucHabit -> {
-            UserChallengeHabitResponse userChallengeHabitResponse = new UserChallengeHabitResponse(ucHabit.getId(), ucHabit.getUserChallenge().getId(), ucHabit.getHabitIds(), "success");
-            responses.add(userChallengeHabitResponse);
-        });
-        return new ResponseEntity<>(responses, HttpStatus.OK);
+        List<Habit> habits = new ArrayList<>();
+        if (ucHabits.size() > 0) {
+            UserChallengeHabit ucHabit = ucHabits.get(0);
+            Long[] habit_ids = ucHabit.getHabitIds();
+            habits = habitRepository.findAllById(Arrays.asList(habit_ids));
+        }
+        return new ResponseEntity<>(habits, HttpStatus.OK);
     }
 }
