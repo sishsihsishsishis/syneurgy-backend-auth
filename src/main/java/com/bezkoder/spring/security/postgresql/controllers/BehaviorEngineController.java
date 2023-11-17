@@ -18,10 +18,7 @@ import com.bezkoder.spring.security.postgresql.service.UserChallengeService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -98,7 +95,7 @@ public class BehaviorEngineController {
         }
 
         MeetingRequest[] meetings = userChallengeMeetingRequest.getMeetings();
-
+        List<Long> meetingIds = new ArrayList<>();
         if (meetings.length == 0) {
             return ResponseEntity
                     .badRequest()
@@ -126,7 +123,8 @@ public class BehaviorEngineController {
             Long totalConcurrentEvents = meetingRequest.getTotalConcurrentEvents();
             int meetingReminderTime = meetingRequest.getMeetingReminderTime();
             Meeting meeting = new Meeting(uChallenge, startTime, endTime, meetingId, meetingTitle, isCustom, totalConcurrentEvents, meetingReminderTime);
-            meetingRepository.save(meeting);
+            Meeting meetingResult = meetingRepository.save(meeting);
+            meetingIds.add(meetingResult.getId());
         }
 
         int percent = meetingService.calculateMeetingPercentageForUser(uChallenge.getUser().getId());
@@ -134,7 +132,7 @@ public class BehaviorEngineController {
         user.setPercent(percent);
         uChallenge.setUser(userRepository.save(user));
         userChallengeRepository.save(uChallenge);
-        return ResponseEntity.ok("Meetings are anchored successfully");
+        return new ResponseEntity<>(meetingIds, HttpStatus.OK);
     }
 
     @GetMapping("/topUsers")

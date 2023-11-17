@@ -1,8 +1,10 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
 import com.bezkoder.spring.security.postgresql.dto.MeetingDTO;
+import com.bezkoder.spring.security.postgresql.models.Meeting;
 import com.bezkoder.spring.security.postgresql.models.User;
 import com.bezkoder.spring.security.postgresql.models.UserChallenge;
+import com.bezkoder.spring.security.postgresql.payload.request.ReminderTimeRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.repository.MeetingRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserChallengeRepository;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -142,4 +145,18 @@ public class MeetingController {
         return ResponseEntity.ok(percentage);
     }
 
+    @PostMapping("/reminderMeeting")
+    @ApiOperation("set reminder time")
+    public ResponseEntity<?> setReminderTime(@Valid @RequestBody ReminderTimeRequest reminderTimeRequest) {
+        Long[] meetingIds = reminderTimeRequest.getMeeting_ids();
+        Long reminderTime = reminderTimeRequest.getReminderTime();
+        List<Meeting> meetings = meetingRepository.findByIdIn(meetingIds);
+
+        for (Meeting meeting: meetings) {
+            meeting.setMeetingReminderTime(reminderTime.intValue());
+        }
+
+        meetingRepository.saveAll(meetings);
+        return ResponseEntity.ok("Updated successfully");
+    }
 }

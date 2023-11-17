@@ -31,5 +31,5 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     @Query("SELECT m FROM Meeting m JOIN m.userChallenge uc WHERE uc.user.id = :userId AND m.meetingStartTime < CURRENT_DATE")
     List<Meeting> findPastMeetingsByUserId(@Param("userId") Long userId);
-
+    List<Meeting> findByIdIn(Long[] meetingIds);
 }
