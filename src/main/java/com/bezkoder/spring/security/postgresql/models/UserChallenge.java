@@ -26,6 +26,11 @@ public class UserChallenge {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
+    @Column(name = "is_finished")
+    private boolean isFinished = false;
+
+    private int step = 1;
+
     public UserChallenge(User user, Challenge challenge) {
         this.user = user;
         this.challenge = challenge;
@@ -64,5 +69,19 @@ public class UserChallenge {
         return createdDate;
     }
 
+    public boolean isFinished() {
+        return isFinished;
+    }
 
+    public void setFinished(boolean finished) {
+        isFinished = finished;
+    }
+
+    public int getStep() {
+        return step;
+    }
+
+    public void setStep(int step) {
+        this.step = step;
+    }
 }

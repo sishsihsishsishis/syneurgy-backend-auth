@@ -27,4 +27,9 @@ public interface UserChallengeRepository extends JpaRepository<UserChallenge, Lo
                     " ORDER BY percent DESC" +
                     " LIMIT 5")
     List<UserChallenge> getHighestPercentageChallengesPerUser();
+
+    @Query("SELECT uc FROM UserChallenge uc WHERE uc.user.id = :userId AND uc.isFinished = false ORDER BY uc.id DESC")
+    List<UserChallenge>  findUnfinishedUserChallengesByUserId(@Param("userId") Long userId);
+
+
 }
