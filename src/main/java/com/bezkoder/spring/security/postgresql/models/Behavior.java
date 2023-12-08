@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Behavior {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @Column(length = 500)
     private String name;
@@ -15,11 +15,11 @@ public class Behavior {
     @ManyToOne
     private Component component;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

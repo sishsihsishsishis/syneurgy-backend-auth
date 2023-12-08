@@ -4,6 +4,16 @@ public class ReminderTimeRequest {
     private Long[] meeting_ids;
     private Long reminderTime;
 
+    private Long[] conference_ids;
+
+    public Long[] getConference_ids() {
+        return conference_ids;
+    }
+
+    public void setConference_ids(Long[] conference_ids) {
+        this.conference_ids = conference_ids;
+    }
+
     public Long getReminderTime() {
         return reminderTime;
     }
