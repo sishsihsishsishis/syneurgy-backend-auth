@@ -51,7 +51,7 @@ public class ConferenceSchedulerService {
                     String userName = userComponent.getUser().getFullName();
                     ApiClient client = Postmark.getApiClient("2274a4ca-df74-4850-8b4c-06d1da6c14a2");
 
-                    Message message = new Message("notifications@syneurgy.com", userEmail, "It's time for your habit.", "Hi, " + userName + ". You have a conference in " + defaultMeetingReminderTime +"minutes. Please prepare something to grow your habits." + existingConference.getConferenceId() );
+                    Message message = new Message("notifications@syneurgy.com", userEmail, "It's time for your habit.", "Hi, " + userName + ". You have a conference in " + conferenceReminderTime  +"minutes. Please prepare something to grow your habits." + existingConference.getId() );
 
                     try {
                         com.postmarkapp.postmark.client.data.model.message.MessageResponse response = client.deliverMessage(message);
