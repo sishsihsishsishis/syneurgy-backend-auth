@@ -1,7 +1,6 @@
 package com.bezkoder.spring.security.postgresql.dto;
 
 import com.bezkoder.spring.security.postgresql.models.Conference;
-import com.bezkoder.spring.security.postgresql.models.Meeting;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 

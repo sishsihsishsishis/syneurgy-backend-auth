@@ -1,7 +1,7 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
 
-import com.bezkoder.spring.security.postgresql.dto.ChallengeWithUsersDto;
+
 import com.bezkoder.spring.security.postgresql.dto.ComponentWithUsersDto;
 import com.bezkoder.spring.security.postgresql.models.Component;
 import com.bezkoder.spring.security.postgresql.repository.ComponentRepository;

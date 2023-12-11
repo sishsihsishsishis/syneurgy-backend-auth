@@ -1,7 +1,7 @@
 package com.bezkoder.spring.security.postgresql.payload.request;
 
 public class ReminderTimeRequest {
-    private Long[] meeting_ids;
+
     private Long reminderTime;
 
     private Long[] conference_ids;
@@ -22,11 +22,5 @@ public class ReminderTimeRequest {
         this.reminderTime = reminderTime;
     }
 
-    public Long[] getMeeting_ids() {
-        return meeting_ids;
-    }
 
-    public void setMeeting_ids(Long[] meeting_ids) {
-        this.meeting_ids = meeting_ids;
-    }
 }
