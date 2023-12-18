@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import com.bezkoder.spring.security.postgresql.payload.request.AuthRequest;
+import com.bezkoder.spring.security.postgresql.payload.request.ConfirmEmailRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.ConfirmInviteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.UserInfoRequest;
 import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
@@ -66,6 +67,9 @@ public class AuthController {
     @Value("${frontend_base_url}")
     private String frontendBaseUrl;
 
+    @Value("${postmark.confirm-email-id}")
+    private Integer confirmEmailID;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserInfoRequest loginRequest) {
 
@@ -76,7 +80,10 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
+        if (userDetails.isEmailVerified() == false) {
+            return new ResponseEntity<>("You need to confirm your email first.", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+            List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
@@ -126,7 +133,7 @@ public class AuthController {
                     User newUser = new User(signUpRequest.getEmail().toLowerCase(),
                             signUpRequest.getEmail().toLowerCase(),
                             encoder.encode(signUpRequest.getPassword()));
-
+                    newUser.setTokenForEmail(UUID.randomUUID().toString());
                     Set<Role> userRoles = new HashSet<>();
                     Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -134,6 +141,11 @@ public class AuthController {
                     newUser.setRoles(userRoles);
                     newUser.setCreatedDate(new Date());
                     userRepository.save(newUser);
+                    HashMap<String, Object> model = new HashMap<String, Object>();
+                    model.put("confirm_email", newUser.getEmail());
+                    model.put("action_url", frontendBaseUrl + "/confirm-email?email=" + newUser.getEmail()+"&token="+ newUser.getTokenForEmail());
+
+                    emailService.sendTemplateEmailWithPostmark(newUser.getEmail(), confirmEmailID, model);
                     return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
                 }
             }
@@ -141,7 +153,7 @@ public class AuthController {
             User user = new User(signUpRequest.getEmail().toLowerCase(),
                     signUpRequest.getEmail().toLowerCase(),
                     encoder.encode(signUpRequest.getPassword()));
-
+            user.setTokenForEmail(UUID.randomUUID().toString());
             Set<Role> roles = new HashSet<>();
 
             Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
@@ -152,10 +164,43 @@ public class AuthController {
             user.setRoles(roles);
             userRepository.save(user);
 
+            HashMap<String, Object> model = new HashMap<String, Object>();
+            model.put("confirm_email", user.getEmail());
+            model.put("action_url", frontendBaseUrl + "/confirm-email?email=" + user.getEmail()+"&token="+user.getTokenForEmail());
+
+            emailService.sendTemplateEmailWithPostmark(user.getEmail(), confirmEmailID, model);
+
             return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
         }
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    @PostMapping("/confirm-email-test")
+    public ResponseEntity<?> confirmEmailTest(){
+        HashMap<String, Object> model = new HashMap<String, Object>();
+        String email = "carlos.guzman@techsquads.com";
+        model.put("confirm_email", email);
+        model.put("action_url", frontendBaseUrl + "/confirm-email?email=" + email);
+
+        emailService.sendTemplateEmailWithPostmark(email, confirmEmailID, model);
+        return ResponseEntity.ok(new MessageResponse("Confirm Email was sent successfully"));
+    }
+
+    @PostMapping("/confirm-email")
+    public ResponseEntity<?> confirmEmail(@Valid @RequestBody ConfirmEmailRequest confirmEmailRequest) {
+        String token = confirmEmailRequest.getToken();
+        String email = confirmEmailRequest.getEmail();
+        List<User> users = userRepository.findByEmailAndTokenForEmailAndIsEmailVerified(email, token, false);
+        if (users.isEmpty()) {
+            return new ResponseEntity<>("Can not find the user", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        User user = users.get(0);
+        user.setTokenForEmail("");
+        user.setEmailVerified(true);
+        userRepository.save(user);
+
+        return ResponseEntity.ok(new MessageResponse("Your email has been successfully verified."));
     }
 
     @PostMapping("/confirm-invitation")
@@ -238,6 +283,8 @@ public class AuthController {
         user.setPassword(encoder.encode(newPassword));
         if (resetPwType.equals("n")) {// new password
             user.setInvitationToken("");
+            user.setTokenForEmail("");
+            user.setEmailVerified(true);
         } else { // forgot password
             user.setResetPasswordToken("");
         }

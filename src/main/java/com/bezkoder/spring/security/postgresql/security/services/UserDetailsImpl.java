@@ -36,10 +36,12 @@ public class UserDetailsImpl implements UserDetails {
     private String photo;
     private String answers;
 
+    private boolean isEmailVerified;
+
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String username, String email, String password, Integer step,
-                           Collection<? extends GrantedAuthority> authorities, String firstName, String lastName, String countryCode, String country, String company, String position, String photo, String answers) {
+                           Collection<? extends GrantedAuthority> authorities, String firstName, String lastName, String countryCode, String country, String company, String position, String photo, String answers, boolean isEmailVerified) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -54,6 +56,7 @@ public class UserDetailsImpl implements UserDetails {
         this.position = position;
         this.photo = photo;
         this.answers = answers;
+        this.isEmailVerified = isEmailVerified;
     }
 
     public static UserDetailsImpl build(User user) {
@@ -75,7 +78,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getCompany(),
                 user.getPosition(),
                 user.getPhoto(),
-                user.getAnswers()
+                user.getAnswers(),
+                user.isEmailVerified()
         );
     }
 
@@ -169,6 +173,14 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getAnswers() {
         return answers;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        isEmailVerified = emailVerified;
+    }
+
+    public boolean isEmailVerified() {
+        return isEmailVerified;
     }
 
     @Override

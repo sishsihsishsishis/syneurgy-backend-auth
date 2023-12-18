@@ -62,7 +62,7 @@ public class InvitationController {
         String username = jwtUtils.getExistingUsername(token);
         Optional<User> existingUser1 = userRepository.findByUsername(username);
 
-        if (!existingUser1.isPresent()) {
+        if (existingUser1.isEmpty()) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: The current user is not unavailable!"));
@@ -74,13 +74,13 @@ public class InvitationController {
         if (teamId == null) {
 
             List<UserTeam> userTeams = userTeamRepository.findByUserId(currentUser.getId());
-            if (userTeams.size() > 0) {
+            if (!userTeams.isEmpty()) {
                 UserTeam userTeam = userTeams.get(0);
                 teamId = userTeam.getId().getTeamId();
             }
         }
         Optional<Team> existingTeam = teamRepository.findById(teamId);
-        if (!existingTeam.isPresent()) {
+        if (existingTeam.isEmpty()) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Error: The current team is not unavailable!"));
@@ -111,6 +111,7 @@ public class InvitationController {
             } else {
                 User newUser = new User(email.toLowerCase(), email.toLowerCase(), encoder.encode("123456"));
                 newUser.setInvitationToken(UUID.randomUUID().toString());
+                newUser.setTokenForEmail(UUID.randomUUID().toString());
                 User newUser1 = userRepository.save(newUser);
 
                 UserTeam userTeam = new UserTeam(newUser1, team, false);

@@ -22,4 +22,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
   List<User> findUsersByUserTeamsId(Long userTeamId);
 
   List<User> findTop5ByFirstNameIsNotNullOrderByPercentDesc();
+
+  List<User> findByEmailAndTokenForEmailAndIsEmailVerified(String email, String tokenForEmail, boolean isEmailVerified);
 }

@@ -73,6 +73,12 @@ public class User {
 
 	private int percent; // Level of Participation
 
+
+	@Column(name = "is_email_verified", columnDefinition = "boolean default false")
+	private boolean isEmailVerified;
+
+	private String tokenForEmail;
+
 	public User() {
 	}
 
@@ -217,5 +223,21 @@ public class User {
 
 	public void setPercent(int percent) {
 		this.percent = percent;
+	}
+
+	public boolean isEmailVerified() {
+		return isEmailVerified;
+	}
+
+	public void setEmailVerified(boolean emailVerified) {
+		isEmailVerified = emailVerified;
+	}
+
+	public String getTokenForEmail() {
+		return tokenForEmail;
+	}
+
+	public void setTokenForEmail(String tokenForEmail) {
+		this.tokenForEmail = tokenForEmail;
 	}
 }
