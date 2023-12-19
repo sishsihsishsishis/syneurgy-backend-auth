@@ -6,6 +6,8 @@ import com.bezkoder.spring.security.postgresql.service.AnchorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +43,11 @@ public class AnchorController {
         return anchor.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/byComponentId")
+    public Page<Anchor> getAnchorsByComponentId(@RequestParam Long componentId, Pageable pageable) {
+        return anchorService.getAnchorsByComponentId(componentId, pageable);
+    }
+
 
 }

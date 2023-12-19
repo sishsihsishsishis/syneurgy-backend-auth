@@ -7,6 +7,8 @@ import com.bezkoder.spring.security.postgresql.service.BehaviorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +43,10 @@ public class BehaviorController {
         Optional<Behavior> behavior = behaviorRepository.findById(id);
         return behavior.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/byComponentId")
+    public Page<Behavior> getBehaviorsByComponentId(@RequestParam Long componentId, Pageable pageable) {
+        return behaviorService.getBehaviorsByComponentId(componentId, pageable);
     }
 }
