@@ -11,6 +11,7 @@ public class Component {
 
     private String name;
 
+    private String definition;
     @ManyToOne
     private Competency competency;
 
@@ -36,5 +37,13 @@ public class Component {
 
     public void setCompetency(Competency competency) {
         this.competency = competency;
+    }
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
     }
 }
