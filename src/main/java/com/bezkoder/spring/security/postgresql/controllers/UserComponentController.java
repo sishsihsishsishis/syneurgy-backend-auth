@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -62,6 +63,33 @@ public class UserComponentController {
         }
         Component firstComponent = componentList.get(0);
         UserComponent userComponent = new UserComponent(currentUser, firstComponent);
+        UserComponent newUserComponent = userComponentRepository.save(userComponent);
+        return ResponseEntity.ok(new UserComponentResponse(newUserComponent.getId(), newUserComponent.getComponent().getId(), newUserComponent.getUser().getId(), newUserComponent.getCreatedDate().getTime(), newUserComponent.isFinished(), newUserComponent.getStep(), newUserComponent.getAnchorId(), newUserComponent.getBehaviorId(), newUserComponent.getCelebrationId()));
+    }
+
+    @PostMapping("/withComponent")
+    @ApiOperation("Create new user component with the existing component")
+    public ResponseEntity<?> createBEWizardWithComponentId(@RequestHeader(name = "Authorization") String token, @RequestBody UserComponentRequest userComponentRequest) {
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser1 = userRepository.findByUsername(username);
+
+        if (existingUser1.isEmpty()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+        }
+        User currentUser = existingUser1.get();
+        Long componentId = userComponentRequest.getComponentId();
+
+        Optional<Component> component = componentRepository.findById(componentId);
+        if (component.isEmpty()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("Error: The current component is not unavailable!"));
+        }
+        Component existingComponent = component.get();
+
+        UserComponent userComponent = new UserComponent(currentUser, existingComponent);
         UserComponent newUserComponent = userComponentRepository.save(userComponent);
         return ResponseEntity.ok(new UserComponentResponse(newUserComponent.getId(), newUserComponent.getComponent().getId(), newUserComponent.getUser().getId(), newUserComponent.getCreatedDate().getTime(), newUserComponent.isFinished(), newUserComponent.getStep(), newUserComponent.getAnchorId(), newUserComponent.getBehaviorId(), newUserComponent.getCelebrationId()));
     }
@@ -199,6 +227,10 @@ public class UserComponentController {
         return ResponseEntity.ok(new UserComponentResponse(updatedUserComponent.getId(), updatedUserComponent.getComponent().getId(), updatedUserComponent.getUser().getId(), updatedUserComponent.getCreatedDate().getTime(), updatedUserComponent.isFinished(), updatedUserComponent.getStep(), updatedUserComponent.getAnchorId(), updatedUserComponent.getBehaviorId(), updatedUserComponent.getCelebrationId()));
     }
 
-
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<Map<String, List<Map<String, Object>>>> getUserComponentsByUserId(@PathVariable Long userId) {
+        Map<String, List<Map<String, Object>>> userComponents = userComponentService.getUserComponentsByUserId(userId);
+        return ResponseEntity.ok(userComponents);
+    }
 
 }

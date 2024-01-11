@@ -5,6 +5,8 @@ public class UserComponentRequest {
     private Long behaviorId;
     private Long celebrationId;
 
+    private Long componentId;
+
     public void setAnchorId(Long anchorId) {
         this.anchorId = anchorId;
     }
@@ -27,5 +29,13 @@ public class UserComponentRequest {
 
     public Long getCelebrationId() {
         return celebrationId;
+    }
+
+    public Long getComponentId() {
+        return componentId;
+    }
+
+    public void setComponentId(Long componentId) {
+        this.componentId = componentId;
     }
 }

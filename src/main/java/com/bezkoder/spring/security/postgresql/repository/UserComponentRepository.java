@@ -6,7 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
+    import java.util.Map;
+    import java.util.Optional;
 
 public interface UserComponentRepository extends JpaRepository<UserComponent, Long> {
     Optional<UserComponent> findByUserIdAndComponentId(Long userId, Long componentId);
@@ -30,4 +31,11 @@ public interface UserComponentRepository extends JpaRepository<UserComponent, Lo
     @Query("SELECT uc FROM UserComponent uc WHERE uc.user.id = :userId AND uc.isFinished = false ORDER BY uc.id DESC")
     List<UserComponent>  findUnfinishedUserComponentsByUserId(@Param("userId") Long userId);
 
+    @Query("SELECT new map(CASE WHEN COUNT(c) > 2 THEN 'superpower' ELSE 'challenge' END as category, count(c.id) as count, uc.component.id as component_id, uc.component.name as component_name, uc.user.id as user_id, cp.id as competency_id, cp.name as competency_name) " +
+            "FROM UserComponent uc " +
+            "JOIN uc.component c " +
+            "JOIN c.competency cp " +
+            "WHERE uc.user.id = :userId " +
+            "GROUP BY cp.id, uc.component.id, uc.component.name, uc.user.id")
+    List<Map<String, Object>> getUserComponentsByUserId(@Param("userId") Long userId);
 }
