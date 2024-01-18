@@ -82,7 +82,7 @@ public class ConferenceController {
         String username = jwtUtils.getExistingUsername(token);
         Optional<User> existingUser = userRepository.findByUsername(username);
 
-        if (!existingUser.isPresent()) {
+        if (existingUser.isEmpty()) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("The current user is not unavailable!"));
