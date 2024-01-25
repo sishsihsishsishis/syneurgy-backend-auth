@@ -38,10 +38,13 @@ public class UserDetailsImpl implements UserDetails {
 
     private boolean isEmailVerified;
 
+    private boolean isActive;
+
+    private long createdDate;
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String username, String email, String password, Integer step,
-                           Collection<? extends GrantedAuthority> authorities, String firstName, String lastName, String countryCode, String country, String company, String position, String photo, String answers, boolean isEmailVerified) {
+                           Collection<? extends GrantedAuthority> authorities, String firstName, String lastName, String countryCode, String country, String company, String position, String photo, String answers, boolean isEmailVerified, boolean isActive, long createdDate) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -57,6 +60,8 @@ public class UserDetailsImpl implements UserDetails {
         this.photo = photo;
         this.answers = answers;
         this.isEmailVerified = isEmailVerified;
+        this.isActive = isActive;
+        this.createdDate = createdDate;
     }
 
     public static UserDetailsImpl build(User user) {
@@ -79,7 +84,9 @@ public class UserDetailsImpl implements UserDetails {
                 user.getPosition(),
                 user.getPhoto(),
                 user.getAnswers(),
-                user.isEmailVerified()
+                user.isEmailVerified(),
+                user.isActive(),
+                user.getCreatedDate().getTime()
         );
     }
 
@@ -201,6 +208,22 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public long getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(long createdDate) {
+        this.createdDate = createdDate;
     }
 
     @Override

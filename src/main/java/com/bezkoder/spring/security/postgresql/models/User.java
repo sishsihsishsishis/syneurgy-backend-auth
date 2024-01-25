@@ -73,7 +73,8 @@ public class User {
 
 	private int percent; // Level of Participation
 
-
+	@Column(columnDefinition = "boolean default true")
+	private boolean isActive;
 	@Column(name = "is_email_verified", columnDefinition = "boolean default false")
 	private boolean isEmailVerified;
 
@@ -239,5 +240,13 @@ public class User {
 
 	public void setTokenForEmail(String tokenForEmail) {
 		this.tokenForEmail = tokenForEmail;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean active) {
+		isActive = active;
 	}
 }

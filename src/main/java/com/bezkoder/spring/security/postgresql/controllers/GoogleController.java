@@ -37,7 +37,7 @@ public class GoogleController {
         if (!existingUser.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
 
         User currentUser = existingUser.get();
@@ -58,7 +58,7 @@ public class GoogleController {
         if (!existingUser.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
 
         User currentUser = existingUser.get();

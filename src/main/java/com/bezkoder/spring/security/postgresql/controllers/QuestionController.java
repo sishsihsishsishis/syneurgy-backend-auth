@@ -43,7 +43,7 @@ public class QuestionController {
         if (!existingUser1.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
         String answers = currentUser.getAnswers();
@@ -73,7 +73,7 @@ public class QuestionController {
         if (!existingUser1.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
 

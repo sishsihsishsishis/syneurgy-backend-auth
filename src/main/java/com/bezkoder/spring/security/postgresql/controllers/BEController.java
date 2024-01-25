@@ -66,7 +66,7 @@ public class BEController {
         if (!existingUser.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
 
         User currentUser = existingUser.get();
@@ -77,14 +77,14 @@ public class BEController {
         if (userComponent.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user Component is not unavailable!"));
+                    .body(new MessageResponse("The current user Component is unavailable!"));
         }
 
         UserComponent uComponent = userComponent.get();
         if (currentUser.getId() != uComponent.getUser().getId()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user Component is not unavailable!"));
+                    .body(new MessageResponse("The current user Component is unavailable!"));
         }
 
         ConferenceRequest[] conferences = userComponentConferenceRequest.getConferences();

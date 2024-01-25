@@ -50,7 +50,7 @@ public class UserComponentController {
         if (existingUser1.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
 
@@ -59,7 +59,7 @@ public class UserComponentController {
         if(componentList.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("The components are not unavailable!"));
+                    .body(new MessageResponse("The components are unavailable!"));
         }
         Component firstComponent = componentList.get(0);
         UserComponent userComponent = new UserComponent(currentUser, firstComponent);
@@ -76,7 +76,7 @@ public class UserComponentController {
         if (existingUser1.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
         Long componentId = userComponentRequest.getComponentId();
@@ -85,7 +85,7 @@ public class UserComponentController {
         if (component.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current component is not unavailable!"));
+                    .body(new MessageResponse("The current component is unavailable!"));
         }
         Component existingComponent = component.get();
 
@@ -102,7 +102,7 @@ public class UserComponentController {
         if (userComponent.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user component is not unavailable!"));
+                    .body(new MessageResponse("The current user component is unavailable!"));
         }
 
         UserComponent uComponent = userComponent.get();
@@ -111,7 +111,7 @@ public class UserComponentController {
         if(component.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("The current component is not unavailable!"));
+                    .body(new MessageResponse("The current component is unavailable!"));
         }
         Component component1 = component.get();
         uComponent.setComponent(component1);
@@ -130,7 +130,7 @@ public class UserComponentController {
         if (existingUser.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
 
         User currentUser = existingUser.get();
@@ -147,7 +147,7 @@ public class UserComponentController {
         if (userComponent.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user component is not unavailable!"));
+                    .body(new MessageResponse("The current user component is unavailable!"));
         }
         UserComponent uComponent = userComponent.get();
         return ResponseEntity.ok(new UserComponentResponse(uComponent.getId(), uComponent.getComponent().getId(), uComponent.getUser().getId(), uComponent.getCreatedDate().getTime(), uComponent.isFinished(), uComponent.getStep(), uComponent.getAnchorId(), uComponent.getBehaviorId(), uComponent.getCelebrationId()));
@@ -162,7 +162,7 @@ public class UserComponentController {
         if (existingUser.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
 
         User currentUser = existingUser.get();
@@ -206,7 +206,7 @@ public class UserComponentController {
         if (userComponent.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user component is not unavailable!"));
+                    .body(new MessageResponse("The current user component is unavailable!"));
         }
 
         UserComponent uComponent = userComponent.get();

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
@@ -23,13 +24,12 @@ public class JwtValidationController {
 
     @PostMapping("/validateToken")
     public ResponseEntity<?> validateToken(@RequestBody JWTRequest jwtToken) {
-        boolean isValid = jwtUtils.validateJwtToken(jwtToken.getJwtToken());
+        String status = jwtUtils.validateJwtTokenWithStatus(jwtToken.getJwtToken());
         String email = "";
-        if (isValid) {
-            String username = jwtUtils.getUserNameFromJwtToken(jwtToken.getJwtToken());
-            email = username;
+        if (Objects.equals(status, "success")) {
+            email = jwtUtils.getUserNameFromJwtToken(jwtToken.getJwtToken());
         }
-        return ResponseEntity.ok(new EmailResponse(email));
+        return ResponseEntity.ok(new EmailResponse(email, status));
 
     }
 }

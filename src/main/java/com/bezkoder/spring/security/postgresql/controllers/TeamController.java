@@ -1,9 +1,6 @@
 package com.bezkoder.spring.security.postgresql.controllers;
 
-import com.bezkoder.spring.security.postgresql.models.Team;
-import com.bezkoder.spring.security.postgresql.models.User;
-import com.bezkoder.spring.security.postgresql.models.UserTeam;
-import com.bezkoder.spring.security.postgresql.models.UserTeamId;
+import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.TeamRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.TeamResponse;
@@ -13,18 +10,18 @@ import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.security.services.UserDetailsImpl;
+import com.bezkoder.spring.security.postgresql.service.TeamService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.PageImpl;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -38,7 +35,8 @@ public class TeamController {
     UserRepository userRepository;
     @Autowired
     TeamRepository teamRepository;
-
+    @Autowired
+    TeamService teamService;
     @Autowired
     UserTeamRepository userTeamRepository;
     @PostMapping("/team/create")
@@ -51,11 +49,12 @@ public class TeamController {
         if (!existingUser.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User user = existingUser.get();
         Team team = new Team();
         team.setName(teamRequest.getTeamName());
+        team.setCreatedDate(new Date());
         Team newTeam = teamRepository.save(team);
         UserTeam userTeam = new UserTeam(user, newTeam, true);
         newTeam.addUserTeam(userTeam);
@@ -96,60 +95,51 @@ public class TeamController {
         if (!existingUser.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User user = existingUser.get();
 
         List<TeamResponse> teams = new ArrayList<>();
         Set<UserTeam> userTeams = user.getUserTeams();
         for (UserTeam userTeam: userTeams
-             ) {
+        ) {
             Team team = userTeam.getTeam();
-            Boolean getDeleted = team.getDeleted();
-            Boolean isDeleted = false;
-            if (getDeleted == null) {
-                isDeleted = false;
-            } else {
-                if (getDeleted == true) {
-                    isDeleted = true;
-                }
+            TeamResponse teamResponse = this.getTeamResponse(team, search, userTeam.isActive());
+            if (teamResponse != null) {
+                teams.add(teamResponse);
             }
-            if (isDeleted == true) {
-                continue;
-            }
-            if (search != null && search.length() > 0) {
-                if (team.getName().toLowerCase().contains(search.toLowerCase())) {
-                    Set<UserTeam> userTeams1 = team.getUserTeams();
-                    List<UserResponse> userResponses = new ArrayList<>();
-                    for (UserTeam userTeam1: userTeams1) {
-                        User user1 = userTeam1.getUser();
-                        UserDetailsImpl userDetails = UserDetailsImpl.build(user1);
-                        List<String> roles = userDetails.getAuthorities().stream()
-                                .map(item -> item.getAuthority())
-                                .collect(Collectors.toList());
-                        UserResponse userResponse = new UserResponse("",
-                                userDetails.getId(),
-                                userDetails.getUsername(),
-                                userDetails.getEmail().toLowerCase(),
-                                userDetails.getStep(),
-                                roles,
-                                userDetails.getFirstName(),
-                                userDetails.getLastName(),
-                                userDetails.getCountryCode(),
-                                userDetails.getCountry(),
-                                userDetails.getCompany(),
-                                userDetails.getPosition(),
-                                userDetails.getPhoto(),
-                                userDetails.getAnswers(),
-                                userTeam.isActive()
-                        );
+        }
 
-                        userResponses.add(userResponse);
-                    }
-                    TeamResponse teamResponse = new TeamResponse(team.getId(), team.getName(), -1, userResponses);
-                    teams.add(teamResponse);
-                }
-            } else {
+        return new ResponseEntity<>(teams, HttpStatus.OK);
+    }
+
+    @GetMapping("/teams/by_page")
+    public ResponseEntity<Page<TeamResponse>> searchTeams(
+            @RequestParam(required = false) String search,
+            Pageable pageable
+    ) {
+        Page<Team> teams = teamService.getTeams(search, pageable);
+        List<TeamResponse> teamResponses = teamService.getTeamResponses(teams);
+        Page<TeamResponse> teamResponsesPage = new PageImpl<>(teamResponses, pageable, teams.getTotalElements());
+
+        return new ResponseEntity<>(teamResponsesPage, HttpStatus.OK);
+    }
+
+    private TeamResponse getTeamResponse(Team team, String search, boolean isActive) {
+        TeamResponse teamResponse = null;
+        Boolean getDeleted = team.getDeleted();
+        boolean isDeleted = false;
+        if (getDeleted == null) {
+        } else {
+            if (getDeleted) {
+                isDeleted = true;
+            }
+        }
+        if (isDeleted) {
+            return null;
+        }
+        if (search != null && !search.isEmpty()) {
+            if (team.getName().toLowerCase().contains(search.toLowerCase())) {
                 Set<UserTeam> userTeams1 = team.getUserTeams();
                 List<UserResponse> userResponses = new ArrayList<>();
                 for (UserTeam userTeam1: userTeams1) {
@@ -172,16 +162,50 @@ public class TeamController {
                             userDetails.getPosition(),
                             userDetails.getPhoto(),
                             userDetails.getAnswers(),
-                            userTeam.isActive()
+                            isActive,
+                            userDetails.isActive(),
+                            userDetails.isEmailVerified(),
+                            userDetails.getCreatedDate()
                     );
+
                     userResponses.add(userResponse);
                 }
-                TeamResponse teamResponse = new TeamResponse(team.getId(), team.getName(), -1, userResponses);
-                teams.add(teamResponse);
-            }
-        }
+                teamResponse = new TeamResponse(team.getId(), team.getName(), -1, userResponses);
 
-        return new ResponseEntity<>(teams, HttpStatus.OK);
+            }
+        } else {
+            Set<UserTeam> userTeams1 = team.getUserTeams();
+            List<UserResponse> userResponses = new ArrayList<>();
+            for (UserTeam userTeam1: userTeams1) {
+                User user1 = userTeam1.getUser();
+                UserDetailsImpl userDetails = UserDetailsImpl.build(user1);
+                List<String> roles = userDetails.getAuthorities().stream()
+                        .map(item -> item.getAuthority())
+                        .collect(Collectors.toList());
+                UserResponse userResponse = new UserResponse("",
+                        userDetails.getId(),
+                        userDetails.getUsername(),
+                        userDetails.getEmail().toLowerCase(),
+                        userDetails.getStep(),
+                        roles,
+                        userDetails.getFirstName(),
+                        userDetails.getLastName(),
+                        userDetails.getCountryCode(),
+                        userDetails.getCountry(),
+                        userDetails.getCompany(),
+                        userDetails.getPosition(),
+                        userDetails.getPhoto(),
+                        userDetails.getAnswers(),
+                        isActive,
+                        userDetails.isActive(),
+                        userDetails.isEmailVerified(),
+                        userDetails.getCreatedDate()
+                );
+                userResponses.add(userResponse);
+            }
+            teamResponse = new TeamResponse(team.getId(), team.getName(), -1, userResponses);
+        }
+        return teamResponse;
     }
 
     @PostMapping("/users/teams")
@@ -192,7 +216,7 @@ public class TeamController {
         if (!existingUser1.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
 
@@ -211,7 +235,7 @@ public class TeamController {
         if (teamUpdate == null) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The team is not your team!"));
+                    .body(new MessageResponse("The team is not your team!"));
         }
 
         String newTeamName = teamRequest.getTeamName();
@@ -230,7 +254,7 @@ public class TeamController {
         if (!existingUser1.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
 
@@ -249,7 +273,7 @@ public class TeamController {
         if (teamUpdate == null) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The team is not your team!"));
+                    .body(new MessageResponse("The team is not your team!"));
         }
 
         teamUpdate.setDeleted(true);
@@ -263,7 +287,7 @@ public class TeamController {
         if (userTeam == null) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The team is not your team!"));
+                    .body(new MessageResponse("The team is not your team!"));
         }
 
 
@@ -278,12 +302,12 @@ public class TeamController {
         if (!existingTeam.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Error: The current team is not unavailable!"));
+                    .body(new MessageResponse("The current team is unavailable!"));
         }
         Team team = existingTeam.get();
         List<UserTeam> userTeams = userTeamRepository.findByTeamId(team.getId());
         List<UserResponse> userResponses = new ArrayList<>();
-        if (userTeams.size() > 0) {
+        if (!userTeams.isEmpty()) {
             for (UserTeam userTeam: userTeams
             ) {
                 User user1 = userTeam.getUser();
@@ -305,7 +329,10 @@ public class TeamController {
                         userDetails.getPosition(),
                         userDetails.getPhoto(),
                         userDetails.getAnswers(),
-                        userTeam.isActive()
+                        userTeam.isActive(),
+                        userDetails.isActive(),
+                        userDetails.isEmailVerified(),
+                        userDetails.getCreatedDate()
                 );
                 userResponses.add(userResponse);
             }

@@ -57,6 +57,27 @@ public class JwtUtils {
     return false;
   }
 
+  public String validateJwtTokenWithStatus(String authToken) {
+    String status = "invalid";
+    try {
+      Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+      status = "success";
+    } catch (SignatureException e) {
+      logger.error("Invalid JWT signature: {}", e.getMessage());
+    } catch (MalformedJwtException e) {
+      logger.error("Invalid JWT token: {}", e.getMessage());
+    } catch (ExpiredJwtException e) {
+      logger.error("JWT token is expired: {}", e.getMessage());
+      status = "expired";
+    } catch (UnsupportedJwtException e) {
+      logger.error("JWT token is unsupported: {}", e.getMessage());
+    } catch (IllegalArgumentException e) {
+      logger.error("JWT claims string is empty: {}", e.getMessage());
+    }
+
+    return status;
+  }
+
   public String getExistingUsername(String token) {
     String tokenOnly = "";
     if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {

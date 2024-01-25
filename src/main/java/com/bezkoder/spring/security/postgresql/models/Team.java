@@ -3,9 +3,12 @@ package com.bezkoder.spring.security.postgresql.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,7 +28,12 @@ public class Team {
 
     private String name;
 
+    @Nullable
     private Boolean isDeleted;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    private Date createdDate;
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<UserTeam> userTeams = new HashSet<>();
@@ -61,5 +69,13 @@ public class Team {
 
     public void setDeleted(Boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
     }
 }

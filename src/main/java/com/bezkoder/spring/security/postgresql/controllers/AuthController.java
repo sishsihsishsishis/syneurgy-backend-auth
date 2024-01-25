@@ -80,8 +80,11 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        if (userDetails.isEmailVerified() == false) {
+        if (!userDetails.isEmailVerified()) {
             return new ResponseEntity<>("You need to confirm your email first.", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        if (!userDetails.isActive()) {
+            return new ResponseEntity<>("Your account was disabled.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
             List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
@@ -101,7 +104,10 @@ public class AuthController {
                 userDetails.getPosition(),
                 userDetails.getPhoto(),
                 userDetails.getAnswers(),
-                true
+                true,
+                userDetails.isActive(),
+                userDetails.isEmailVerified(),
+                userDetails.getCreatedDate()
         ));
     }
 
@@ -136,7 +142,7 @@ public class AuthController {
                     newUser.setTokenForEmail(UUID.randomUUID().toString());
                     Set<Role> userRoles = new HashSet<>();
                     Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            .orElseThrow(() -> new RuntimeException("Role is not found."));
                     userRoles.add(userRole);
                     newUser.setRoles(userRoles);
                     newUser.setCreatedDate(new Date());
@@ -157,7 +163,7 @@ public class AuthController {
             Set<Role> roles = new HashSet<>();
 
             Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                    .orElseThrow(() -> new RuntimeException("Role is not found."));
             roles.add(adminRole);
             user.setCreatedDate(new Date());
             user.setStep(0);
@@ -209,7 +215,7 @@ public class AuthController {
         String token = confirmRequest.getToken();
         Optional<User> existingUser = userRepository.findByInvitationToken(token);
         if (!existingUser.isPresent()) {
-            return new ResponseEntity<>("The current user is not unavailable!", HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>("The current user is unavailable!", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         User user = existingUser.get();
         user.setInvitationToken("");
@@ -239,7 +245,10 @@ public class AuthController {
                 userDetails.getPosition(),
                 userDetails.getPhoto(),
                 userDetails.getAnswers(),
-                true
+                true,
+                userDetails.isActive(),
+                userDetails.isEmailVerified(),
+                userDetails.getCreatedDate()
         ));
     }
 
@@ -248,7 +257,7 @@ public class AuthController {
         String email = request.getEmail().toLowerCase();
         Optional<User> existingUser = userRepository.findByEmail(email);
         if (!existingUser.isPresent()) {
-            return new ResponseEntity<>("The current user is not unavailable!", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("The current user is unavailable!", HttpStatus.NOT_FOUND);
         }
         User user = existingUser.get();
         if (user.getInvitationToken() != null && user.getInvitationToken().length() > 0) {
@@ -276,7 +285,7 @@ public class AuthController {
         }
 
         if (!existingUser.isPresent()) {
-            return new ResponseEntity<>("The current user is not unavailable!", HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>("The current user is unavailable!", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         String newPassword = request.getPassword();
         User user = existingUser.get();

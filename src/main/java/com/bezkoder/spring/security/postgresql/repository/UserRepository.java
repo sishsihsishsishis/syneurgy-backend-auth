@@ -3,13 +3,18 @@ package com.bezkoder.spring.security.postgresql.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.bezkoder.spring.security.postgresql.models.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends PagingAndSortingRepository<User, Long> {
   Optional<User> findByUsername(String username);
   Optional<User> findByEmail(String email);
   Optional<User> findByInvitationToken(String invitationToken);
@@ -24,4 +29,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
   List<User> findTop5ByFirstNameIsNotNullOrderByPercentDesc();
 
   List<User> findByEmailAndTokenForEmailAndIsEmailVerified(String email, String tokenForEmail, boolean isEmailVerified);
+//  @Query("SELECT u FROM User u " +
+//          "WHERE u.isActive = true " +
+//          "AND (LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%')))")
+@Query("SELECT u FROM User u " +
+        "WHERE u.isActive = true " +
+        "AND ( " +
+        "   :search IS NULL OR " +
+        "   (LENGTH(:search) = 0 AND (u.firstName IS NULL OR u.lastName IS NULL OR u.firstName <> NULL OR u.lastName <> NULL)) OR " +
+        "   (LENGTH(:search) > 0 AND (LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%'))) )" +
+        ") ORDER BY u.createdDate DESC")
+  Page<User> findByIsActiveTrueAndSearch(@Param("search") String search, Pageable pageable);
 }

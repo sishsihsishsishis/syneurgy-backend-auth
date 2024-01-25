@@ -65,7 +65,7 @@ public class InvitationController {
         if (existingUser1.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
 
@@ -83,7 +83,7 @@ public class InvitationController {
         if (existingTeam.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: Error: The current team is not unavailable!"));
+                    .body(new MessageResponse("The current team is unavailable!"));
         }
         Team team = existingTeam.get();
         for (String email : emails
@@ -120,7 +120,7 @@ public class InvitationController {
                 newUser.addUserTeam(newUserTeam);
                 Set<Role> userRoles = new HashSet<>();
                 Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        .orElseThrow(() -> new RuntimeException("Role is not found."));
                 userRoles.add(userRole);
                 newUser.setStep(0);
                 newUser.setRoles(userRoles);
@@ -156,7 +156,7 @@ public class InvitationController {
         if (!existingUser1.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
 
@@ -174,7 +174,7 @@ public class InvitationController {
         if (!existingTeam.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current team is not unavailable!"));
+                    .body(new MessageResponse("The current team is unavailable!"));
         }
         Team team = existingTeam.get();
 
@@ -222,7 +222,7 @@ public class InvitationController {
         } else {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
 
         }
 

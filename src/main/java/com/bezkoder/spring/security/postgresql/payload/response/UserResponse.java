@@ -23,9 +23,14 @@ public class UserResponse {
     private String photo;
     private String answers;
 
-    private Boolean isActiveForTeam;
+    private Boolean isActive;
 
-    public UserResponse(String accessToken, Long id, String username, String email, Integer step, List<String> roles, String firstName, String lastName, String countryCode, String country, String company, String position, String photo, String answers, boolean isActiveForTeam) {
+    private Boolean isEmailVerified;
+
+    private Boolean isActiveForTeam;
+    private long createdDate;
+
+    public UserResponse(String accessToken, Long id, String username, String email, Integer step, List<String> roles, String firstName, String lastName, String countryCode, String country, String company, String position, String photo, String answers, boolean isActiveForTeam, boolean isActive, boolean isEmailVerified, long createdDate) {
         this.token = accessToken;
         this.id = id;
         this.username = username;
@@ -41,6 +46,9 @@ public class UserResponse {
         this.photo = photo;
         this.answers = answers;
         this.isActiveForTeam = isActiveForTeam;
+        this.isActive = isActive;
+        this.isEmailVerified = isEmailVerified;
+        this.createdDate = createdDate;
     }
 
     public String getAccessToken() {
@@ -165,6 +173,46 @@ public class UserResponse {
 
     public Boolean getActiveForTeam() {
         return isActiveForTeam;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        isEmailVerified = emailVerified;
+    }
+
+    public Boolean getEmailVerified() {
+        return isEmailVerified;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setCreatedDate(long createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public long getCreatedDate() {
+        return createdDate;
     }
 }
 

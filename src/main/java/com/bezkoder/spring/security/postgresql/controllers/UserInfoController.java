@@ -75,7 +75,7 @@ public class UserInfoController {
         } else {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
 
     }
@@ -92,7 +92,7 @@ public class UserInfoController {
         } else {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
 
     }
@@ -105,7 +105,7 @@ public class UserInfoController {
         if (!existingUser1.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
 
@@ -127,7 +127,7 @@ public class UserInfoController {
         if (!existingUser1.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
         if (step == -2) {
@@ -150,7 +150,7 @@ public class UserInfoController {
         if (!existingUser1.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
 
@@ -195,7 +195,7 @@ public class UserInfoController {
         if (!existingUser1.isPresent()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("Error: The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
         String FILE_DIRECTORY = System.getProperty("user.dir") + "/src/main/";

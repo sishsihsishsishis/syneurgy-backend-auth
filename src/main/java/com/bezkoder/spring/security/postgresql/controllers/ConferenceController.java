@@ -54,7 +54,7 @@ public class ConferenceController {
         if (existingUser.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
 
         User user = existingUser.get();
@@ -85,7 +85,7 @@ public class ConferenceController {
         if (existingUser.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
 
         User currentUser = existingUser.get();
@@ -124,7 +124,7 @@ public class ConferenceController {
         if (existingUser.isEmpty()) {
             return ResponseEntity
                     .badRequest()
-                    .body(new MessageResponse("The current user is not unavailable!"));
+                    .body(new MessageResponse("The current user is unavailable!"));
         }
 
         User currentUser = existingUser.get();
