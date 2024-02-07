@@ -2,6 +2,7 @@ package com.bezkoder.spring.security.postgresql.controllers;
 
 import com.bezkoder.spring.security.postgresql.exception.ResourceNotFoundException;
 import com.bezkoder.spring.security.postgresql.models.Rating;
+import com.bezkoder.spring.security.postgresql.payload.request.RatingRequest;
 import com.bezkoder.spring.security.postgresql.repository.RatingRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,13 +34,11 @@ public class RatingController {
     }
 
     @PutMapping("/{id}")
-    public Rating updateRating(@PathVariable Long id, @RequestBody Rating ratingDetails) {
+    public Rating updateRating(@PathVariable Long id, @RequestBody RatingRequest ratingRequest) {
         Rating rating = ratingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Rating", "id", id));
 
-        rating.setMeetingId(ratingDetails.getMeetingId());
-        rating.setUserId(ratingDetails.getUserId());
-        rating.setRatingValue(ratingDetails.getRatingValue());
+        rating.setRatingValue(ratingRequest.getRating());
 
         return ratingRepository.save(rating);
     }
