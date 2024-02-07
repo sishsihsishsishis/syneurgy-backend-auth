@@ -81,12 +81,14 @@ public class User {
 	private String tokenForEmail;
 
 	public User() {
+		this.isActive = true;
 	}
 
 	public User(String username, String email, String password) {
 		this.username = username;
 		this.email = email;
 		this.password = password;
+		this.isActive = true;
 	}
 
 	public Set<UserTeam> getUserTeams() {
