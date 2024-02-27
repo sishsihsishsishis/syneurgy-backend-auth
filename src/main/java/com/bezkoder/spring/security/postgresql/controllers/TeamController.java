@@ -257,28 +257,47 @@ public class TeamController {
                     .body(new MessageResponse("The current user is unavailable!"));
         }
         User currentUser = existingUser1.get();
-
-        Set<UserTeam> userTeams = currentUser.getUserTeams();
-
-        Team teamUpdate = null;
-
-        for (UserTeam userTeam: userTeams) {
-            Team team = userTeam.getTeam();
-            if (team.getId() == teamId) {
-                teamUpdate = team;
-                break;
+        Set<Role> roles = currentUser.getRoles();
+        final boolean[] isSuperAdmin = {false};
+        roles.forEach(role -> {
+            if (role.getName().equals(ERole.ROLE_SUPER_ADMIN)) {
+                isSuperAdmin[0] = true;
             }
-        }
+        });
+        if (isSuperAdmin[0]) {
+            Optional<Team> team = teamRepository.findById(teamId);
+            if (!team.isPresent()) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(new MessageResponse("The team is not existing!"));
+            }
+            Team teamUpdate = team.get();
+            teamUpdate.setDeleted(true);
+            teamRepository.save(teamUpdate);
+        } else {
+            Set<UserTeam> userTeams = currentUser.getUserTeams();
 
-        if (teamUpdate == null) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new MessageResponse("The team is not your team!"));
-        }
+            Team teamUpdate = null;
 
-        teamUpdate.setDeleted(true);
-        teamRepository.save(teamUpdate);
+            for (UserTeam userTeam: userTeams) {
+                Team team = userTeam.getTeam();
+                if (team.getId() == teamId) {
+                    teamUpdate = team;
+                    break;
+                }
+            }
+
+            if (teamUpdate == null) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(new MessageResponse("The team is not your team!"));
+            }
+
+            teamUpdate.setDeleted(true);
+            teamRepository.save(teamUpdate);
+        }
         return ResponseEntity.ok("Team is deleted successfully.");
+
     }
 
     @DeleteMapping("/users/userteam")
