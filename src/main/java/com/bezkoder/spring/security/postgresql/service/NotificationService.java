@@ -8,6 +8,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,7 +49,9 @@ public class NotificationService {
                 notification.getObjId(),
                 notification.getUserId(),
                 notification.getCreatedDate().getTime(),
-                notification.getUpdatedDate().getTime()
+                notification.getUpdatedDate().getTime(),
+                notification.getSenderId(),
+                notification.getSenderImg()
         );
         return notificationResponse;
     }
@@ -65,8 +68,18 @@ public class NotificationService {
         return notificationRepository.save(existingNotification);
     }
 
+    public void markAllNotificationsAsRead(Long userId) {
+        List<Notification> notifications = notificationRepository.findByUserId(userId);
+        notifications.forEach(notification -> notification.setReadStatus(true));
+        notificationRepository.saveAll(notifications);
+    }
+
     public void deleteNotification(Long id) {
         notificationRepository.deleteById(id);
+    }
+
+    public long getUnreadNotificationCount(Long userId) {
+        return notificationRepository.countByUserIdAndReadStatus(userId, false);
     }
 
     public void updateReadStatusForMultipleNotifications(List<Long> notificationIds, boolean newReadStatus) {

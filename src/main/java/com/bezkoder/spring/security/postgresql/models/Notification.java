@@ -17,6 +17,10 @@ public class Notification {
     private Long objId;
     private Long userId;
 
+    private String senderImg;
+
+    private Long senderId;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
@@ -93,5 +97,21 @@ public class Notification {
 
     public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
+    }
+
+    public String getSenderImg() {
+        return senderImg;
+    }
+
+    public void setSenderImg(String senderImg) {
+        this.senderImg = senderImg;
+    }
+
+    public Long getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
     }
 }

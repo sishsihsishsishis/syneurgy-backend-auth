@@ -5,6 +5,7 @@ import com.bezkoder.spring.security.postgresql.models.UserTeam;
 import com.bezkoder.spring.security.postgresql.payload.request.NotificationRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.UpdateReadStatusRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
+import com.bezkoder.spring.security.postgresql.payload.response.NotificationCountResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.NotificationResponse;
 import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
 import com.bezkoder.spring.security.postgresql.service.EmailService;
@@ -79,9 +80,10 @@ public class NotificationController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            notification.setName("Processing a meeting");
+            notification.setName("Syneurgy");
             notification.setDescription("Processing a meeting for '" + meetingName + "' is finished.");
-
+            notification.setSenderId(0L);
+            notification.setSenderImg("");
             emailService.sendSimpleEmail(userEmail, "Success", "Processing your meeting is finished successfully. Please look into it and match users." + "\n" + frontendBaseUrl + "/meeting-details/" + objId );
         }
 
@@ -102,7 +104,9 @@ public class NotificationController {
                         notification.getObjId(),
                         notification.getUserId(),
                         notification.getCreatedDate().getTime(),
-                        notification.getUpdatedDate().getTime()
+                        notification.getUpdatedDate().getTime(),
+                        notification.getSenderId(),
+                        notification.getSenderImg()
                 )
         );
     }
@@ -120,7 +124,9 @@ public class NotificationController {
                         notification.getObjId(),
                         notification.getUserId(),
                         notification.getCreatedDate().getTime(),
-                        notification.getUpdatedDate().getTime()
+                        notification.getUpdatedDate().getTime(),
+                        notification.getSenderId(),
+                        notification.getSenderImg()
                 )
         );
     }
@@ -133,6 +139,16 @@ public class NotificationController {
         return new ResponseEntity<>(notificationResponsePage, HttpStatus.OK);
     }
 
+    @GetMapping("/user/{userId}/unread-count")
+    public ResponseEntity<?> getUnreadNotificationCount(@PathVariable Long userId) {
+        return new ResponseEntity<>(new NotificationCountResponse(notificationService.getUnreadNotificationCount(userId)), HttpStatus.OK);
+    }
+
+    @PutMapping("/mark-all-as-read")
+    public ResponseEntity<String> markAllNotificationsAsRead(@RequestParam Long userId) {
+        notificationService.markAllNotificationsAsRead(userId);
+        return ResponseEntity.ok("All notifications for user " + userId + " marked as read.");
+    }
     @PutMapping("/read")
     public String updateReadStatusForMultipleNotifications(@RequestBody UpdateReadStatusRequest request) {
         List<Long> notificationIds = request.getNotificationIds();

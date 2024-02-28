@@ -10,8 +10,10 @@ public class NotificationResponse {
     private Long userId;
     private Long createdDate;
     private Long updatedDate;
+    private Long senderId;
+    private String senderImg;
 
-    public NotificationResponse(Long id, int type, String description, String name, boolean readStatus, Long objId, Long userId, Long createdDate, Long updatedDate) {
+    public NotificationResponse(Long id, int type, String description, String name, boolean readStatus, Long objId, Long userId, Long createdDate, Long updatedDate, Long senderId, String senderImg) {
         this.id = id;
         this.type = type;
         this.description = description;
@@ -21,6 +23,8 @@ public class NotificationResponse {
         this.userId = userId;
         this.createdDate = createdDate;
         this.updatedDate = updatedDate;
+        this.senderId = senderId;
+        this.senderImg = senderImg;
     }
 
     public Long getId() {
@@ -93,6 +97,22 @@ public class NotificationResponse {
 
     public Long getUpdatedDate() {
         return updatedDate;
+    }
+
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
+    }
+
+    public Long getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderImg(String senderImg) {
+        this.senderImg = senderImg;
+    }
+
+    public String getSenderImg() {
+        return senderImg;
     }
 }
 
