@@ -125,6 +125,13 @@ public class TeamController {
         return new ResponseEntity<>(teamResponsesPage, HttpStatus.OK);
     }
 
+    @GetMapping("/teams/by-ids/{teamIds}")
+    public ResponseEntity<?> getTeamsByIds(@PathVariable List<Long> teamIds) {
+        List<Team> teams = teamService.getTeamsByIds(teamIds);
+        List<TeamResponse> teamResponses = teamService.getTeamResponsesForList(teams);
+        return new ResponseEntity<>(teamResponses, HttpStatus.OK);
+    }
+
     private TeamResponse getTeamResponse(Team team, String search, boolean isActive) {
         TeamResponse teamResponse = null;
         Boolean getDeleted = team.getDeleted();

@@ -36,6 +36,21 @@ public class TeamService {
         return teamResponses;
     }
 
+    public List<TeamResponse> getTeamResponsesForList(List<Team> teams) {
+        List<TeamResponse> teamResponses = new ArrayList<>();
+
+        for (Team team : teams) {
+            TeamResponse teamResponse = mapTeamToTeamResponse(team);
+            teamResponses.add(teamResponse);
+        }
+
+        return teamResponses;
+    }
+
+    public List<Team> getTeamsByIds(List<Long> teamIds) {
+        return (List<Team>) teamRepository.findAllById(teamIds);
+    }
+
     private TeamResponse mapTeamToTeamResponse(Team team) {
         TeamResponse teamResponse = null;
 

@@ -18,7 +18,7 @@ public class MatchController {
     @Autowired
     MatchRepository matchRepository;
 
-    @PostMapping("/fillInfo")
+    @PostMapping("/fillInfo")  // remove
     public Map<String, Object> fillInfo(@RequestBody MatchInfoRequest request) {
         List<MatchInfo> infoList = request.getInfo();
         Long meetingId = request.getMeetingId();
@@ -56,7 +56,7 @@ public class MatchController {
         return response;
     }
 
-    @PostMapping("/fillUserId")
+    @PostMapping("/fillUserId") // remove
     public Map<String, Object> fillUserId(@RequestBody MatchUserIdRequest request) {
         List<MatchUserIdInfo> infoList = request.getInfo();
         Long meetingId = request.getMeetingId();
@@ -116,7 +116,7 @@ public class MatchController {
         return response;
     }
 
-    @GetMapping("/getMatchesByMeetingId/{meetingId}")
+    @GetMapping("/getMatchesByMeetingId/{meetingId}") // remove
     public Map<String, Object> getMatchesByMeetingId(@PathVariable Long meetingId) {
         Map<String, Object> response = new HashMap<>();
 
