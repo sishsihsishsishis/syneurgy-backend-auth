@@ -84,7 +84,10 @@ public class NotificationController {
             notification.setDescription("Processing a meeting for '" + meetingName + "' is finished.");
             notification.setSenderId(0L);
             notification.setSenderImg("");
-            emailService.sendSimpleEmail(userEmail, "Success", "Processing your meeting is finished successfully. Please look into it and match users." + "\n" + frontendBaseUrl + "/meeting-details/" + objId );
+//            emailService.sendSimpleEmail(userEmail, "Success", "Processing your meeting is finished successfully. Please look into it and match users." + "\n" + frontendBaseUrl + "/meeting-details/" + objId );
+            String syneurgyEmailUrl = "http://3.148.117.8:3000/chart?meetingid=" + objId;
+            String jsonResponse1 = new RestTemplate().getForObject(syneurgyEmailUrl, String.class);
+
         }
 
         Notification newNotification = notificationService.createNotification(notification);

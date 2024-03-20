@@ -7,10 +7,12 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.bezkoder.spring.security.postgresql.models.UserTeam;
 import com.bezkoder.spring.security.postgresql.payload.request.AuthRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.ConfirmEmailRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.ConfirmInviteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.UserInfoRequest;
+import com.bezkoder.spring.security.postgresql.payload.response.TeamInfoResponse;
 import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
 import com.bezkoder.spring.security.postgresql.service.EmailService;
 import io.swagger.annotations.Api;
@@ -109,6 +111,19 @@ public class AuthController {
                 userDetails.isEmailVerified(),
                 userDetails.getCreatedDate()
         ));
+    }
+
+    @GetMapping("/team/{id}")
+    public ResponseEntity<?> getUser(@PathVariable Long id) {
+        List<UserTeam> userTeams = userTeamRepository.findByTeamId(id);
+        if (userTeams.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        UserTeam userTeam = userTeams.get(0);
+        User currentUser = userTeam.getUser();
+        String userEmail = currentUser.getEmail();
+        String username = currentUser.getFullName();
+        return ResponseEntity.ok(new TeamInfoResponse(username, userEmail, userTeam.getTeam().getName()));
     }
 
     @PostMapping("/signup")
