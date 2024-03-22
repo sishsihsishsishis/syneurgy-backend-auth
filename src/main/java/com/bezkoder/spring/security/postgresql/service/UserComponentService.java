@@ -39,16 +39,16 @@ public class UserComponentService {
         return userComponentRepository.save(userComponent);
     }
 
-    public Map<String, List<Map<String, Object>>> getUserComponentsByUserId(Long userId) {
+    public List<Object> getUserComponentsByUserId(Long userId) {
         List<Map<String, Object>> results = userComponentRepository.getUserComponentsByUserId(userId);
 
-        Map<String, List<Map<String, Object>>> categorizedComponents = new HashMap<>();
-        categorizedComponents.put("superpower", new ArrayList<>());
-        categorizedComponents.put("challenge", new ArrayList<>());
+        List<Object> categorizedComponents = new ArrayList<>();
+//        categorizedComponents.put("superpower", new ArrayList<>());
+//        categorizedComponents.put("challenge", new ArrayList<>());
 
         for (Map<String, Object> result : results) {
-            String category = (String) result.get("category");
-            categorizedComponents.get(category).add(result);
+
+            categorizedComponents.add(result);
         }
 
         return categorizedComponents;

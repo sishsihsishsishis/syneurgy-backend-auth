@@ -209,6 +209,12 @@ public class UserComponentController {
                     .body(new MessageResponse("The current user component is unavailable!"));
         }
 
+        UserComponent uComponent = getUserComponent(userComponentRequest, userComponent);
+        UserComponent updatedUserComponent = userComponentRepository.save(uComponent);
+        return ResponseEntity.ok(new UserComponentResponse(updatedUserComponent.getId(), updatedUserComponent.getComponent().getId(), updatedUserComponent.getUser().getId(), updatedUserComponent.getCreatedDate().getTime(), updatedUserComponent.isFinished(), updatedUserComponent.getStep(), updatedUserComponent.getAnchorId(), updatedUserComponent.getBehaviorId(), updatedUserComponent.getCelebrationId()));
+    }
+
+    private static UserComponent getUserComponent(UserComponentRequest userComponentRequest, Optional<UserComponent> userComponent) {
         UserComponent uComponent = userComponent.get();
 
         Long anchorId = userComponentRequest.getAnchorId();
@@ -223,13 +229,12 @@ public class UserComponentController {
         if (celebrationId > 0) {
             uComponent.setCelebrationId(celebrationId);
         }
-        UserComponent updatedUserComponent = userComponentRepository.save(uComponent);
-        return ResponseEntity.ok(new UserComponentResponse(updatedUserComponent.getId(), updatedUserComponent.getComponent().getId(), updatedUserComponent.getUser().getId(), updatedUserComponent.getCreatedDate().getTime(), updatedUserComponent.isFinished(), updatedUserComponent.getStep(), updatedUserComponent.getAnchorId(), updatedUserComponent.getBehaviorId(), updatedUserComponent.getCelebrationId()));
+        return uComponent;
     }
 
     @GetMapping("/by-user/{userId}")
-    public ResponseEntity<Map<String, List<Map<String, Object>>>> getUserComponentsByUserId(@PathVariable Long userId) {
-        Map<String, List<Map<String, Object>>> userComponents = userComponentService.getUserComponentsByUserId(userId);
+    public ResponseEntity<List<Object>> getUserComponentsByUserId(@PathVariable Long userId) {
+        List<Object> userComponents = userComponentService.getUserComponentsByUserId(userId);
         return ResponseEntity.ok(userComponents);
     }
 
