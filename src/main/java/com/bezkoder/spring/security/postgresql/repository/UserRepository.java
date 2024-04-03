@@ -34,6 +34,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 //          "AND (LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%')))")
 @Query("SELECT u FROM User u " +
         "WHERE u.isActive = true " +
+        "AND u.isEmailVerified = true " +
         "AND ( " +
         "   :search IS NULL OR " +
         "   (LENGTH(:search) = 0 AND (u.firstName IS NULL OR u.lastName IS NULL OR u.firstName <> NULL OR u.lastName <> NULL)) OR " +
