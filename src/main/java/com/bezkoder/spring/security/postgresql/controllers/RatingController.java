@@ -9,6 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
+import java.util.Map;
+
+
 import java.util.List;
 
 @RestController
@@ -53,21 +57,29 @@ public class RatingController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/checkOrCreate")
-    public ResponseEntity<?> checkOrCreateRating(@RequestParam Long userId, @RequestParam Long meetingId, @RequestParam int count) {
-        List<Rating> existingRatings = ratingRepository.findByUserIdAndMeetingId(userId, meetingId);
-        if (existingRatings.isEmpty()) {
-            // If no records found, create 'count' records with given userId and meetingId
-            for (int i = 0; i < count; i++) {
-                Rating rating = new Rating();
-                rating.setUserId(userId);
-                rating.setMeetingId(meetingId);
-                ratingRepository.save(rating);
-            }
-        } else {
-            return new ResponseEntity<>(existingRatings, HttpStatus.OK);
+    @PostMapping("/rate")
+    public ResponseEntity<List<Rating>> rateMeeting(@RequestBody Map<String, Object> payload) {
+        Long userId = Long.parseLong(payload.get("userId").toString());
+        Long meetingId = Long.parseLong(payload.get("meetingId").toString());
+        List<Map<String, String>> examples = (List<Map<String, String>>) payload.get("examples");
+
+        List<Rating> ratings = ratingRepository.findByUserIdAndMeetingIdOrderByIdAsc(userId, meetingId);
+        if (!ratings.isEmpty()) {
+            return new ResponseEntity<>(ratings, HttpStatus.OK);
         }
-        existingRatings = ratingRepository.findByUserIdAndMeetingId(userId, meetingId);
-        return new ResponseEntity<>(existingRatings, HttpStatus.OK);
+
+        List<Rating> createdRatings = new ArrayList<>();
+        for (Map<String, String> example : examples) {
+            Rating rating = new Rating();
+            rating.setUserId(userId);
+            rating.setMeetingId(meetingId);
+            rating.setType(example.get("type"));
+            rating.setSubType(example.get("subType"));
+            // Set other fields as needed
+            ratingRepository.save(rating);
+            createdRatings.add(rating);
+        }
+
+        return new ResponseEntity<>(createdRatings, HttpStatus.OK);
     }
 }

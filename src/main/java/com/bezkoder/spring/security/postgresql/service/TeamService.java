@@ -79,7 +79,8 @@ public class TeamService {
                     true,
                     userDetails.isActive(),
                     userDetails.isEmailVerified(),
-                    userDetails.getCreatedDate()
+                    userDetails.getCreatedDate(),
+                    userDetails.getPaid_status()
             );
             userResponses.add(userResponse);
         }

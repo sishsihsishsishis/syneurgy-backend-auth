@@ -53,7 +53,8 @@ public class UserService {
                 true,
                 userDetails.isActive(),
                 userDetails.isEmailVerified(),
-                userDetails.getCreatedDate()
+                userDetails.getCreatedDate(),
+                userDetails.getPaid_status()
         );
         return userResponse;
     }

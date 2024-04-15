@@ -172,7 +172,8 @@ public class TeamController {
                             isActive,
                             userDetails.isActive(),
                             userDetails.isEmailVerified(),
-                            userDetails.getCreatedDate()
+                            userDetails.getCreatedDate(),
+                            userDetails.getPaid_status()
                     );
 
                     userResponses.add(userResponse);
@@ -206,7 +207,8 @@ public class TeamController {
                         isActive,
                         userDetails.isActive(),
                         userDetails.isEmailVerified(),
-                        userDetails.getCreatedDate()
+                        userDetails.getCreatedDate(),
+                        userDetails.getPaid_status()
                 );
                 userResponses.add(userResponse);
             }
@@ -379,7 +381,8 @@ public class TeamController {
                         userTeam.isActive(),
                         userDetails.isActive(),
                         userDetails.isEmailVerified(),
-                        userDetails.getCreatedDate()
+                        userDetails.getCreatedDate(),
+                        userDetails.getPaid_status()
                 );
                 userResponses.add(userResponse);
             }

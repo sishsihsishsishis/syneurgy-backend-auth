@@ -65,6 +65,8 @@ public class User {
 	@Size(max = 120)
 	private String password;
 
+	private int paid_status = 0; // Default value is 0
+
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(	name = "user_roles", 
 				joinColumns = @JoinColumn(name = "user_id"), 
@@ -250,5 +252,13 @@ public class User {
 
 	public void setActive(boolean active) {
 		isActive = active;
+	}
+
+	public int getPaid_status() {
+		return paid_status;
+	}
+
+	public void setPaid_status(int paid_status) {
+		this.paid_status = paid_status;
 	}
 }

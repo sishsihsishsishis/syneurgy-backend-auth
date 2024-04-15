@@ -43,8 +43,13 @@ public class UserDetailsImpl implements UserDetails {
     private long createdDate;
     private Collection<? extends GrantedAuthority> authorities;
 
+    private int paid_status;
+
     public UserDetailsImpl(Long id, String username, String email, String password, Integer step,
-                           Collection<? extends GrantedAuthority> authorities, String firstName, String lastName, String countryCode, String country, String company, String position, String photo, String answers, boolean isEmailVerified, boolean isActive, long createdDate) {
+                           Collection<? extends GrantedAuthority> authorities, String firstName,
+                           String lastName, String countryCode, String country, String company,
+                           String position, String photo, String answers, boolean isEmailVerified,
+                           boolean isActive, long createdDate, int paid_status) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -62,6 +67,7 @@ public class UserDetailsImpl implements UserDetails {
         this.isEmailVerified = isEmailVerified;
         this.isActive = isActive;
         this.createdDate = createdDate;
+        this.paid_status = paid_status;
     }
 
     public static UserDetailsImpl build(User user) {
@@ -86,7 +92,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getAnswers(),
                 user.isEmailVerified(),
                 user.isActive(),
-                user.getCreatedDate().getTime()
+                user.getCreatedDate().getTime(),
+                user.getPaid_status()
         );
     }
 
@@ -234,5 +241,13 @@ public class UserDetailsImpl implements UserDetails {
             return false;
         UserDetailsImpl user = (UserDetailsImpl) o;
         return Objects.equals(id, user.id);
+    }
+
+    public void setPaid_status(int paid_status) {
+        this.paid_status = paid_status;
+    }
+
+    public int getPaid_status() {
+        return paid_status;
     }
 }

@@ -30,7 +30,11 @@ public class UserResponse {
     private Boolean isActiveForTeam;
     private long createdDate;
 
-    public UserResponse(String accessToken, Long id, String username, String email, Integer step, List<String> roles, String firstName, String lastName, String countryCode, String country, String company, String position, String photo, String answers, boolean isActiveForTeam, boolean isActive, boolean isEmailVerified, long createdDate) {
+    private int paid_status;
+
+    public UserResponse(String accessToken, Long id, String username, String email, Integer step, List<String> roles, String firstName, String lastName,
+                        String countryCode, String country, String company, String position, String photo, String answers, boolean isActiveForTeam,
+                        boolean isActive, boolean isEmailVerified, long createdDate, int paid_status) {
         this.token = accessToken;
         this.id = id;
         this.username = username;
@@ -49,6 +53,7 @@ public class UserResponse {
         this.isActive = isActive;
         this.isEmailVerified = isEmailVerified;
         this.createdDate = createdDate;
+        this.paid_status = paid_status;
     }
 
     public String getAccessToken() {
@@ -213,6 +218,14 @@ public class UserResponse {
 
     public long getCreatedDate() {
         return createdDate;
+    }
+
+    public int getPaid_status() {
+        return paid_status;
+    }
+
+    public void setPaid_status(int paid_status) {
+        this.paid_status = paid_status;
     }
 }
 

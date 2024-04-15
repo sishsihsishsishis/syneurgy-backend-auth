@@ -15,6 +15,8 @@ public class Rating {
     private Long userId;
 
     private int ratingValue;
+    private String type;
+    private String subType;
 
     // Constructors, getters, and setters
     // Constructor(s)
@@ -53,5 +55,21 @@ public class Rating {
 
     public void setRatingValue(int ratingValue) {
         this.ratingValue = ratingValue;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getSubType() {
+        return subType;
+    }
+
+    public void setSubType(String subType) {
+        this.subType = subType;
     }
 }
