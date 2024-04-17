@@ -8,6 +8,7 @@ import com.bezkoder.spring.security.postgresql.payload.response.TeamResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
+import com.bezkoder.spring.security.postgresql.security.services.UserDetailsImpl;
 import com.bezkoder.spring.security.postgresql.service.UserService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -79,5 +81,39 @@ public class UserController {
         userRepository.save(user1);
 
         return ResponseEntity.ok(new MessageResponse("The user with the id is deleted successfully."));
+    }
+
+    @PutMapping("/{id}/paid-status")
+    public ResponseEntity<?> updatePaidStatus(@PathVariable Long id, @RequestParam int paidStatus) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        user.setPaid_status(paidStatus);
+        User newUser = userRepository.save(user);
+        UserDetailsImpl userDetails = UserDetailsImpl.build(newUser);
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new UserResponse("",
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail().toLowerCase(),
+                userDetails.getStep(),
+                roles,
+                userDetails.getFirstName(),
+                userDetails.getLastName(),
+                userDetails.getCountryCode(),
+                userDetails.getCountry(),
+                userDetails.getCompany(),
+                userDetails.getPosition(),
+                userDetails.getPhoto(),
+                userDetails.getAnswers(),
+                true,
+                userDetails.isActive(),
+                userDetails.isEmailVerified(),
+                userDetails.getCreatedDate(),
+                userDetails.getPaid_status()
+        ));
     }
 }

@@ -15,6 +15,7 @@ import com.bezkoder.spring.security.postgresql.payload.request.UserInfoRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.TeamInfoResponse;
 import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
 import com.bezkoder.spring.security.postgresql.service.EmailService;
+import com.bezkoder.spring.security.postgresql.service.UserService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +63,9 @@ public class AuthController {
 
     @Autowired
     UserTeamRepository userTeamRepository;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private EmailService emailService;
@@ -125,40 +129,6 @@ public class AuthController {
         String userEmail = currentUser.getEmail();
         String username = currentUser.getFullName();
         return ResponseEntity.ok(new TeamInfoResponse(username, userEmail, userTeam.getTeam().getName()));
-    }
-
-    @PutMapping("/{id}/paid-status")
-    public ResponseEntity<?> updatePaidStatus(@PathVariable Long id, @RequestParam int paidStatus) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        user.setPaid_status(paidStatus);
-        User newUser = userRepository.save(user);
-        UserDetailsImpl userDetails = UserDetailsImpl.build(newUser);
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(new UserResponse("",
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getEmail().toLowerCase(),
-                userDetails.getStep(),
-                roles,
-                userDetails.getFirstName(),
-                userDetails.getLastName(),
-                userDetails.getCountryCode(),
-                userDetails.getCountry(),
-                userDetails.getCompany(),
-                userDetails.getPosition(),
-                userDetails.getPhoto(),
-                userDetails.getAnswers(),
-                true,
-                userDetails.isActive(),
-                userDetails.isEmailVerified(),
-                userDetails.getCreatedDate(),
-                userDetails.getPaid_status()
-        ));
     }
 
     @PostMapping("/signup")
