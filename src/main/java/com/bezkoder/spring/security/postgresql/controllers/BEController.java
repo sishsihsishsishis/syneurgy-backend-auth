@@ -203,7 +203,7 @@ public class BEController {
     }
 
     @PostMapping("/GoogleRefreshToken")
-    public ResponseEntity<String> refreshToken(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<TokenResponse> refreshToken(@RequestBody AuthRequest authRequest) {
         String tokenUrl = "https://oauth2.googleapis.com/token";
 
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
@@ -225,14 +225,36 @@ public class BEController {
 
             // Log request and response details for debugging
             System.out.println("Request: " + request);
-            System.out.println("Response: " + response);
+            System.out.println("Response111: " + response);
 
             // Process the response, save tokens, and return a suitable response to the frontend.
-            return response;
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // Parse response body
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode responseBody = objectMapper.readTree(response.getBody());
+
+                // Extract fields from response
+                String accessToken = responseBody.get("access_token").asText();
+                int expiresIn = responseBody.get("expires_in").asInt();
+
+
+                // Create custom response object
+                TokenResponse tokenResponse = new TokenResponse(accessToken, expiresIn, null);
+
+                // Return response entity
+                return ResponseEntity.ok(tokenResponse);
+            } else {
+                // Handle error cases (e.g., return an error response)
+                return ResponseEntity.status(response.getStatusCode()).body(null);
+            }
         } catch (HttpClientErrorException.BadRequest badRequestException) {
             // Log additional details for Bad Request exception
             System.err.println("Bad Request Exception Details: " + badRequestException.getResponseBodyAsString());
             throw badRequestException;
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 }
