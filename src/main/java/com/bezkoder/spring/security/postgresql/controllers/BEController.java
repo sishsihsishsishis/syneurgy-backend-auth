@@ -3,6 +3,7 @@ package com.bezkoder.spring.security.postgresql.controllers;
 import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.*;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
+import com.bezkoder.spring.security.postgresql.payload.response.TokenResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.TopPerformanceUserResponse;
 import com.bezkoder.spring.security.postgresql.repository.ConferenceRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserComponentRepository;
@@ -10,6 +11,10 @@ import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.service.ConferenceService;
 import com.bezkoder.spring.security.postgresql.service.UserComponentService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -141,7 +146,7 @@ public class BEController {
     }
 
     @PostMapping("/GoogleToken")
-    public ResponseEntity<String> exchangeToken(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<TokenResponse> exchangeToken(@RequestBody AuthRequest authRequest) {
         String tokenUrl = "https://oauth2.googleapis.com/token";
 
         MultiValueMap<String, String> data = new LinkedMultiValueMap<>();
@@ -164,12 +169,36 @@ public class BEController {
             System.out.println("Request: " + request);
             System.out.println("Response: " + response);
 
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // Parse response body
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode responseBody = objectMapper.readTree(response.getBody());
+
+                // Extract fields from response
+                String accessToken = responseBody.get("access_token").asText();
+                int expiresIn = responseBody.get("expires_in").asInt();
+                String refreshToken = responseBody.get("refresh_token").asText();
+
+                // Create custom response object
+                TokenResponse tokenResponse = new TokenResponse(accessToken, expiresIn, refreshToken);
+
+                // Return response entity
+                return ResponseEntity.ok(tokenResponse);
+            } else {
+                // Handle error cases (e.g., return an error response)
+                return ResponseEntity.status(response.getStatusCode()).body(null);
+            }
+
             // Process the response, save tokens, and return a suitable response to the frontend.
-            return response;
+
         } catch (HttpClientErrorException.BadRequest badRequestException) {
             // Log additional details for Bad Request exception
             System.err.println("Bad Request Exception Details: " + badRequestException.getResponseBodyAsString());
             throw badRequestException;
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 
