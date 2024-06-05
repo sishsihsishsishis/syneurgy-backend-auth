@@ -268,8 +268,7 @@ public class DataLoader implements CommandLineRunner {
         component12.setCv("RelaxedFace");
         component12.setNlp("");
         component12.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Use relaxed facial expressions"),
-                new MBehavior(2, "Try to avoid fidgeting, and refrain from constantly shifting around")
+                new MBehavior(1, "Use relaxed facial expressions")
         ));
 
         Optional<ComponentM> existingComponent12 = componentMRepository
