@@ -1,9 +1,6 @@
 package com.bezkoder.spring.security.postgresql.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Rating {
@@ -17,6 +14,11 @@ public class Rating {
     private int ratingValue;
     private String type;
     private String subType;
+
+    @Column(name = "is_demo")
+    private boolean isDemo;
+    private Double starts = (double) 0;
+    private Double ends = (double) 0;
 
     // Constructors, getters, and setters
     // Constructor(s)
@@ -71,5 +73,29 @@ public class Rating {
 
     public void setSubType(String subType) {
         this.subType = subType;
+    }
+
+    public boolean isDemo() {
+        return isDemo;
+    }
+
+    public void setDemo(boolean demo) {
+        isDemo = demo;
+    }
+
+    public Double getStarts() {
+        return starts;
+    }
+
+    public void setStarts(Double starts) {
+        this.starts = starts;
+    }
+
+    public Double getEnds() {
+        return ends;
+    }
+
+    public void setEnds(Double ends) {
+        this.ends = ends;
     }
 }

@@ -61,25 +61,77 @@ public class RatingController {
     public ResponseEntity<List<Rating>> rateMeeting(@RequestBody Map<String, Object> payload) {
         Long userId = Long.parseLong(payload.get("userId").toString());
         Long meetingId = Long.parseLong(payload.get("meetingId").toString());
-        List<Map<String, String>> examples = (List<Map<String, String>>) payload.get("examples");
-
-        List<Rating> ratings = ratingRepository.findByUserIdAndMeetingIdOrderByIdAsc(userId, meetingId);
-        if (!ratings.isEmpty()) {
-            return new ResponseEntity<>(ratings, HttpStatus.OK);
-        }
-
+        List<Map<String, Object>> examples = (List<Map<String, Object>>) payload.get("examples");
+        boolean isDemo = (boolean) payload.get("isDemo");
         List<Rating> createdRatings = new ArrayList<>();
-        for (Map<String, String> example : examples) {
-            Rating rating = new Rating();
-            rating.setUserId(userId);
-            rating.setMeetingId(meetingId);
-            rating.setType(example.get("type"));
-            rating.setSubType(example.get("subType"));
-            // Set other fields as needed
-            ratingRepository.save(rating);
-            createdRatings.add(rating);
-        }
+        if (isDemo) {
+            List<Rating> ratings = ratingRepository.findByUserIdAndMeetingIdOrderByIdAsc(userId, meetingId);
+            if (!ratings.isEmpty()) {
+                return new ResponseEntity<>(ratings, HttpStatus.OK);
+            }
 
+            for (Map<String, Object> example : examples) {
+                Rating rating = new Rating();
+                rating.setUserId(userId);
+                rating.setMeetingId(meetingId);
+                rating.setType(example.get("type").toString());
+                rating.setSubType(example.get("subType").toString());
+                rating.setDemo(true);
+                // Set other fields as needed
+                ratingRepository.save(rating);
+                createdRatings.add(rating);
+            }
+
+            return new ResponseEntity<>(createdRatings, HttpStatus.OK);
+        }
+        else { // just 10 examples
+            for(Map<String, Object> example: examples) {
+                Double starts;
+                Double ends;
+                Object startsObj = example.get("starts");
+                if (startsObj instanceof Integer) {
+                    starts = ((Integer) startsObj).doubleValue();
+                } else if (startsObj instanceof Long) {
+                    starts = ((Long) startsObj).doubleValue();
+                } else if (startsObj instanceof Double) {
+                    starts = (Double) startsObj;
+                } else {
+                    throw new IllegalArgumentException("Unexpected type: starts" );
+                }
+
+
+                Object endsObj = example.get("ends");
+                if (endsObj instanceof Integer) {
+                    ends = ((Integer) endsObj).doubleValue();
+                } else if (endsObj instanceof Long) {
+                    ends = ((Long) endsObj).doubleValue();
+                } else if (endsObj instanceof Double) {
+                    ends = (Double) endsObj;
+                } else {
+                    throw new IllegalArgumentException("Unexpected type: ends" );
+                }
+
+                Integer integerValue = (Integer) example.get("meetingId");
+                Long meetingId1 = integerValue.longValue();
+
+                List<Rating> ratings = ratingRepository.findByUserIdAndMeetingIdAndStartsAndEndsOrderByIdAsc(userId, meetingId1, starts, ends);
+                if (!ratings.isEmpty() ){
+                    Rating rating1 = ratings.get(0);
+                    createdRatings.add(rating1);
+                } else {
+                    Rating rating = new Rating();
+                    rating.setUserId(userId);
+                    rating.setMeetingId(meetingId1);
+                    rating.setType("");
+                    rating.setSubType("");
+                    rating.setStarts(starts);
+                    rating.setEnds(ends);
+                    rating.setDemo(false);
+                    ratingRepository.save(rating);
+                    createdRatings.add(rating);
+                }
+            }
+        }
         return new ResponseEntity<>(createdRatings, HttpStatus.OK);
     }
 }
