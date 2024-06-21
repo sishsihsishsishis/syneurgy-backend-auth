@@ -15,8 +15,8 @@ public class Rating {
     private String type;
     private String subType;
 
-    @Column(name = "is_demo")
-    private boolean isDemo;
+    @Column(name = "is_demo", nullable = false)
+    private boolean isDemo = false;
     private Double starts = (double) 0;
     private Double ends = (double) 0;
 
