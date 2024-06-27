@@ -6,11 +6,10 @@ import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.TokenResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.TopPerformanceUserResponse;
 import com.bezkoder.spring.security.postgresql.repository.ConferenceRepository;
-import com.bezkoder.spring.security.postgresql.repository.UserComponentRepository;
+import com.bezkoder.spring.security.postgresql.repository.UserComponentNewRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.service.ConferenceService;
-import com.bezkoder.spring.security.postgresql.service.UserComponentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,14 +41,11 @@ public class BEController {
     ConferenceRepository conferenceRepository;
 
     @Autowired
-    UserComponentRepository userComponentRepository;
+    UserComponentNewRepository userComponentNewRepository;
     @Autowired
     JwtUtils jwtUtils;
     @Autowired
     private ConferenceService conferenceService;
-
-    @Autowired
-    private UserComponentService userComponentService;
 
     @Value("${client_id}")
     private String clientId;
@@ -78,14 +74,15 @@ public class BEController {
 
         Long uComponent_id = userComponentConferenceRequest.getUser_component_id();
 
-        Optional<UserComponent> userComponent = userComponentRepository.findById(uComponent_id);
-        if (userComponent.isEmpty()) {
+        Optional<UserComponentNew> userComponentNew = userComponentNewRepository.findById(uComponent_id);
+
+        if (userComponentNew.isEmpty()) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("The current user Component is unavailable!"));
         }
 
-        UserComponent uComponent = userComponent.get();
+        UserComponentNew uComponent = userComponentNew.get();
         if (currentUser.getId() != uComponent.getUser().getId()) {
             return ResponseEntity
                     .badRequest()
@@ -129,7 +126,7 @@ public class BEController {
         User user = uComponent.getUser();
         user.setPercent(percent);
         uComponent.setUser(userRepository.save(user));
-        userComponentRepository.save(uComponent);
+        userComponentNewRepository.save(uComponent);
         return new ResponseEntity<>(conferenceIds, HttpStatus.OK);
     }
 

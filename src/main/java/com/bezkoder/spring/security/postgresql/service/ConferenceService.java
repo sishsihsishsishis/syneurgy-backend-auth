@@ -26,7 +26,7 @@ public class ConferenceService {
 
     public List<ConferenceDTO> getNextConferencesByUserComponentId(Long userComponentId) {
         Date nowDate = new Date();
-        List<Conference> conferences = conferenceRepository.findByUserComponentIdAndConferenceStartTimeAfter(userComponentId, nowDate);
+        List<Conference> conferences = conferenceRepository.findByUserComponentNewIdAndConferenceStartTimeAfter(userComponentId, nowDate);
         return conferences.stream()
                 .map(ConferenceDTO::new)
                 .collect(Collectors.toList());

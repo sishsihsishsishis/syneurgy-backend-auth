@@ -2,10 +2,8 @@ package com.bezkoder.spring.security.postgresql.controllers;
 
 
 
-import com.bezkoder.spring.security.postgresql.dto.ComponentWithUsersDto;
 import com.bezkoder.spring.security.postgresql.models.Component;
 import com.bezkoder.spring.security.postgresql.repository.ComponentRepository;
-import com.bezkoder.spring.security.postgresql.service.ComponentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +17,12 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/components")
+@RequestMapping("/api/components1")
 @Api(tags = "Component")
 public class ComponentController {
     @Autowired
     ComponentRepository componentRepository;
 
-    @Autowired
-    ComponentService componentService;
 
     @GetMapping
     @ApiOperation("Get All Components")
@@ -85,10 +81,4 @@ public class ComponentController {
         }
     }
 
-    @GetMapping("/users")
-    @ApiOperation("Get All Components with users list")
-    public ResponseEntity<?> getAllComponentsWithUsersList() {
-        List<ComponentWithUsersDto> componentDTOS = componentService.getComponentsWithUsers();
-        return ResponseEntity.ok(componentDTOS);
-    }
 }

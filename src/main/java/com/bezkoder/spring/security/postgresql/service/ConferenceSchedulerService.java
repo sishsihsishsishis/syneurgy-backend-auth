@@ -1,7 +1,7 @@
 package com.bezkoder.spring.security.postgresql.service;
 
 import com.bezkoder.spring.security.postgresql.models.Conference;
-import com.bezkoder.spring.security.postgresql.models.UserComponent;
+import com.bezkoder.spring.security.postgresql.models.UserComponentNew;
 import com.bezkoder.spring.security.postgresql.repository.ConferenceRepository;
 import com.postmarkapp.postmark.Postmark;
 import com.postmarkapp.postmark.client.ApiClient;
@@ -46,9 +46,9 @@ public class ConferenceSchedulerService {
                     conferenceReminderTime = defaultMeetingReminderTime;
                 }
                 if (mins == conferenceReminderTime) {
-                    UserComponent userComponent = existingConference.getUserComponent();
-                    String userEmail = userComponent.getUser().getEmail();
-                    String userName = userComponent.getUser().getFullName();
+                    UserComponentNew userComponentNew = existingConference.getUserComponentNew();
+                    String userEmail = userComponentNew.getUser().getEmail();
+                    String userName = userComponentNew.getUser().getFullName();
                     ApiClient client = Postmark.getApiClient("2274a4ca-df74-4850-8b4c-06d1da6c14a2");
 
                     Message message = new Message("notifications@syneurgy.com", userEmail, "It's time for your habit.", "Hi, " + userName + ". You have a conference in " + conferenceReminderTime  +"minutes. Please prepare something to grow your habits." + existingConference.getId() );

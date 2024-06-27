@@ -1,18 +1,18 @@
 package com.bezkoder.spring.security.postgresql.payload.request;
 
 public class UserComponentRequest {
-    private Long anchorId;
+    private Long contextId;
     private Long behaviorId;
-    private Long celebrationId;
+
 
     private Long componentId;
 
-    public void setAnchorId(Long anchorId) {
-        this.anchorId = anchorId;
+    public void setContextId(Long contextId) {
+        this.contextId = contextId;
     }
 
-    public Long getAnchorId() {
-        return anchorId;
+    public Long getContextId() {
+        return contextId;
     }
 
     public void setBehaviorId(Long behaviorId) {
@@ -23,13 +23,6 @@ public class UserComponentRequest {
         return behaviorId;
     }
 
-    public void setCelebrationId(Long celebrationId) {
-        this.celebrationId = celebrationId;
-    }
-
-    public Long getCelebrationId() {
-        return celebrationId;
-    }
 
     public Long getComponentId() {
         return componentId;

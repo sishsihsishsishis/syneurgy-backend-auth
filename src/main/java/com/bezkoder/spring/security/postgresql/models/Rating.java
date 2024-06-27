@@ -12,8 +12,7 @@ public class Rating {
     private Long userId;
 
     private int ratingValue;
-    private String type;
-    private String subType;
+    private String keyword;
 
     @Column(name = "is_demo", nullable = false)
     private boolean isDemo = false;
@@ -59,20 +58,12 @@ public class Rating {
         this.ratingValue = ratingValue;
     }
 
-    public String getType() {
-        return type;
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getSubType() {
-        return subType;
-    }
-
-    public void setSubType(String subType) {
-        this.subType = subType;
+    public String getKeyword() {
+        return keyword;
     }
 
     public boolean isDemo() {

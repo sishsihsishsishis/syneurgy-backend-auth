@@ -11,8 +11,8 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "user_component")
-public class UserComponent {
+@Table(name = "user_component_new")
+public class UserComponentNew {
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class UserComponent {
 
     @Getter
     @ManyToOne
-    private Component component;
+    private ComponentNew componentNew;
 
     @Getter
     @Temporal(TemporalType.TIMESTAMP)
@@ -35,22 +35,17 @@ public class UserComponent {
 
     @Getter
     private int step = 1;
-
     @Getter
-    private Long anchorId = 0L;
+    private Long contextId = 0L;
 
     @Getter
     private Long behaviorId = 0L;
 
-    @Getter
-    private Long celebrationId = 0L;
-
-    public UserComponent(User user, Component component) {
+    public UserComponentNew(User user, ComponentNew componentNew) {
         this.user = user;
-        this.component = component;
+        this.componentNew = componentNew;
         this.createdDate = new Date();
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -59,8 +54,8 @@ public class UserComponent {
         this.user = user;
     }
 
-    public void setComponent(Component component) {
-        this.component = component;
+    public void setComponentNew(ComponentNew componentNew) {
+        this.componentNew = componentNew;
     }
 
     public void setCreatedDate(Date createdDate) {
@@ -75,15 +70,11 @@ public class UserComponent {
         this.step = step;
     }
 
-    public void setAnchorId(Long anchorId) {
-        this.anchorId = anchorId;
+    public void setContextId(Long contextId) {
+        this.contextId = contextId;
     }
 
     public void setBehaviorId(Long behaviorId) {
         this.behaviorId = behaviorId;
-    }
-
-    public void setCelebrationId(Long celebrationId) {
-        this.celebrationId = celebrationId;
     }
 }

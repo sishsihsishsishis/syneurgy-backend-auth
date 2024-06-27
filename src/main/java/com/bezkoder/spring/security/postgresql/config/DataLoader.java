@@ -1,550 +1,291 @@
 package com.bezkoder.spring.security.postgresql.config;
 
-import com.bezkoder.spring.security.postgresql.models.ComponentM;
-import com.bezkoder.spring.security.postgresql.models.MBehavior;
-import com.bezkoder.spring.security.postgresql.repository.ComponentMRepository;
+import com.bezkoder.spring.security.postgresql.models.ComponentNew;
+import com.bezkoder.spring.security.postgresql.models.NBehavior;
+import com.bezkoder.spring.security.postgresql.models.SubComponent;
+import com.bezkoder.spring.security.postgresql.repository.ComponentNewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Component
 public class DataLoader implements CommandLineRunner {
 
     @Autowired
-    private ComponentMRepository componentMRepository;
+    private ComponentNewRepository componentNewRepository;
 
     @Override
     public void run(String... args) throws Exception {
         // Create initial data
-        ComponentM component1 = new ComponentM();
-        component1.setComponent("Trust");
-        component1.setSubcomponent("Active listening");
-        component1.setCv("NodHead");
-        component1.setNlp("");
-        component1.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Nod head in agreement more often"),
-                new MBehavior(2, "Tilting your head can show interest")
-        ));
+        Optional<ComponentNew> componentNewOptional1 = componentNewRepository.findByName("Trust");
+        if (!componentNewOptional1.isPresent()) {
+            ComponentNew componentNew = new ComponentNew("Trust", "Assurance that team members will support each other and act with integrity.");
 
-        Optional<ComponentM> existingComponent1 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component1.getComponent(),
-                        component1.getSubcomponent(),
-                        component1.getCv(),
-                        component1.getNlp()
-                );
+            SubComponent subComponent1 = new SubComponent("Active listening",
+                    "NodHead", "", componentNew
+            );
+            NBehavior behavior1 = new NBehavior("Nod head in agreement more often");
+            NBehavior behavior2 = new NBehavior("Tilting your head can show interest");
+            behavior1.setSubComponent(subComponent1);
+            behavior2.setSubComponent(subComponent1);
+            subComponent1.setBehaviors(Arrays.asList(
+                    behavior1, behavior2
+            ));
+            SubComponent subComponent2 = new SubComponent("Active listening", "EyeContact", "", componentNew
+            );
 
-        if (!existingComponent1.isPresent()) {
-            componentMRepository.save(component1);
+            NBehavior behavior3 = new NBehavior("Make sure you are looking at the speaker");
+            NBehavior behavior4 = new NBehavior("Avoid multitasking when team members are speaking");
+            NBehavior behavior5 = new NBehavior("Use expressive eyebrows");
+            behavior3.setSubComponent(subComponent2);
+            behavior4.setSubComponent(subComponent2);
+            behavior5.setSubComponent(subComponent2);
+            subComponent2.setBehaviors(Arrays.asList(
+                    behavior3, behavior4, behavior5
+            ));
+
+            SubComponent subComponent3 = new SubComponent("Active listening", "LeanForward", "", componentNew
+            );
+            NBehavior behavior6 = new NBehavior("Lean forward to show you are actively listening");
+            NBehavior behavior7 = new NBehavior("Try to avoid fidgeting, and refrain from constantly shifting around");
+            behavior6.setSubComponent(subComponent3);
+            behavior7.setSubComponent(subComponent3);
+            subComponent3.setBehaviors(Arrays.asList(
+                    behavior6, behavior7
+            ));
+            SubComponent subComponent4 = new SubComponent("Active listening", "", "NotInterrupting", componentNew
+            );
+
+            NBehavior behavior8 = new NBehavior("Be sure to control the pace of your speaking");
+            NBehavior behavior9 = new NBehavior("Be sure to respectfully interrupt");
+            NBehavior behavior10 = new NBehavior("Wait to speak until your team mates have completely finished");
+
+            behavior8.setSubComponent(subComponent4);
+            behavior9.setSubComponent(subComponent4);
+            behavior10.setSubComponent(subComponent4);
+            subComponent4.setBehaviors(Arrays.asList(
+                    behavior8, behavior9, behavior10
+            ));
+            SubComponent subComponent5 = new SubComponent("Positive body language", "Smile", "", componentNew
+            );
+
+            NBehavior behavior11 = new NBehavior("Smiling can help improve team cohesion");
+            behavior11.setSubComponent(subComponent5);
+            subComponent5.setBehaviors(Arrays.asList(
+                    behavior11
+            ));
+            SubComponent subComponent6 = new SubComponent("Positive body language", "NodHead", "", componentNew
+            );
+
+            NBehavior behavior12 = new NBehavior("Nod head in agreement more often");
+            NBehavior behavior13 = new NBehavior("Tilting your head can show interest");
+            behavior12.setSubComponent(subComponent6);
+            behavior13.setSubComponent(subComponent6);
+            subComponent6.setBehaviors(Arrays.asList(
+                    behavior12, behavior13
+            ));
+            SubComponent subComponent7 = new SubComponent("Positive sentiment", "", "PositiveLanguage", componentNew
+            );
+            NBehavior behavior14 = new NBehavior("Use positive phrases like \"Great work!\", \"Thanks for your hard work.\" and \"Well done!\"");
+            behavior14.setSubComponent(subComponent7);
+            subComponent7.setBehaviors(Arrays.asList(
+                    behavior14
+            ));
+            SubComponent subComponent8 = new SubComponent("Burstiness", "", "", componentNew
+            );
+
+            NBehavior behavior15 = new NBehavior("Acknowledge when others are speaking");
+            behavior15.setSubComponent(subComponent8);
+            subComponent8.setBehaviors(Arrays.asList(
+                    behavior15
+            ));
+
+            componentNew.setSubComponents(Arrays.asList(subComponent1, subComponent2, subComponent3, subComponent4, subComponent5, subComponent6, subComponent7, subComponent8));
+            componentNewRepository.save(componentNew);
         }
 
-        ComponentM component2 = new ComponentM();
-        component2.setComponent("Trust");
-        component2.setSubcomponent("Active listening");
-        component2.setCv("EyeContact");
-        component2.setNlp("");
-        component2.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Make sure you are looking at the speaker"),
-                new MBehavior(2, "Avoid multitasking when team members are speaking"),
-                new MBehavior(3, "Use expressive eyebrows")
-        ));
+        Optional<ComponentNew> componentNewOptional2 = componentNewRepository.findByName("Psychological Safety");
+        if (!componentNewOptional2.isPresent()) {
+            ComponentNew componentNew = new ComponentNew("Psychological Safety", "A sense of security that allows team members to take risks and share their thoughts freely.");
 
-        Optional<ComponentM> existingComponent2 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component2.getComponent(),
-                        component2.getSubcomponent(),
-                        component2.getCv(),
-                        component2.getNlp()
-                );
+            SubComponent subComponent9 = new SubComponent("Active listening", "NodHead", "", componentNew
+            );
+            NBehavior behavior16 = new NBehavior("Nod head in agreement more often");
+            NBehavior behavior17 = new NBehavior("Tilting your head can show interest");
+            behavior16.setSubComponent(subComponent9);
+            behavior17.setSubComponent(subComponent9);
+            subComponent9.setBehaviors(Arrays.asList(
+                    behavior16, behavior17
+            ));
+            SubComponent subComponent10 = new SubComponent("Active listening", "EyeContact", "", componentNew
+            );
 
-        if (!existingComponent2.isPresent()) {
-            componentMRepository.save(component2);
+            NBehavior behavior18 = new NBehavior("Make sure you are looking at the speaker");
+            NBehavior behavior19 = new NBehavior("Avoid multitasking when team members are speaking");
+            NBehavior behavior20 = new NBehavior("Use expressive eyebrows");
+            behavior18.setSubComponent(subComponent10);
+            behavior19.setSubComponent(subComponent10);
+            behavior20.setSubComponent(subComponent10);
+            subComponent10.setBehaviors(Arrays.asList(
+                    behavior18, behavior19, behavior20
+            ));
+            SubComponent subComponent11 = new SubComponent("Active listening", "LeanForward", "", componentNew
+            );
+            NBehavior behavior21 = new NBehavior("Lean forward to show you are actively listening");
+            NBehavior behavior22 = new NBehavior("Try to avoid fidgeting, and refrain from constantly shifting around");
+            behavior21.setSubComponent(subComponent11);
+            behavior22.setSubComponent(subComponent11);
+            subComponent11.setBehaviors(Arrays.asList(
+                    behavior21, behavior22
+            ));
+            SubComponent subComponent12 = new SubComponent("Relaxed Facial expression", "RelaxedFace", "", componentNew
+            );
+            NBehavior behavior23 = new NBehavior("Use relaxed facial expressions");
+            behavior23.setSubComponent(subComponent12);
+            subComponent12.setBehaviors(Arrays.asList(
+                    behavior23
+            ));
+            SubComponent subComponent13 = new SubComponent("Open body language", "RelaxedPosture", "", componentNew
+            );
+            NBehavior behavior24 = new NBehavior("Relax any tension in your body");
+            behavior24.setSubComponent(subComponent13);
+            subComponent13.setBehaviors(Arrays.asList(
+                    behavior24
+            ));
+            SubComponent subComponent14 = new SubComponent("", "", "NotInterrupting", componentNew
+            );
+            NBehavior behavior25 = new NBehavior("Be sure to control the pace of your speaking");
+            NBehavior behavior26 = new NBehavior("Be sure to respectfully interrupt");
+            NBehavior behavior27 = new NBehavior("Wait to speak until your team mates have completely finished");
+            behavior25.setSubComponent(subComponent14);
+            behavior26.setSubComponent(subComponent14);
+            behavior27.setSubComponent(subComponent14);
+            subComponent14.setBehaviors(Arrays.asList(
+                    behavior25, behavior26, behavior27
+            ));
+            componentNew.setSubComponents(Arrays.asList(subComponent9, subComponent10, subComponent11, subComponent12, subComponent13, subComponent14));
+            componentNewRepository.save(componentNew);
+        }
+        Optional<ComponentNew> componentNewOptional3 = componentNewRepository.findByName("Enjoyment");
+        if (!componentNewOptional3.isPresent()) {
+            ComponentNew componentNew = new ComponentNew("Enjoyment", "The positive feelings derived from collaborative efforts and interactions within the team.");
+
+            SubComponent subComponent15 = new SubComponent("Positive body language", "Smile", "", componentNew
+            );
+            NBehavior behavior28 = new NBehavior("Smiling can help improve team cohesion");
+            behavior28.setSubComponent(subComponent15);
+            subComponent15.setBehaviors(Arrays.asList(
+                    behavior28
+            ));
+            SubComponent subComponent16 = new SubComponent("Positive body language", "UprightPosture", "", componentNew
+            );
+
+            NBehavior behavior29 = new NBehavior("Make sure to sit up straight");
+            NBehavior behavior30 = new NBehavior("Be mindful of of your body posture");
+            behavior29.setSubComponent(subComponent16);
+            behavior30.setSubComponent(subComponent16);
+            subComponent16.setBehaviors(Arrays.asList(
+                    behavior29, behavior30
+            ));
+            SubComponent subComponent17 = new SubComponent("Positive sentiment", "", "PositiveLanguage", componentNew
+            );
+            NBehavior behavior31 = new NBehavior("Use positive phrases like \"Great work!\", \"Thanks for your hard work.\" and \"Well done!\"");
+            behavior31.setSubComponent(subComponent17);
+            subComponent17.setBehaviors(Arrays.asList(
+                    behavior31
+            ));
+            SubComponent subComponent18 = new SubComponent("Positive Emotion on face", "PositiveFace", "", componentNew
+            );
+            NBehavior behavior32 = new NBehavior("Make sure to keep  your eyes open and alert");
+            behavior32.setSubComponent(subComponent18);
+            subComponent18.setBehaviors(Arrays.asList(
+                    behavior32
+            ));
+            componentNew.setSubComponents(Arrays.asList(subComponent15, subComponent16, subComponent17, subComponent18));
+            componentNewRepository.save(componentNew);
         }
 
-        ComponentM component3 = new ComponentM();
-        component3.setComponent("Trust");
-        component3.setSubcomponent("Active listening");
-        component3.setCv("LeanForward");
-        component3.setNlp("");
-        component3.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Lean forward to show you are actively listening"),
-                new MBehavior(2, "Try to avoid fidgeting, and refrain from constantly shifting around")
-        ));
+        Optional<ComponentNew> componentNewOptional4 = componentNewRepository.findByName("Engagement");
+        if (!componentNewOptional4.isPresent()) {
+            ComponentNew componentNew = new ComponentNew("Engagement", "Active involvement and investment in the team's tasks and objectives.");
 
-        Optional<ComponentM> existingComponent3 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component3.getComponent(),
-                        component3.getSubcomponent(),
-                        component3.getCv(),
-                        component3.getNlp()
-                );
-
-        if (!existingComponent3.isPresent()) {
-            componentMRepository.save(component3);
+            SubComponent subComponent19 = new SubComponent("Active participation", "RaiseHand", "", componentNew
+            );
+            NBehavior behavior33 = new NBehavior("Raise your hand when you want to make a contribution");
+            NBehavior behavior34 = new NBehavior("Use hand gestures appropriately");
+            behavior33.setSubComponent(subComponent19);
+            behavior34.setSubComponent(subComponent19);
+            subComponent19.setBehaviors(Arrays.asList(
+                    behavior33, behavior34
+            ));
+            SubComponent subComponent20 = new SubComponent("Attention", "EyeContact", "", componentNew
+            );
+            NBehavior behavior35 = new NBehavior("Make sure you are looking at the speaker");
+            NBehavior behavior36 = new NBehavior("Avoid multitasking when team members are speaking");
+            NBehavior behavior37 = new NBehavior("Use expressive eyebrows");
+            behavior35.setSubComponent(subComponent20);
+            behavior36.setSubComponent(subComponent20);
+            behavior37.setSubComponent(subComponent20);
+            subComponent20.setBehaviors(Arrays.asList(
+                    behavior35, behavior36, behavior37
+            ));
+            SubComponent subComponent21 = new SubComponent("", "FacingScreen", "", componentNew
+            );
+            NBehavior behavior38 = new NBehavior("Make sure to face the screen or show that you are listening");
+            behavior38.setSubComponent(subComponent21);
+            subComponent21.setBehaviors(Arrays.asList(
+                    behavior38
+            ));
+            SubComponent subComponent22 = new SubComponent("", "", "EngageLanguage", componentNew
+            );
+            NBehavior behavior39 = new NBehavior("Ask open-ended questions");
+            NBehavior behavior40 = new NBehavior("Actively use emojis or reactions to show engagement");
+            NBehavior behavior41 = new NBehavior("Use language that includes all team members like \"our\", \"we\", and \"us\"");
+            NBehavior behavior42 = new NBehavior("Intentionally validate your team members contributions");
+            behavior39.setSubComponent(subComponent22);
+            behavior40.setSubComponent(subComponent22);
+            behavior41.setSubComponent(subComponent22);
+            behavior42.setSubComponent(subComponent22);
+            subComponent22.setBehaviors(Arrays.asList(
+                    behavior39, behavior40, behavior41, behavior42
+            ));
+            componentNew.setSubComponents(Arrays.asList(subComponent19, subComponent20, subComponent21, subComponent22));
+            componentNewRepository.save(componentNew);
         }
 
-        ComponentM component4 = new ComponentM();
-        component4.setComponent("Trust");
-        component4.setSubcomponent("Active listening");
-        component4.setCv("");
-        component4.setNlp("NotInterrupting");
-        component4.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Be sure to control the pace of your speaking"),
-                new MBehavior(2, "Be sure to respectfully interrupt"),
-                new MBehavior(3, "Wait to speak until your team mates have completely finished")
-        ));
+        Optional<ComponentNew> componentNewOptional5 = componentNewRepository.findByName("Participation");
+        if (!componentNewOptional5.isPresent()) {
+            ComponentNew componentNew = new ComponentNew("Participation", "Balanced involvement and contribution from all team members, fostering inclusivity."
+            );
 
-        Optional<ComponentM> existingComponent4 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component4.getComponent(),
-                        component4.getSubcomponent(),
-                        component4.getCv(),
-                        component4.getNlp()
-                );
+            SubComponent subComponent23 = new SubComponent("TurnTaking", "RaiseHand", "", componentNew
+            );
+            NBehavior behavior43 = new NBehavior("Raise your hand when you want to make a contribution");
+            NBehavior behavior44 = new NBehavior("Use hand gestures appropriately");
+            behavior43.setSubComponent(subComponent23);
+            behavior44.setSubComponent(subComponent23);
+            subComponent23.setBehaviors(Arrays.asList(
+                    behavior43, behavior44
+            ));
+            SubComponent subComponent24 = new SubComponent("", "", "NotInterrupting", componentNew
+            );
+            NBehavior behavior45 = new NBehavior("Be sure to control the pace of your speaking");
+            NBehavior behavior46 = new NBehavior("Be sure to respectfully interrupt");
+            NBehavior behavior47 = new NBehavior("Wait to speak until your team mates have completely finished");
+            behavior45.setSubComponent(subComponent24);
+            behavior46.setSubComponent(subComponent24);
+            behavior47.setSubComponent(subComponent24);
+            subComponent23.setBehaviors(Arrays.asList(
+                    behavior45, behavior46, behavior47
+            ));
+            componentNew.setSubComponents(Arrays.asList(subComponent23, subComponent24));
+            componentNewRepository.save(componentNew);
 
-        if (!existingComponent4.isPresent()) {
-            componentMRepository.save(component4);
         }
 
-        ComponentM component5 = new ComponentM();
-        component5.setComponent("Trust");
-        component5.setSubcomponent("Positive body language");
-        component5.setCv("Smile");
-        component5.setNlp("");
-        component5.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Smiling can help improve team cohesion")
-        ));
-
-        Optional<ComponentM> existingComponent5 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component5.getComponent(),
-                        component5.getSubcomponent(),
-                        component5.getCv(),
-                        component5.getNlp()
-                );
-
-        if (!existingComponent5.isPresent()) {
-            componentMRepository.save(component5);
-        }
-
-        ComponentM component6 = new ComponentM();
-        component6.setComponent("Trust");
-        component6.setSubcomponent("Positive body language");
-        component6.setCv("NodHead");
-        component6.setNlp("");
-        component6.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Nod head in agreement more often"),
-                new MBehavior(2, "Tilting your head can show interest")
-        ));
-
-        Optional<ComponentM> existingComponent6 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component6.getComponent(),
-                        component6.getSubcomponent(),
-                        component6.getCv(),
-                        component6.getNlp()
-                );
-
-        if (!existingComponent6.isPresent()) {
-            componentMRepository.save(component6);
-        }
-
-        ComponentM component7 = new ComponentM();
-        component7.setComponent("Trust");
-        component7.setSubcomponent("Positive sentiment");
-        component7.setCv("");
-        component7.setNlp("PositiveLanguage");
-        component7.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Use positive phrases like \"Great work!\", \"Thanks for your hard work.\" and \"Well done!\"")
-        ));
-
-        Optional<ComponentM> existingComponent7 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component7.getComponent(),
-                        component7.getSubcomponent(),
-                        component7.getCv(),
-                        component7.getNlp()
-                );
-
-        if (!existingComponent7.isPresent()) {
-            componentMRepository.save(component7);
-        }
-
-        ComponentM component8 = new ComponentM();
-        component8.setComponent("Trust");
-        component8.setSubcomponent("Burstiness");
-        component8.setCv("");
-        component8.setNlp("");
-        component8.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Acknowledge when others are speaking")
-        ));
-
-        Optional<ComponentM> existingComponent8 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component8.getComponent(),
-                        component8.getSubcomponent(),
-                        component8.getCv(),
-                        component8.getNlp()
-                );
-
-        if (!existingComponent8.isPresent()) {
-            componentMRepository.save(component8);
-        }
-
-
-        ComponentM component9 = new ComponentM();
-        component9.setComponent("Psychological Safety");
-        component9.setSubcomponent("Active listening");
-        component9.setCv("NodHead");
-        component9.setNlp("");
-        component9.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Nod head in agreement more often"),
-                new MBehavior(2, "Tilting your head can show interest")
-        ));
-
-        Optional<ComponentM> existingComponent9 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component9.getComponent(),
-                        component9.getSubcomponent(),
-                        component9.getCv(),
-                        component9.getNlp()
-                );
-
-        if (!existingComponent9.isPresent()) {
-            componentMRepository.save(component9);
-        }
-
-        ComponentM component10 = new ComponentM();
-        component10.setComponent("Psychological Safety");
-        component10.setSubcomponent("Active listening");
-        component10.setCv("EyeContact");
-        component10.setNlp("");
-        component10.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Make sure you are looking at the speaker"),
-                new MBehavior(2, "Avoid multitasking when team members are speaking"),
-                new MBehavior(3, "Use expressive eyebrows")
-        ));
-
-        Optional<ComponentM> existingComponent10 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component10.getComponent(),
-                        component10.getSubcomponent(),
-                        component10.getCv(),
-                        component10.getNlp()
-                );
-
-        if (!existingComponent10.isPresent()) {
-            componentMRepository.save(component10);
-        }
-
-        ComponentM component11 = new ComponentM();
-        component11.setComponent("Psychological Safety");
-        component11.setSubcomponent("Active listening");
-        component11.setCv("LeanForward");
-        component11.setNlp("");
-        component11.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Lean forward to show you are actively listening"),
-                new MBehavior(2, "Try to avoid fidgeting, and refrain from constantly shifting around")
-        ));
-
-        Optional<ComponentM> existingComponent11 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component11.getComponent(),
-                        component11.getSubcomponent(),
-                        component11.getCv(),
-                        component11.getNlp()
-                );
-
-        if (!existingComponent11.isPresent()) {
-            componentMRepository.save(component11);
-        }
-
-        ComponentM component12 = new ComponentM();
-        component12.setComponent("Psychological Safety");
-        component12.setSubcomponent("Relaxed Facial expression");
-        component12.setCv("RelaxedFace");
-        component12.setNlp("");
-        component12.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Use relaxed facial expressions")
-        ));
-
-        Optional<ComponentM> existingComponent12 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component12.getComponent(),
-                        component12.getSubcomponent(),
-                        component12.getCv(),
-                        component12.getNlp()
-                );
-
-        if (!existingComponent12.isPresent()) {
-            componentMRepository.save(component12);
-        }
-
-        ComponentM component13 = new ComponentM();
-        component13.setComponent("Psychological Safety");
-        component13.setSubcomponent("Open body language");
-        component13.setCv("RelaxedPosture");
-        component13.setNlp("");
-        component13.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Relax any tension in your body")
-        ));
-
-        Optional<ComponentM> existingComponent13 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component13.getComponent(),
-                        component13.getSubcomponent(),
-                        component13.getCv(),
-                        component13.getNlp()
-                );
-
-        if (!existingComponent13.isPresent()) {
-            componentMRepository.save(component13);
-        }
-
-        ComponentM component14 = new ComponentM();
-        component14.setComponent("Psychological Safety");
-        component14.setSubcomponent("");
-        component14.setCv("");
-        component14.setNlp("NotInterrupting");
-        component14.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Be sure to control the pace of your speaking"),
-                new MBehavior(2, "Be sure to respectfully interrupt"),
-                new MBehavior(3, "Wait to speak until your team mates have completely finished")
-        ));
-
-        Optional<ComponentM> existingComponent14 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component14.getComponent(),
-                        component14.getSubcomponent(),
-                        component14.getCv(),
-                        component14.getNlp()
-                );
-
-        if (!existingComponent14.isPresent()) {
-            componentMRepository.save(component14);
-        }
-
-        ComponentM component15 = new ComponentM();
-        component15.setComponent("Enjoyment");
-        component15.setSubcomponent("Positive body language");
-        component15.setCv("Smile");
-        component15.setNlp("");
-        component15.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Smiling can help improve team cohesion")
-        ));
-
-        Optional<ComponentM> existingComponent15 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component15.getComponent(),
-                        component15.getSubcomponent(),
-                        component15.getCv(),
-                        component15.getNlp()
-                );
-
-        if (!existingComponent15.isPresent()) {
-            componentMRepository.save(component15);
-        }
-
-        ComponentM component16 = new ComponentM();
-        component16.setComponent("Enjoyment");
-        component16.setSubcomponent("Positive body language");
-        component16.setCv("UprightPosture");
-        component16.setNlp("");
-        component16.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Make sure to sit up straight"),
-                new MBehavior(2, "Be mindful of of your body posture")
-        ));
-
-        Optional<ComponentM> existingComponent16 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component16.getComponent(),
-                        component16.getSubcomponent(),
-                        component16.getCv(),
-                        component16.getNlp()
-                );
-
-        if (!existingComponent16.isPresent()) {
-            componentMRepository.save(component16);
-        }
-
-        ComponentM component17 = new ComponentM();
-        component17.setComponent("Enjoyment");
-        component17.setSubcomponent("Positive sentiment");
-        component17.setCv("");
-        component17.setNlp("PositiveLanguage");
-        component17.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Use positive phrases like \"Great work!\", \"Thanks for your hard work.\" and \"Well done!\"")
-        ));
-
-        Optional<ComponentM> existingComponent17 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component17.getComponent(),
-                        component17.getSubcomponent(),
-                        component17.getCv(),
-                        component17.getNlp()
-                );
-
-        if (!existingComponent17.isPresent()) {
-            componentMRepository.save(component17);
-        }
-
-        ComponentM component18 = new ComponentM();
-        component18.setComponent("Enjoyment");
-        component18.setSubcomponent("Positive Emotion on face");
-        component18.setCv("PositiveFace");
-        component18.setNlp("");
-        component18.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Make sure to keep  your eyes open and alert")
-        ));
-
-        Optional<ComponentM> existingComponent18 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component18.getComponent(),
-                        component18.getSubcomponent(),
-                        component18.getCv(),
-                        component18.getNlp()
-                );
-
-        if (!existingComponent18.isPresent()) {
-            componentMRepository.save(component18);
-        }
-
-        ComponentM component19 = new ComponentM();
-        component19.setComponent("Engagement");
-        component19.setSubcomponent("Active participation");
-        component19.setCv("RaiseHand");
-        component19.setNlp("");
-        component19.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Raise your hand when you want to make a contribution"),
-                new MBehavior(2, "Use hand gestures appropriately")
-        ));
-
-        Optional<ComponentM> existingComponent19 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component19.getComponent(),
-                        component19.getSubcomponent(),
-                        component19.getCv(),
-                        component19.getNlp()
-                );
-
-        if (!existingComponent19.isPresent()) {
-            componentMRepository.save(component19);
-        }
-
-        ComponentM component20 = new ComponentM();
-        component20.setComponent("Engagement");
-        component20.setSubcomponent("Attention");
-        component20.setCv("EyeContact");
-        component20.setNlp("");
-        component20.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Make sure you are looking at the speaker"),
-                new MBehavior(2, "Avoid multitasking when team members are speaking"),
-                new MBehavior(3, "Use expressive eyebrows")
-        ));
-
-        Optional<ComponentM> existingComponent20 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component20.getComponent(),
-                        component20.getSubcomponent(),
-                        component20.getCv(),
-                        component20.getNlp()
-                );
-
-        if (!existingComponent20.isPresent()) {
-            componentMRepository.save(component20);
-        }
-
-        ComponentM component21 = new ComponentM();
-        component21.setComponent("Engagement");
-        component21.setSubcomponent("");
-        component21.setCv("FacingScreen");
-        component21.setNlp("");
-        component21.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Make sure to face the screen or show that you are listening")
-        ));
-
-        Optional<ComponentM> existingComponent21 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component21.getComponent(),
-                        component21.getSubcomponent(),
-                        component21.getCv(),
-                        component21.getNlp()
-                );
-
-        if (!existingComponent21.isPresent()) {
-            componentMRepository.save(component21);
-        }
-
-        ComponentM component22 = new ComponentM();
-        component22.setComponent("Engagement");
-        component22.setSubcomponent("");
-        component22.setCv("");
-        component22.setNlp("EngageLanguage");
-        component22.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Ask open-ended questions"),
-                new MBehavior(2, "Actively use emojis or reactions to show engagement"),
-                new MBehavior(3, "Use language that includes all team members like \"our\", \"we\", and \"us\""),
-                new MBehavior(4, "Intentionally validate your team members contributions")
-        ));
-
-        Optional<ComponentM> existingComponent22 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component22.getComponent(),
-                        component22.getSubcomponent(),
-                        component22.getCv(),
-                        component22.getNlp()
-                );
-
-        if (!existingComponent22.isPresent()) {
-            componentMRepository.save(component22);
-        }
-
-        ComponentM component23 = new ComponentM();
-        component23.setComponent("Participation");
-        component23.setSubcomponent("TurnTaking");
-        component23.setCv("RaiseHand");
-        component23.setNlp("");
-        component23.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Raise your hand when you want to make a contribution"),
-                new MBehavior(2, "Use hand gestures appropriately")
-        ));
-
-        Optional<ComponentM> existingComponent23 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component23.getComponent(),
-                        component23.getSubcomponent(),
-                        component23.getCv(),
-                        component23.getNlp()
-                );
-
-        if (!existingComponent23.isPresent()) {
-            componentMRepository.save(component23);
-        }
-
-
-        ComponentM component24 = new ComponentM();
-        component24.setComponent("Participation");
-        component24.setSubcomponent("");
-        component24.setCv("");
-        component24.setNlp("NotInterrupting");
-        component24.setBehaviors(Arrays.asList(
-                new MBehavior(1, "Be sure to control the pace of your speaking"),
-                new MBehavior(2, "Be sure to respectfully interrupt"),
-                new MBehavior(3, "Wait to speak until your team mates have completely finished")
-        ));
-        Optional<ComponentM> existingComponent24 = componentMRepository
-                .findByComponentAndSubcomponentAndCvAndNlp(
-                        component24.getComponent(),
-                        component24.getSubcomponent(),
-                        component24.getCv(),
-                        component24.getNlp()
-                );
-
-        if (!existingComponent24.isPresent()) {
-            componentMRepository.save(component24);
-        }
     }
 }

@@ -22,25 +22,33 @@ public class Conference {
     private String conferenceTitle;
 
     private Boolean isCustom;
+
     private Long totalConcurrentEvents;
 
     private int conferenceReminderTime;
+
     @ManyToOne
-    private  UserComponent userComponent;
+    private UserComponentNew userComponentNew;
+
 
     @Temporal(TemporalType.TIMESTAMP)
+
     private Date conferenceStartTime;
 
+
     @Temporal(TemporalType.TIMESTAMP)
+
     private Date conferenceEndTime;
 
     @Temporal(TemporalType.TIMESTAMP)
+
     private Date createdDate;
+
 
     private Boolean isSent;
 
-    public  Conference(UserComponent userComponent, long conferenceStartTime, long conferenceEndTime, String conferenceId, String conferenceTitle, Boolean isCustom, Long totalConcurrentEvents, int conferenceReminderTime) {
-        this.userComponent = userComponent;
+    public Conference(UserComponentNew userComponentNew, long conferenceStartTime, long conferenceEndTime, String conferenceId, String conferenceTitle, Boolean isCustom, Long totalConcurrentEvents, int conferenceReminderTime) {
+        this.userComponentNew = userComponentNew;
         this.conferenceStartTime = new Date(conferenceStartTime);
         this.conferenceEndTime = new Date(conferenceEndTime);
         this.isSent = false;
@@ -60,87 +68,83 @@ public class Conference {
         return id;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
-    public UserComponent getUserComponent() {
-        return userComponent;
+    public Date getCreatedDate() {
+        return createdDate;
     }
 
-    public void setUserComponent(UserComponent userComponent) {
-        this.userComponent = userComponent;
+    public void setUserComponentNew(UserComponentNew userComponentNew) {
+        this.userComponentNew = userComponentNew;
     }
 
-    public Date getConferenceStartTime() {
-        return conferenceStartTime;
+    public UserComponentNew getUserComponentNew() {
+        return userComponentNew;
     }
 
     public void setConferenceStartTime(Date conferenceStartTime) {
         this.conferenceStartTime = conferenceStartTime;
     }
 
-    public Date getConferenceEndTime() {
-        return conferenceEndTime;
+    public Date getConferenceStartTime() {
+        return conferenceStartTime;
     }
 
     public void setConferenceEndTime(Date conferenceEndTime) {
         this.conferenceEndTime = conferenceEndTime;
     }
 
-
-
-    public Boolean getSent() {
-        return isSent;
+    public Date getConferenceEndTime() {
+        return conferenceEndTime;
     }
 
     public void setSent(Boolean sent) {
         isSent = sent;
     }
 
-    public String getConferenceId() {
-        return conferenceId;
+    public Boolean getSent() {
+        return isSent;
     }
 
     public void setConferenceId(String conferenceId) {
         this.conferenceId = conferenceId;
     }
 
-    public String getConferenceTitle() {
-        return conferenceTitle;
+    public String getConferenceId() {
+        return conferenceId;
     }
 
     public void setConferenceTitle(String conferenceTitle) {
         this.conferenceTitle = conferenceTitle;
     }
 
-
-    public Boolean getCustom() {
-        return isCustom;
+    public String getConferenceTitle() {
+        return conferenceTitle;
     }
 
     public void setCustom(Boolean custom) {
         isCustom = custom;
     }
 
-    public Long getTotalConcurrentEvents() {
-        return totalConcurrentEvents;
+    public Boolean getCustom() {
+        return isCustom;
     }
 
     public void setTotalConcurrentEvents(Long totalConcurrentEvents) {
         this.totalConcurrentEvents = totalConcurrentEvents;
     }
 
-    public int getConferenceReminderTime() {
-        return conferenceReminderTime;
+    public Long getTotalConcurrentEvents() {
+        return totalConcurrentEvents;
     }
 
     public void setConferenceReminderTime(int conferenceReminderTime) {
         this.conferenceReminderTime = conferenceReminderTime;
     }
 
+    public int getConferenceReminderTime() {
+        return conferenceReminderTime;
+    }
 }

@@ -74,8 +74,7 @@ public class RatingController {
                 Rating rating = new Rating();
                 rating.setUserId(userId);
                 rating.setMeetingId(meetingId);
-                rating.setType(example.get("type").toString());
-                rating.setSubType(example.get("subType").toString());
+                rating.setKeyword(example.get("keyword").toString());
                 rating.setDemo(true);
                 // Set other fields as needed
                 ratingRepository.save(rating);
@@ -122,8 +121,7 @@ public class RatingController {
                     Rating rating = new Rating();
                     rating.setUserId(userId);
                     rating.setMeetingId(meetingId1);
-                    rating.setType("");
-                    rating.setSubType("");
+                    rating.setKeyword(example.get("keyword").toString());
                     rating.setStarts(starts);
                     rating.setEnds(ends);
                     rating.setDemo(false);

@@ -5,7 +5,7 @@ import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.ReminderTimeRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.repository.ConferenceRepository;
-import com.bezkoder.spring.security.postgresql.repository.UserComponentRepository;
+import com.bezkoder.spring.security.postgresql.repository.UserComponentNewRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import com.bezkoder.spring.security.postgresql.service.ConferenceService;
@@ -32,7 +32,7 @@ public class ConferenceController {
     UserRepository userRepository;
 
     @Autowired
-    UserComponentRepository userComponentRepository;
+    UserComponentNewRepository userComponentNewRepository;
 
     @Autowired
     ConferenceRepository conferenceRepository;
@@ -59,9 +59,10 @@ public class ConferenceController {
 
         User user = existingUser.get();
         List<ConferenceDTO> results = new ArrayList<>();
-        List<UserComponent> userComponents = userComponentRepository.findByUserId(user.getId());
-        userComponents.forEach(userComponent -> {
-            List<ConferenceDTO> conferenceDTOS = conferenceService.getNextConferencesByUserComponentId(userComponent.getId());
+        List<UserComponentNew> userComponentNews = userComponentNewRepository.findByUserId(user.getId());
+
+        userComponentNews.forEach(userComponentNew -> {
+            List<ConferenceDTO> conferenceDTOS = conferenceService.getNextConferencesByUserComponentId(userComponentNew.getId());
             if (!conferenceDTOS.isEmpty()) {
                 results.addAll(conferenceDTOS);
             }
@@ -128,11 +129,12 @@ public class ConferenceController {
         }
 
         User currentUser = existingUser.get();
-        List<UserComponent> userComponents = userComponentRepository.findByUserIdOrderByCreatedDateDesc(currentUser.getId());
+        List<UserComponentNew> userComponentNews = userComponentNewRepository.findByUserIdOrderByCreatedDateDesc(currentUser.getId());
+
         int percentage = 0;
-        if (userComponents.size() > 0) {
-            UserComponent userComponent = userComponents.get(0);
-            percentage = userComponent.getUser().getPercent();
+        if (userComponentNews.size() > 0) {
+            UserComponentNew userComponentNew = userComponentNews.get(0);
+            percentage = userComponentNew.getUser().getPercent();
         }
 
         return ResponseEntity.ok(percentage);

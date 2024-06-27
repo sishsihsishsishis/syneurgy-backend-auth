@@ -48,17 +48,17 @@ public class ConferenceDTO {
 
     public ConferenceDTO(Conference conference) {
         this.id = conference.getId();
-        this.user_component_id = conference.getUserComponent().getId();
-        this.component_id = conference.getUserComponent().getComponent().getId();
-        this.component_title = conference.getUserComponent().getComponent().getName();
+        this.user_component_id = conference.getUserComponentNew().getId();
+        this.component_id = conference.getUserComponentNew().getComponentNew().getId();
+        this.component_title = conference.getUserComponentNew().getComponentNew().getName();
         this.conferenceId = conference.getConferenceId();
         this.conferenceTitle = conference.getConferenceTitle();
-        this.isCustom = conference.getCustom();
+        this.isCustom = conference.getIsCustom();
         this.totalConcurrentEvents = conference.getTotalConcurrentEvents();
         this.conferenceStartTime = conference.getConferenceStartTime();
         this.conferenceEndTime = conference.getConferenceEndTime();
         this.createdDate = conference.getCreatedDate();
-        this.isSent = conference.getSent();
+        this.isSent = conference.getIsSent();
 
     }
 

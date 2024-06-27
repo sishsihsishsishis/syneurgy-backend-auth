@@ -14,11 +14,11 @@ public interface ConferenceRepository extends JpaRepository<Conference, Long> {
 
     List<Conference> findByConferenceStartTimeAfterAndIsSentIsFalse(Date conferenceTime);
 
-    List<Conference> findByUserComponentId(Long userComponentId);
 
-    List<Conference> findByUserComponentIdAndConferenceStartTimeAfter(Long userComponentId, Date conferenceTime);
 
-    @Query("SELECT c FROM Conference c JOIN c.userComponent uc " +
+    List<Conference> findByUserComponentNewIdAndConferenceStartTimeAfter(Long userComponentNewId, Date conferenceTime);
+
+    @Query("SELECT c FROM Conference c JOIN c.userComponentNew uc " +
             "WHERE MONTH(c.conferenceStartTime) = :month AND YEAR(c.conferenceStartTime) = :year AND uc.user.id = :userId " +
             "ORDER BY c.conferenceStartTime")
     List<Conference> findConferencesInMonthForUser(
@@ -27,10 +27,10 @@ public interface ConferenceRepository extends JpaRepository<Conference, Long> {
             @Param("userId") Long userId
     );
 
-    @Query("SELECT c FROM Conference c JOIN c.userComponent uc WHERE uc.user.id = :userId")
+    @Query("SELECT c FROM Conference c JOIN c.userComponentNew uc WHERE uc.user.id = :userId")
     List<Conference> findByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT c FROM Conference c JOIN c.userComponent uc WHERE uc.user.id = :userId AND c.conferenceStartTime < CURRENT_DATE")
+    @Query("SELECT c FROM Conference c JOIN c.userComponentNew uc WHERE uc.user.id = :userId AND c.conferenceStartTime < CURRENT_DATE")
     List<Conference> findPastConferencesByUserId(@Param("userId") Long userId);
     List<Conference> findByIdIn(Long[] conferenceIds);
 }
