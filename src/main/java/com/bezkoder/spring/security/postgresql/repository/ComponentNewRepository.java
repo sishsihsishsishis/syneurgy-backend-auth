@@ -1,7 +1,7 @@
 package com.bezkoder.spring.security.postgresql.repository;
 
 
-import com.bezkoder.spring.security.postgresql.models.Component;
+
 import com.bezkoder.spring.security.postgresql.models.ComponentNew;
 import org.springframework.data.jpa.repository.JpaRepository;
 

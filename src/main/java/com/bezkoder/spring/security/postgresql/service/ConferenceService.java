@@ -2,7 +2,6 @@ package com.bezkoder.spring.security.postgresql.service;
 
 import com.bezkoder.spring.security.postgresql.dto.ConferenceDTO;
 import com.bezkoder.spring.security.postgresql.models.Conference;
-import com.bezkoder.spring.security.postgresql.repository.ComponentRepository;
 import com.bezkoder.spring.security.postgresql.repository.ConferenceRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,7 @@ import java.util.stream.Collectors;
 public class ConferenceService {
     @Autowired
     private ConferenceRepository conferenceRepository;
-    @Autowired
-    private ComponentRepository componentRepository;
+
 
     @Autowired
     private UserRepository userRepository;
