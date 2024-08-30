@@ -2,7 +2,6 @@ package com.bezkoder.spring.security.postgresql.controllers;
 
 import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.InviteRequest;
-import com.bezkoder.spring.security.postgresql.payload.request.UserInfoRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.InviteResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.repository.*;
