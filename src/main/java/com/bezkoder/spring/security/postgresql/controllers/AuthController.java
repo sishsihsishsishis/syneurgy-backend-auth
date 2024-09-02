@@ -7,12 +7,13 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import com.bezkoder.spring.security.postgresql.models.UserTeam;
+import com.bezkoder.spring.security.postgresql.models.*;
 import com.bezkoder.spring.security.postgresql.payload.request.AuthRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.ConfirmEmailRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.ConfirmInviteRequest;
 import com.bezkoder.spring.security.postgresql.payload.request.UserInfoRequest;
 import com.bezkoder.spring.security.postgresql.payload.response.TeamInfoResponse;
+import com.bezkoder.spring.security.postgresql.repository.UserMinutesRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserTeamRepository;
 import com.bezkoder.spring.security.postgresql.service.EmailService;
 import com.bezkoder.spring.security.postgresql.service.UserService;
@@ -29,9 +30,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import com.bezkoder.spring.security.postgresql.models.ERole;
-import com.bezkoder.spring.security.postgresql.models.Role;
-import com.bezkoder.spring.security.postgresql.models.User;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
 import com.bezkoder.spring.security.postgresql.repository.RoleRepository;
@@ -69,6 +67,8 @@ public class AuthController {
 
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private UserMinutesRepository userMinutesRepository;
 
     @Value("${frontend_base_url}")
     private String frontendBaseUrl;
@@ -188,7 +188,14 @@ public class AuthController {
             user.setCreatedDate(new Date());
             user.setStep(0);
             user.setRoles(roles);
-            userRepository.save(user);
+            User savedUser = userRepository.save(user);
+            UserMinutes userMinutes = new UserMinutes();
+            userMinutes.setUserId(savedUser.getId());
+            userMinutes.setAllMinutes(120);
+            userMinutes.setConsumedMinutes(0);
+
+            // Save the user minutes entry to the database
+            userMinutesRepository.save(userMinutes);
 
             HashMap<String, Object> model = new HashMap<String, Object>();
             model.put("confirm_email", user.getEmail());
