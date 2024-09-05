@@ -191,7 +191,7 @@ public class AuthController {
             User savedUser = userRepository.save(user);
             UserMinutes userMinutes = new UserMinutes();
             userMinutes.setUserId(savedUser.getId());
-            userMinutes.setAllMinutes(120);
+            userMinutes.setAllMinutes(0);
             userMinutes.setConsumedMinutes(0);
 
             // Save the user minutes entry to the database

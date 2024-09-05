@@ -94,7 +94,7 @@ public class MeetingMinutesController {
                     .body(new MessageResponse("There is no user minutes."));
         }
         UserMinutes userMinutes = userMinutes1.get();
-        userMinutes.setConsumedMinutes(totalConsumedMinutesSafe);
+        userMinutes.setConsumedMinutes(userMinutes.getConsumedMinutes() + totalConsumedMinutesSafe);
         userMinutesRepository.save(userMinutes);
         // Step 4: Return the updated user_minutes details
         Map<String, Object> response = new HashMap<>();
