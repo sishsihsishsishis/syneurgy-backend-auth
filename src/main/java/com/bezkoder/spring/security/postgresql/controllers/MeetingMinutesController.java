@@ -100,6 +100,7 @@ public class MeetingMinutesController {
         Map<String, Object> response = new HashMap<>();
         response.put("user_id", userMinutes.getUserId());
         response.put("all_minutes", userMinutes.getAllMinutes());
+        response.put("added_minutes", userMinutes.getAddedMinutes());
         response.put("consumed_minutes", userMinutes.getConsumedMinutes());
 
         return ResponseEntity.ok(response);

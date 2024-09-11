@@ -19,6 +19,9 @@ public class UserMinutes {
     @Column(name = "consumed_minutes", nullable = false)
     private Integer consumedMinutes;
 
+    @Column(name = "added_minutes")
+    private Integer addedMinutes = 0;
+
     // Getters and Setters
 
     public Long getId() {
@@ -51,5 +54,13 @@ public class UserMinutes {
 
     public void setConsumedMinutes(Integer consumedMinutes) {
         this.consumedMinutes = consumedMinutes;
+    }
+
+    public Integer getAddedMinutes() {
+        return addedMinutes;
+    }
+
+    public void setAddedMinutes(Integer addedMinutes) {
+        this.addedMinutes = addedMinutes;
     }
 }
