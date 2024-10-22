@@ -96,6 +96,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/jwt/**").permitAll()
                 .antMatchers("/uploads/**").permitAll()
                 .antMatchers("/v2/api-docs", "/swagger-ui.html", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**").permitAll()
+                .antMatchers("/swagger-ui/index.html").permitAll()
                 .anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());

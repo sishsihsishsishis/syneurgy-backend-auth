@@ -14,6 +14,7 @@ public class Question {
     private String question;
     private String answers;
 
+    private Integer type;
     public void setId(Integer id) {
         this.id = id;
     }
@@ -36,5 +37,13 @@ public class Question {
 
     public void setAnswers(String answers) {
         this.answers = answers;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

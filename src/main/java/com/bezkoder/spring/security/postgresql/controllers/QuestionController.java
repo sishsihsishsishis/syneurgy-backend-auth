@@ -13,6 +13,7 @@ import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,6 +64,12 @@ public class QuestionController {
             questions1.add(questions.get(i));
         }
         return new ResponseEntity<>(questions1, HttpStatus.OK);
+    }
+
+    @GetMapping("/new-questions")
+    public ResponseEntity<?> getNewQuestions() {
+        List<Question> questions = questionRepository.findQuestionsWithTypeGreaterThan(0);
+        return new ResponseEntity<>(questions, HttpStatus.OK);
     }
 
     @PostMapping("/questions")
