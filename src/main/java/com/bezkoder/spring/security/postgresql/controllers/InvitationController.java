@@ -48,6 +48,9 @@ public class InvitationController {
     AuthenticationManager authenticationManager;
 
     @Autowired
+    private UserMinutesRepository userMinutesRepository;
+
+    @Autowired
     PasswordEncoder encoder;
 
     @Value("${postmark.invite-tempate-id}")
@@ -124,7 +127,15 @@ public class InvitationController {
                 newUser.setStep(0);
                 newUser.setRoles(userRoles);
                 newUser.setCreatedDate(new Date());
-                userRepository.save(newUser);
+                User savedUser = userRepository.save(newUser);
+
+                UserMinutes userMinutes = new UserMinutes();
+                userMinutes.setUserId(savedUser.getId());
+                userMinutes.setAllMinutes(0);
+                userMinutes.setConsumedMinutes(0);
+
+                // Save the user minutes entry to the database
+                userMinutesRepository.save(userMinutes);
 
                 team.addUserTeam(newUserTeam);
                 teamRepository.save(team);
