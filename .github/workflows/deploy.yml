@@ -26,6 +26,7 @@ jobs:
         env:
           EC2_HOST: ${{ secrets.SSH_HOST_DEV }}
         run: |
+          mkdir -p ~/.ssh
           ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
 
       # Step 4: Create .env File from Secret
