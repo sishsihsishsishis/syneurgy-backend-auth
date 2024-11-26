@@ -21,18 +21,25 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # Step 3: Create .env File from Secret
+      # Step 3: Add EC2 Host to Known Hosts
+      - name: Add EC2 Host to Known Hosts
+        env:
+          EC2_HOST: ${{ secrets.SSH_HOST_DEV }}
+        run: |
+          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+
+      # Step 4: Create .env File from Secret
       - name: Create .env File
         env:
           ENV_STAGING: ${{ secrets.ENV_STAGING }}
         run: |
           echo "$ENV_STAGING" > .env
 
-      # Step 4: Build the project
+      # Step 5: Build the project
       - name: Build with Maven
         run: mvn clean install
 
-      # Step 5: Copy jar file to EC2
+      # Step 6: Copy jar file to EC2
       - name: Deploy JAR to EC2
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
@@ -43,7 +50,7 @@ jobs:
           chmod 600 key.pem
           scp -i key.pem target/spring-boot-security-postgresql-0.0.1-SNAPSHOT.jar ${EC2_USER}@${EC2_HOST}:~/sy/sy.jar
 
-      # Step 6: Restart the application on EC2
+      # Step 7: Restart the application on EC2
       - name: Restart Application
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
