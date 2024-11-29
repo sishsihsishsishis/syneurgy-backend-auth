@@ -42,6 +42,7 @@ public class TestController {
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
+
         try {
             throw new Exception("This is a test");
         } catch (Exception e) {
