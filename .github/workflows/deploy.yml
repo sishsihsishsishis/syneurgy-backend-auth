@@ -51,7 +51,10 @@ jobs:
         run: |
           echo "${SSH_KEY}" > key.pem
           chmod 600 key.pem
+          # Copy the JAR file
           scp -i key.pem target/spring-boot-security-postgresql-0.0.1-SNAPSHOT.jar ${EC2_USER}@${EC2_HOST}:~/sy/sy.jar
+          # Copy the .env file
+          scp -i key.pem .env ${EC2_USER}@${EC2_HOST}:~/sy/.env
 
       # Step 7: Restart the application on EC2
       - name: Restart Application
@@ -113,7 +116,10 @@ jobs:
         run: |
           echo "${SSH_KEY}" > key.pem
           chmod 600 key.pem
+          # Copy the JAR file
           scp -i key.pem target/spring-boot-security-postgresql-0.0.1-SNAPSHOT.jar ${EC2_USER}@${EC2_HOST}:~/sy/sy.jar
+          # Copy the .env file
+          scp -i key.pem .env ${EC2_USER}@${EC2_HOST}:~/sy/.env
 
       # Step 7: Restart the application on EC2
       - name: Restart Application
