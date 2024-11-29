@@ -42,6 +42,12 @@ public class NotificationController {
     @Autowired
     private EmailService emailService;
 
+    @Value("${report_server_url}")
+    private String reportServerUrl;
+
+    @Value("${data_server_url}")
+    private String dataServerUrl;
+
     @Value("${frontend_base_url}")
     private String frontendBaseUrl;
 
@@ -57,7 +63,7 @@ public class NotificationController {
         notification.setCreatedDate(currentDate);
         notification.setUpdatedDate(currentDate);
         if (type == 0) { // Processing the meeting is finished
-            String meetingInfoUrl = "http://18.144.11.243:8080/meeting/info/" + objId;
+            String meetingInfoUrl = dataServerUrl + "/meeting/info/" + objId;
             String jsonResponse = new RestTemplate().getForObject(meetingInfoUrl, String.class);
             String meetingName = "";
             String userEmail = "";
@@ -85,7 +91,7 @@ public class NotificationController {
             notification.setSenderId(0L);
             notification.setSenderImg("");
 //            emailService.sendSimpleEmail(userEmail, "Success", "Processing your meeting is finished successfully. Please look into it and match users." + "\n" + frontendBaseUrl + "/meeting-details/" + objId );
-            String syneurgyEmailUrl = "http://3.148.117.8:3000/chart?meetingid=" + objId;
+            String syneurgyEmailUrl = reportServerUrl + "/chart?meetingid=" + objId;
             String jsonResponse1 = new RestTemplate().getForObject(syneurgyEmailUrl, String.class);
 
         }
