@@ -49,7 +49,7 @@ public class TestController {
             Sentry.captureException(e);
         }
 
-        return "Public Content.";
+        return "Public Content111.";
     }
 
     @GetMapping("/test")
