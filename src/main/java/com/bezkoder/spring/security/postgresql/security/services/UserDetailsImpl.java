@@ -45,11 +45,14 @@ public class UserDetailsImpl implements UserDetails {
 
     private int paid_status;
 
+    private  boolean isSeenTutorialHome;
+    private  boolean isSeenTutorialMeeting;
+
     public UserDetailsImpl(Long id, String username, String email, String password, Integer step,
                            Collection<? extends GrantedAuthority> authorities, String firstName,
                            String lastName, String countryCode, String country, String company,
                            String position, String photo, String answers, boolean isEmailVerified,
-                           boolean isActive, long createdDate, int paid_status) {
+                           boolean isActive, long createdDate, int paid_status, boolean isSeenTutorialHome, boolean isSeenTutorialMeeting) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -68,6 +71,8 @@ public class UserDetailsImpl implements UserDetails {
         this.isActive = isActive;
         this.createdDate = createdDate;
         this.paid_status = paid_status;
+        this.isSeenTutorialHome = isSeenTutorialHome;
+        this.isSeenTutorialMeeting = isSeenTutorialMeeting;
     }
 
     public static UserDetailsImpl build(User user) {
@@ -93,7 +98,9 @@ public class UserDetailsImpl implements UserDetails {
                 user.isEmailVerified(),
                 user.isActive(),
                 user.getCreatedDate().getTime(),
-                user.getPaid_status()
+                user.getPaid_status(),
+                user.isSeenTutorialHome(),
+                user.isSeenTutorialMeeting()
         );
     }
 
@@ -249,5 +256,21 @@ public class UserDetailsImpl implements UserDetails {
 
     public int getPaid_status() {
         return paid_status;
+    }
+
+    public boolean isSeenTutorialHome() {
+        return isSeenTutorialHome;
+    }
+
+    public boolean isSeenTutorialMeeting() {
+        return isSeenTutorialMeeting;
+    }
+
+    public void setSeenTutorialHome(boolean seenTutorialHome) {
+        isSeenTutorialHome = seenTutorialHome;
+    }
+
+    public void setSeenTutorialMeeting(boolean seenTutorialMeeting) {
+        isSeenTutorialMeeting = seenTutorialMeeting;
     }
 }

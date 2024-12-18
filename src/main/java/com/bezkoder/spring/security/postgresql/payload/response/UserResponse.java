@@ -32,9 +32,12 @@ public class UserResponse {
 
     private int paid_status;
 
+    private boolean isSeenTutorialHome;
+    private boolean isSeenTutorialMeeting;
+
     public UserResponse(String accessToken, Long id, String username, String email, Integer step, List<String> roles, String firstName, String lastName,
                         String countryCode, String country, String company, String position, String photo, String answers, boolean isActiveForTeam,
-                        boolean isActive, boolean isEmailVerified, long createdDate, int paid_status) {
+                        boolean isActive, boolean isEmailVerified, long createdDate, int paid_status, boolean isSeenTutorialHome, boolean isSeenTutorialMeeting) {
         this.token = accessToken;
         this.id = id;
         this.username = username;
@@ -54,6 +57,8 @@ public class UserResponse {
         this.isEmailVerified = isEmailVerified;
         this.createdDate = createdDate;
         this.paid_status = paid_status;
+        this.isSeenTutorialHome = isSeenTutorialHome;
+        this.isSeenTutorialMeeting = isSeenTutorialMeeting;
     }
 
     public String getAccessToken() {
@@ -226,6 +231,22 @@ public class UserResponse {
 
     public void setPaid_status(int paid_status) {
         this.paid_status = paid_status;
+    }
+
+    public void setSeenTutorialMeeting(boolean seenTutorialMeeting) {
+        isSeenTutorialMeeting = seenTutorialMeeting;
+    }
+
+    public void setSeenTutorialHome(boolean seenTutorialHome) {
+        isSeenTutorialHome = seenTutorialHome;
+    }
+
+    public boolean isSeenTutorialMeeting() {
+        return isSeenTutorialMeeting;
+    }
+
+    public boolean isSeenTutorialHome() {
+        return isSeenTutorialHome;
     }
 }
 

@@ -83,6 +83,77 @@ public class UserController {
         return ResponseEntity.ok(new MessageResponse("The user with the id is deleted successfully."));
     }
 
+    @PutMapping("/{id}/doneTutorialMeeting")
+    public ResponseEntity<?> seenTutorialMeeting(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        user.setSeenTutorialMeeting(true);
+        User newUser = userRepository.save(user);
+        UserDetailsImpl userDetails = UserDetailsImpl.build(newUser);
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new UserResponse("",
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail().toLowerCase(),
+                userDetails.getStep(),
+                roles,
+                userDetails.getFirstName(),
+                userDetails.getLastName(),
+                userDetails.getCountryCode(),
+                userDetails.getCountry(),
+                userDetails.getCompany(),
+                userDetails.getPosition(),
+                userDetails.getPhoto(),
+                userDetails.getAnswers(),
+                true,
+                userDetails.isActive(),
+                userDetails.isEmailVerified(),
+                userDetails.getCreatedDate(),
+                userDetails.getPaid_status(),
+                userDetails.isSeenTutorialHome(),
+                userDetails.isSeenTutorialMeeting()
+        ));
+    }
+    @PutMapping("/{id}/doneTutorialHome")
+    public ResponseEntity<?> seenTutorialHome(@PathVariable Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        user.setSeenTutorialHome(true);
+        User newUser = userRepository.save(user);
+        UserDetailsImpl userDetails = UserDetailsImpl.build(newUser);
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new UserResponse("",
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail().toLowerCase(),
+                userDetails.getStep(),
+                roles,
+                userDetails.getFirstName(),
+                userDetails.getLastName(),
+                userDetails.getCountryCode(),
+                userDetails.getCountry(),
+                userDetails.getCompany(),
+                userDetails.getPosition(),
+                userDetails.getPhoto(),
+                userDetails.getAnswers(),
+                true,
+                userDetails.isActive(),
+                userDetails.isEmailVerified(),
+                userDetails.getCreatedDate(),
+                userDetails.getPaid_status(),
+                userDetails.isSeenTutorialHome(),
+                userDetails.isSeenTutorialMeeting()
+        ));
+    }
+
     @PutMapping("/{id}/paid-status")
     public ResponseEntity<?> updatePaidStatus(@PathVariable Long id, @RequestParam int paidStatus) {
         User user = userRepository.findById(id).orElse(null);
@@ -113,7 +184,9 @@ public class UserController {
                 userDetails.isActive(),
                 userDetails.isEmailVerified(),
                 userDetails.getCreatedDate(),
-                userDetails.getPaid_status()
+                userDetails.getPaid_status(),
+                userDetails.isSeenTutorialHome(),
+                userDetails.isSeenTutorialMeeting()
         ));
     }
 }
