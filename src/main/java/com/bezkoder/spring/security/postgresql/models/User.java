@@ -30,6 +30,10 @@ public class User {
 	private String email;
 
 	@Size(max = 50)
+	@Column(name = "zoom_email", unique = true, nullable = true)
+	private String zoomEmail;
+
+	@Size(max = 50)
 	private String firstName;
 
 	@Size(max = 50)
@@ -81,6 +85,12 @@ public class User {
 	private boolean isEmailVerified;
 
 	private String tokenForEmail;
+
+	@Column(name = "is_seen_tutorial_home", columnDefinition = "boolean default false")
+	private boolean isSeenTutorialHome;
+
+	@Column(name = "is_seen_tutorial_meeting", columnDefinition = "boolean default false")
+	private boolean isSeenTutorialMeeting;
 
 	public User() {
 		this.isActive = true;
@@ -260,5 +270,29 @@ public class User {
 
 	public void setPaid_status(int paid_status) {
 		this.paid_status = paid_status;
+	}
+
+	public String getZoomEmail() {
+		return zoomEmail;
+	}
+
+	public void setZoomEmail(String zoomEmail) {
+		this.zoomEmail = zoomEmail;
+	}
+
+	public boolean isSeenTutorialHome() {
+		return isSeenTutorialHome;
+	}
+
+	public boolean isSeenTutorialMeeting() {
+		return isSeenTutorialMeeting;
+	}
+
+	public void setSeenTutorialHome(boolean seenTutorialHome) {
+		isSeenTutorialHome = seenTutorialHome;
+	}
+
+	public void setSeenTutorialMeeting(boolean seenTutorialMeeting) {
+		isSeenTutorialMeeting = seenTutorialMeeting;
 	}
 }

@@ -80,7 +80,9 @@ public class TeamService {
                     userDetails.isActive(),
                     userDetails.isEmailVerified(),
                     userDetails.getCreatedDate(),
-                    userDetails.getPaid_status()
+                    userDetails.getPaid_status(),
+                    userDetails.isSeenTutorialHome(),
+                    userDetails.isSeenTutorialMeeting()
             );
             userResponses.add(userResponse);
         }

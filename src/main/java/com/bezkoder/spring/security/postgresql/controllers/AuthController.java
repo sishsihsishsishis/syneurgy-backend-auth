@@ -114,7 +114,9 @@ public class AuthController {
                 userDetails.isActive(),
                 userDetails.isEmailVerified(),
                 userDetails.getCreatedDate(),
-                userDetails.getPaid_status()
+                userDetails.getPaid_status(),
+                userDetails.isSeenTutorialHome(),
+                userDetails.isSeenTutorialMeeting()
         ));
     }
 
@@ -276,7 +278,9 @@ public class AuthController {
                 userDetails.isActive(),
                 userDetails.isEmailVerified(),
                 userDetails.getCreatedDate(),
-                userDetails.getPaid_status()
+                userDetails.getPaid_status(),
+                userDetails.isSeenTutorialHome(),
+                userDetails.isSeenTutorialMeeting()
         ));
     }
 

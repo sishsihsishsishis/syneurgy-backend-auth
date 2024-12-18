@@ -54,7 +54,9 @@ public class UserService {
                 userDetails.isActive(),
                 userDetails.isEmailVerified(),
                 userDetails.getCreatedDate(),
-                userDetails.getPaid_status()
+                userDetails.getPaid_status(),
+                userDetails.isSeenTutorialHome(),
+                userDetails.isSeenTutorialMeeting()
         );
         return userResponse;
     }
