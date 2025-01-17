@@ -4,7 +4,6 @@ import com.bezkoder.spring.security.postgresql.models.ERole;
 import com.bezkoder.spring.security.postgresql.models.Role;
 import com.bezkoder.spring.security.postgresql.models.User;
 import com.bezkoder.spring.security.postgresql.payload.response.MessageResponse;
-import com.bezkoder.spring.security.postgresql.payload.response.TeamResponse;
 import com.bezkoder.spring.security.postgresql.payload.response.UserResponse;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
@@ -115,7 +114,11 @@ public class UserController {
                 userDetails.getCreatedDate(),
                 userDetails.getPaid_status(),
                 userDetails.isSeenTutorialHome(),
-                userDetails.isSeenTutorialMeeting()
+                userDetails.isSeenTutorialMeeting(),
+
+                userDetails.getZoomAccountId(),
+                userDetails.getZoomClientId(),
+                userDetails.getZoomClientSecret()
         ));
     }
     @PutMapping("/{id}/doneTutorialHome")
@@ -150,7 +153,11 @@ public class UserController {
                 userDetails.getCreatedDate(),
                 userDetails.getPaid_status(),
                 userDetails.isSeenTutorialHome(),
-                userDetails.isSeenTutorialMeeting()
+                userDetails.isSeenTutorialMeeting(),
+
+                userDetails.getZoomAccountId(),
+                userDetails.getZoomClientId(),
+                userDetails.getZoomClientSecret()
         ));
     }
 
@@ -186,7 +193,11 @@ public class UserController {
                 userDetails.getCreatedDate(),
                 userDetails.getPaid_status(),
                 userDetails.isSeenTutorialHome(),
-                userDetails.isSeenTutorialMeeting()
+                userDetails.isSeenTutorialMeeting(),
+
+                userDetails.getZoomAccountId(),
+                userDetails.getZoomClientId(),
+                userDetails.getZoomClientSecret()
         ));
     }
 }

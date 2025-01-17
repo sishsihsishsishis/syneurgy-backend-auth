@@ -35,9 +35,15 @@ public class UserResponse {
     private boolean isSeenTutorialHome;
     private boolean isSeenTutorialMeeting;
 
+    private String zoomAccountId;
+    private String zoomClientId;
+    private String zoomClientSecret;
+
     public UserResponse(String accessToken, Long id, String username, String email, Integer step, List<String> roles, String firstName, String lastName,
                         String countryCode, String country, String company, String position, String photo, String answers, boolean isActiveForTeam,
-                        boolean isActive, boolean isEmailVerified, long createdDate, int paid_status, boolean isSeenTutorialHome, boolean isSeenTutorialMeeting) {
+                        boolean isActive, boolean isEmailVerified, long createdDate, int paid_status, boolean isSeenTutorialHome, boolean isSeenTutorialMeeting,
+                        String zoomAccountId, String zoomClientId, String zoomClientSecret
+                        ) {
         this.token = accessToken;
         this.id = id;
         this.username = username;
@@ -59,6 +65,10 @@ public class UserResponse {
         this.paid_status = paid_status;
         this.isSeenTutorialHome = isSeenTutorialHome;
         this.isSeenTutorialMeeting = isSeenTutorialMeeting;
+        this.zoomAccountId = zoomAccountId;
+        this.zoomClientId = zoomClientId;
+        this.zoomClientSecret = zoomClientSecret;
+
     }
 
     public String getAccessToken() {
@@ -247,6 +257,18 @@ public class UserResponse {
 
     public boolean isSeenTutorialHome() {
         return isSeenTutorialHome;
+    }
+
+    public String getZoomAccountId() {
+        return zoomAccountId;
+    }
+
+    public String getZoomClientId() {
+        return zoomClientId;
+    }
+
+    public String getZoomClientSecret() {
+        return zoomClientSecret;
     }
 }
 

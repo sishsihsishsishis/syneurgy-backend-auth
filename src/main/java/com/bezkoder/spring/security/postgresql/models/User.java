@@ -92,6 +92,15 @@ public class User {
 	@Column(name = "is_seen_tutorial_meeting", columnDefinition = "boolean default false")
 	private boolean isSeenTutorialMeeting;
 
+	@Size(max = 50)
+	private String zoomAccountId;
+
+	@Size(max = 50)
+	private String zoomClientId;
+
+	@Size(max = 50)
+	private String zoomClientSecret;
+
 	public User() {
 		this.isActive = true;
 	}
@@ -294,5 +303,29 @@ public class User {
 
 	public void setSeenTutorialMeeting(boolean seenTutorialMeeting) {
 		isSeenTutorialMeeting = seenTutorialMeeting;
+	}
+
+	public String getZoomAccountId() {
+		return zoomAccountId;
+	}
+
+	public void setZoomAccountId(String zoomAccountId) {
+		this.zoomAccountId = zoomAccountId;
+	}
+
+	public String getZoomClientId() {
+		return zoomClientId;
+	}
+
+	public void setZoomClientId(String zoomClientId) {
+		this.zoomClientId = zoomClientId;
+	}
+
+	public String getZoomClientSecret() {
+		return zoomClientSecret;
+	}
+
+	public void setZoomClientSecret(String zoomClientSecret) {
+		this.zoomClientSecret = zoomClientSecret;
 	}
 }
