@@ -47,12 +47,18 @@ public class UserDetailsImpl implements UserDetails {
 
     private  boolean isSeenTutorialHome;
     private  boolean isSeenTutorialMeeting;
+    
+    private String zoomAccountId;
+    private String zoomClientId;
+    private String zoomClientSecret;
+
 
     public UserDetailsImpl(Long id, String username, String email, String password, Integer step,
                            Collection<? extends GrantedAuthority> authorities, String firstName,
                            String lastName, String countryCode, String country, String company,
                            String position, String photo, String answers, boolean isEmailVerified,
-                           boolean isActive, long createdDate, int paid_status, boolean isSeenTutorialHome, boolean isSeenTutorialMeeting) {
+                           boolean isActive, long createdDate, int paid_status, boolean isSeenTutorialHome, boolean isSeenTutorialMeeting,
+                           String zoomAccountId, String zoomClientId, String zoomClientSecret) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -73,6 +79,10 @@ public class UserDetailsImpl implements UserDetails {
         this.paid_status = paid_status;
         this.isSeenTutorialHome = isSeenTutorialHome;
         this.isSeenTutorialMeeting = isSeenTutorialMeeting;
+        
+        this.zoomAccountId = zoomAccountId;
+        this.zoomClientId = zoomClientId;
+        this.zoomClientSecret = zoomClientSecret;
     }
 
     public static UserDetailsImpl build(User user) {
@@ -100,7 +110,10 @@ public class UserDetailsImpl implements UserDetails {
                 user.getCreatedDate().getTime(),
                 user.getPaid_status(),
                 user.isSeenTutorialHome(),
-                user.isSeenTutorialMeeting()
+                user.isSeenTutorialMeeting(),
+                user.getZoomAccountId(),
+                user.getZoomClientId(),
+                user.getZoomClientSecret()
         );
     }
 
@@ -272,5 +285,18 @@ public class UserDetailsImpl implements UserDetails {
 
     public void setSeenTutorialMeeting(boolean seenTutorialMeeting) {
         isSeenTutorialMeeting = seenTutorialMeeting;
+    }
+
+    
+    public String getZoomAccountId() {
+        return zoomAccountId;
+    }
+
+    public String getZoomClientId() {
+        return zoomClientId;
+    }
+
+    public String getZoomClientSecret() {
+        return zoomClientSecret;
     }
 }

@@ -116,7 +116,10 @@ public class AuthController {
                 userDetails.getCreatedDate(),
                 userDetails.getPaid_status(),
                 userDetails.isSeenTutorialHome(),
-                userDetails.isSeenTutorialMeeting()
+                userDetails.isSeenTutorialMeeting(),
+                userDetails.getZoomAccountId(),
+                userDetails.getZoomClientId(),
+                userDetails.getZoomClientSecret()                
         ));
     }
 
@@ -280,7 +283,10 @@ public class AuthController {
                 userDetails.getCreatedDate(),
                 userDetails.getPaid_status(),
                 userDetails.isSeenTutorialHome(),
-                userDetails.isSeenTutorialMeeting()
+                userDetails.isSeenTutorialMeeting(),
+                userDetails.getZoomAccountId(),
+                userDetails.getZoomClientId(),
+                userDetails.getZoomClientSecret()
         ));
     }
 

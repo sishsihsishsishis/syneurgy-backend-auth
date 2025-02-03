@@ -175,7 +175,10 @@ public class TeamController {
                             userDetails.getCreatedDate(),
                             userDetails.getPaid_status(),
                             userDetails.isSeenTutorialHome(),
-                            userDetails.isSeenTutorialMeeting()
+                            userDetails.isSeenTutorialMeeting(),
+                            userDetails.getZoomAccountId(),
+                            userDetails.getZoomClientId(),
+                            userDetails.getZoomClientSecret()
                     );
 
                     userResponses.add(userResponse);
@@ -212,7 +215,10 @@ public class TeamController {
                         userDetails.getCreatedDate(),
                         userDetails.getPaid_status(),
                         userDetails.isSeenTutorialHome(),
-                        userDetails.isSeenTutorialMeeting()
+                        userDetails.isSeenTutorialMeeting(),
+                        userDetails.getZoomAccountId(),
+                        userDetails.getZoomClientId(),
+                        userDetails.getZoomClientSecret()
                 );
                 userResponses.add(userResponse);
             }
@@ -388,7 +394,10 @@ public class TeamController {
                         userDetails.getCreatedDate(),
                         userDetails.getPaid_status(),
                         userDetails.isSeenTutorialHome(),
-                        userDetails.isSeenTutorialMeeting()
+                        userDetails.isSeenTutorialMeeting(),
+                        userDetails.getZoomAccountId(),
+                        userDetails.getZoomClientId(),
+                        userDetails.getZoomClientSecret()
                 );
                 userResponses.add(userResponse);
             }

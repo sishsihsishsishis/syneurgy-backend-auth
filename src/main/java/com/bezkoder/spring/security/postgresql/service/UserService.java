@@ -56,7 +56,10 @@ public class UserService {
                 userDetails.getCreatedDate(),
                 userDetails.getPaid_status(),
                 userDetails.isSeenTutorialHome(),
-                userDetails.isSeenTutorialMeeting()
+                userDetails.isSeenTutorialMeeting(),
+                userDetails.getZoomAccountId(),
+                userDetails.getZoomClientId(),
+                userDetails.getZoomClientSecret()
         );
         return userResponse;
     }

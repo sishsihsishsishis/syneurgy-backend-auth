@@ -82,7 +82,10 @@ public class TeamService {
                     userDetails.getCreatedDate(),
                     userDetails.getPaid_status(),
                     userDetails.isSeenTutorialHome(),
-                    userDetails.isSeenTutorialMeeting()
+                    userDetails.isSeenTutorialMeeting(),
+                    userDetails.getZoomAccountId(),
+                    userDetails.getZoomClientId(),
+                    userDetails.getZoomClientSecret()
             );
             userResponses.add(userResponse);
         }
