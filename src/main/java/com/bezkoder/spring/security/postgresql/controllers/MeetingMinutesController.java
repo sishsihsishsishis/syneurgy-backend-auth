@@ -11,15 +11,26 @@ import com.bezkoder.spring.security.postgresql.repository.UserMinutesRepository;
 import com.bezkoder.spring.security.postgresql.repository.UserRepository;
 import com.bezkoder.spring.security.postgresql.security.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+import org.springframework.http.*;
+import java.nio.file.Files;
+import java.io.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/meetings")
 public class MeetingMinutesController {
+
+    @Value("${video.upload.dir}")
+    private String videoUploadDir;
 
     @Autowired
     private MeetingMinutesRepository meetingMinutesRepository;
@@ -34,7 +45,8 @@ public class MeetingMinutesController {
     @PostMapping("/initialize-meeting-minutes")
     public ResponseEntity<?> initializeMeetingMinutes(@RequestBody InitializeMeetingMinutesRequest request) {
         // Check if a record with userId and meetingId already exists
-        Optional<MeetingMinutes> existingMeetingMinutes = meetingMinutesRepository.findByUserIdAndMeetingId(request.getUserId(), request.getMeetingId());
+        Optional<MeetingMinutes> existingMeetingMinutes = meetingMinutesRepository
+                .findByUserIdAndMeetingId(request.getUserId(), request.getMeetingId());
 
         if (!existingMeetingMinutes.isPresent()) {
             // If the record doesn't exist, create a new one with meeting_minutes set to 0
@@ -52,8 +64,10 @@ public class MeetingMinutesController {
             return ResponseEntity.ok("Meeting minutes already exist for this user and meeting.");
         }
     }
+
     @PostMapping("/minutes")
-    public ResponseEntity<?> saveMeetingMinutes(@RequestBody MeetingMinutesRequest request, @RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<?> saveMeetingMinutes(@RequestBody MeetingMinutesRequest request,
+            @RequestHeader(name = "Authorization") String token) {
         String username = jwtUtils.getExistingUsername(token);
         Optional<User> existingUser1 = userRepository.findByUsername(username);
 
@@ -68,7 +82,8 @@ public class MeetingMinutesController {
         // Iterate over each meeting in the request
         for (MeetingMinutesRequest.Meeting meeting : request.getMeetings()) {
             // Check if a record with userId and meetingId exists
-            Optional<MeetingMinutes> existingMeetingMinutes = meetingMinutesRepository.findByUserIdAndMeetingId(request.getUserId(), meeting.getMeetingId());
+            Optional<MeetingMinutes> existingMeetingMinutes = meetingMinutesRepository
+                    .findByUserIdAndMeetingId(request.getUserId(), meeting.getMeetingId());
 
             if (existingMeetingMinutes.isPresent()) {
                 // If the record exists, update the meeting minutes
@@ -105,4 +120,258 @@ public class MeetingMinutesController {
 
         return ResponseEntity.ok(response);
     }
+
+    // @PostMapping("/compress-video")
+    // public ResponseEntity<?> compressVideoandUpload(
+    // @RequestParam("data") MultipartFile chunk,
+    // @RequestParam("uploadId") String uploadId,
+    // @RequestParam("upload-path") String uploadPath,
+    // @RequestParam("partNumber") String partNumber,
+    // @RequestHeader(name = "Authorization") String token) {
+    // String username = jwtUtils.getExistingUsername(token);
+    // Optional<User> existingUser1 = userRepository.findByUsername(username);
+    // if (!existingUser1.isPresent()) {
+    // return ResponseEntity
+    // .badRequest()
+    // .body(new MessageResponse("The current user is unavailable!"));
+    // }
+    // try {
+    // // Create a temporary file for the input chunk with a generic extension
+    // File inputFile = File.createTempFile("chunk", ".mov"); // Use ".mov" for the
+    // input
+    // chunk.transferTo(inputFile); // Save the blob to a temporary file
+
+    // File outputFile = File.createTempFile("chunk", ".mp4"); // Create a temp file
+    // for the converted chunk
+
+    // // Convert the blob to a valid .mp4 format using FFmpeg
+    // ProcessBuilder processBuilder = new ProcessBuilder(
+    // "ffmpeg", "-i", inputFile.getAbsolutePath(), "-c:v", "libx264", "-preset",
+    // "ultrafast",
+    // "-movflags", "frag_keyframe+empty_moov", outputFile.getAbsolutePath());
+
+    // processBuilder.redirectErrorStream(true);
+    // Process process = processBuilder.start();
+
+    // // Capture FFmpeg output for debugging
+    // try (BufferedReader reader = new BufferedReader(new
+    // InputStreamReader(process.getInputStream()))) {
+    // String line;
+    // while ((line = reader.readLine()) != null) {
+    // System.out.println(line); // Log FFmpeg output
+    // }
+    // }
+
+    // int exitCode = process.waitFor();
+    // if (exitCode != 0) {
+    // System.err.println("FFmpeg process failed with exit code: " + exitCode);
+    // return ResponseEntity.status(500).body("FFmpeg conversion failed.");
+    // }
+
+    // // Check if the output file is valid
+    // if (outputFile.length() == 0) {
+    // System.err.println("Converted chunk is empty.");
+    // return ResponseEntity.status(500).body("Converted chunk is empty.");
+    // }
+
+    // // Read the converted file into a byte array
+    // byte[] convertedChunk = Files.readAllBytes(outputFile.toPath());
+
+    // // Create a ByteArrayResource for sending the chunk
+    // ByteArrayResource resource = new ByteArrayResource(convertedChunk) {
+    // @Override
+    // public String getFilename() {
+    // return partNumber; // Set the filename for the chunk
+    // }
+    // };
+
+    // // Prepare headers and body for the multipart request
+    // HttpHeaders headers = new HttpHeaders();
+    // headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    // // Create a MultiValueMap for form data (file + additional fields)
+    // MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+    // body.add("data", resource); // Add the blob as a file
+    // body.add("uploadId", uploadId);
+    // body.add("partNumber", partNumber);
+
+    // // Create the HTTP request entity
+    // HttpEntity<MultiValueMap<String, Object>> requestEntity = new
+    // HttpEntity<>(body, headers);
+    // // Define the target server URL
+    // String targetServerUrl = uploadPath; // Replace with the actual server URL
+    // // Send the request using RestTemplate
+    // RestTemplate restTemplate = new RestTemplate();
+    // ResponseEntity<String> res1 = restTemplate.postForEntity(targetServerUrl,
+    // requestEntity, String.class);
+
+    // // Clean up temporary files
+    // inputFile.delete();
+    // outputFile.delete();
+
+    // // Handle the response
+    // if (res1.getStatusCode().is2xxSuccessful()) {
+    // System.out.println("Blob and additional data sent successfully: " +
+    // res1.getBody());
+    // } else {
+    // System.out.println("Failed to send blob. Response: " + res1.getStatusCode());
+    // }
+
+    // // return ResponseEntity.ok().headers(headers).body(convertedChunk);
+    // // Step 4: Return the updated user_minutes details
+    // // Map<String, Object> response = new HashMap<>();
+    // // response.put("data", res1.getBody());
+
+    // return ResponseEntity.ok(res1.getBody());
+
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // return ResponseEntity.status(500).body(null);
+    // }
+
+    // }
+    // private static final // Change this as needed
+
+    @PostMapping("/compress-video")
+    public ResponseEntity<?> compressVideoandUpload(
+            @RequestParam("data") MultipartFile chunk,
+            @RequestParam("uploadId") String uploadId,
+            @RequestParam("upload-path") String uploadPath,
+            @RequestParam("partNumber") String partNumber,
+            @RequestParam("chunkCount") Integer chunkCount,
+            @RequestHeader(name = "Authorization") String token) {
+
+        String username = jwtUtils.getExistingUsername(token);
+        Optional<User> existingUser1 = userRepository.findByUsername(username);
+        if (!existingUser1.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new MessageResponse("The current user is unavailable!"));
+        }
+
+        String STORAGE_DIR = videoUploadDir + "/";
+
+        try {
+            // Step 1: Save incoming chunk
+            File uploadDir = new File(STORAGE_DIR + uploadId);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+            File chunkFile = new File(uploadDir, "chunk-" + partNumber);
+            chunk.transferTo(chunkFile);
+
+            // Check if all chunks have been uploaded (this is an assumption; you may need a
+            // better check)
+            File[] chunkFiles = uploadDir.listFiles();
+            if (chunkFiles == null || chunkFiles.length < chunkCount) { // Replace '5' with the expected number of
+                                                                        // chunks
+                return ResponseEntity.ok("Chunk " + partNumber + " uploaded successfully.");
+            }
+
+            // Step 2: Merge chunks into one .mov file
+            File mergedFile = new File(STORAGE_DIR + uploadId + "/merged.mov");
+            try (FileOutputStream fos = new FileOutputStream(mergedFile)) {
+                Arrays.sort(chunkFiles, Comparator.comparingInt(f -> Integer.parseInt(f.getName().split("-")[1])));
+                for (File chunkPart : chunkFiles) {
+                    Files.copy(chunkPart.toPath(), fos);
+                    chunkPart.delete();
+                }
+            }
+
+            // Step 3: Convert the merged .mov to .mp4 using FFmpeg
+            File outputMp4 = new File(STORAGE_DIR + uploadId + "/converted.mp4");
+
+            // ProcessBuilder processBuilder = new ProcessBuilder(
+            // "ffmpeg", "-i", mergedFile.getAbsolutePath(), "-c:v", "libx264", "-preset",
+            // "ultrafast",
+            // "-movflags", "faststart", outputMp4.getAbsolutePath());
+
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                    "ffmpeg", "-y", // Overwrite output if exists
+                    "-i", mergedFile.toString(), // Read from saved file
+                    "-preset", "ultrafast", // Faster encoding
+                    "-b:v", "2048k", // Video bitrate (reduce for smaller file, increase for better quality)
+                    "-b:a", "256k", // Audio bitrate
+                    "-vcodec", "libx264",
+                    "-acodec", "aac",
+                    "-movflags", "+faststart", // Optimize for fast streaming
+                    "-progress", "pipe:1", // Enable progress output
+                    outputMp4.toString());
+
+            processBuilder.redirectErrorStream(true);
+            Process process = processBuilder.start();
+
+            // Capture FFmpeg output for debugging
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                return ResponseEntity.status(500).body("FFmpeg conversion failed.");
+            }
+            mergedFile.delete();
+
+            // Step 4: Split the .mp4 file and upload chunks to another server
+            long chunkSize = 10 * 1024 * 1024; // 10 MB
+
+            // String[] egZs = [];
+            List<String> tag_list = new ArrayList<String>();
+
+            try (RandomAccessFile raf = new RandomAccessFile(outputMp4, "r")) {
+                long totalSize = outputMp4.length();
+                int partNumberForUpload = 0;
+
+                while (raf.getFilePointer() < totalSize) {
+                    long remaining = totalSize - raf.getFilePointer();
+                    long size = Math.min(chunkSize, remaining);
+
+                    byte[] buffer = new byte[(int) size];
+                    raf.readFully(buffer);
+                    final int currentPartNumber = partNumberForUpload + 1;
+
+                    // Prepare the chunk as ByteArrayResource
+                    ByteArrayResource resource = new ByteArrayResource(buffer) {
+                        @Override
+                        public String getFilename() {
+                            return "part-" + currentPartNumber;
+                        }
+                    };
+
+                    // Send the chunk to the target server
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+                    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+                    body.add("data", resource);
+                    body.add("uploadId", uploadId);
+                    body.add("partNumber", partNumberForUpload + 1);
+
+                    HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+                    RestTemplate restTemplate = new RestTemplate();
+                    ResponseEntity<String> response = restTemplate.postForEntity(uploadPath, requestEntity,
+                            String.class);
+
+                    if (!response.getStatusCode().is2xxSuccessful()) {
+                        return ResponseEntity.status(500).body("Failed to upload part " + partNumberForUpload);
+                    }
+
+                    System.out.println(response.getBody());
+                    tag_list.add(response.getBody());
+
+                    partNumberForUpload++;
+                }
+            }
+            outputMp4.delete();
+            return ResponseEntity.ok(tag_list);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("An error occurred during video processing.");
+        }
+
+    }
+
 }
