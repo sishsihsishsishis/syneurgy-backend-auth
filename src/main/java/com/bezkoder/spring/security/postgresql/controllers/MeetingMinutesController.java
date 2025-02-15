@@ -120,118 +120,6 @@ public class MeetingMinutesController {
 
         return ResponseEntity.ok(response);
     }
-
-    // @PostMapping("/compress-video")
-    // public ResponseEntity<?> compressVideoandUpload(
-    // @RequestParam("data") MultipartFile chunk,
-    // @RequestParam("uploadId") String uploadId,
-    // @RequestParam("upload-path") String uploadPath,
-    // @RequestParam("partNumber") String partNumber,
-    // @RequestHeader(name = "Authorization") String token) {
-    // String username = jwtUtils.getExistingUsername(token);
-    // Optional<User> existingUser1 = userRepository.findByUsername(username);
-    // if (!existingUser1.isPresent()) {
-    // return ResponseEntity
-    // .badRequest()
-    // .body(new MessageResponse("The current user is unavailable!"));
-    // }
-    // try {
-    // // Create a temporary file for the input chunk with a generic extension
-    // File inputFile = File.createTempFile("chunk", ".mov"); // Use ".mov" for the
-    // input
-    // chunk.transferTo(inputFile); // Save the blob to a temporary file
-
-    // File outputFile = File.createTempFile("chunk", ".mp4"); // Create a temp file
-    // for the converted chunk
-
-    // // Convert the blob to a valid .mp4 format using FFmpeg
-    // ProcessBuilder processBuilder = new ProcessBuilder(
-    // "ffmpeg", "-i", inputFile.getAbsolutePath(), "-c:v", "libx264", "-preset",
-    // "ultrafast",
-    // "-movflags", "frag_keyframe+empty_moov", outputFile.getAbsolutePath());
-
-    // processBuilder.redirectErrorStream(true);
-    // Process process = processBuilder.start();
-
-    // // Capture FFmpeg output for debugging
-    // try (BufferedReader reader = new BufferedReader(new
-    // InputStreamReader(process.getInputStream()))) {
-    // String line;
-    // while ((line = reader.readLine()) != null) {
-    // System.out.println(line); // Log FFmpeg output
-    // }
-    // }
-
-    // int exitCode = process.waitFor();
-    // if (exitCode != 0) {
-    // System.err.println("FFmpeg process failed with exit code: " + exitCode);
-    // return ResponseEntity.status(500).body("FFmpeg conversion failed.");
-    // }
-
-    // // Check if the output file is valid
-    // if (outputFile.length() == 0) {
-    // System.err.println("Converted chunk is empty.");
-    // return ResponseEntity.status(500).body("Converted chunk is empty.");
-    // }
-
-    // // Read the converted file into a byte array
-    // byte[] convertedChunk = Files.readAllBytes(outputFile.toPath());
-
-    // // Create a ByteArrayResource for sending the chunk
-    // ByteArrayResource resource = new ByteArrayResource(convertedChunk) {
-    // @Override
-    // public String getFilename() {
-    // return partNumber; // Set the filename for the chunk
-    // }
-    // };
-
-    // // Prepare headers and body for the multipart request
-    // HttpHeaders headers = new HttpHeaders();
-    // headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-    // // Create a MultiValueMap for form data (file + additional fields)
-    // MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-    // body.add("data", resource); // Add the blob as a file
-    // body.add("uploadId", uploadId);
-    // body.add("partNumber", partNumber);
-
-    // // Create the HTTP request entity
-    // HttpEntity<MultiValueMap<String, Object>> requestEntity = new
-    // HttpEntity<>(body, headers);
-    // // Define the target server URL
-    // String targetServerUrl = uploadPath; // Replace with the actual server URL
-    // // Send the request using RestTemplate
-    // RestTemplate restTemplate = new RestTemplate();
-    // ResponseEntity<String> res1 = restTemplate.postForEntity(targetServerUrl,
-    // requestEntity, String.class);
-
-    // // Clean up temporary files
-    // inputFile.delete();
-    // outputFile.delete();
-
-    // // Handle the response
-    // if (res1.getStatusCode().is2xxSuccessful()) {
-    // System.out.println("Blob and additional data sent successfully: " +
-    // res1.getBody());
-    // } else {
-    // System.out.println("Failed to send blob. Response: " + res1.getStatusCode());
-    // }
-
-    // // return ResponseEntity.ok().headers(headers).body(convertedChunk);
-    // // Step 4: Return the updated user_minutes details
-    // // Map<String, Object> response = new HashMap<>();
-    // // response.put("data", res1.getBody());
-
-    // return ResponseEntity.ok(res1.getBody());
-
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // return ResponseEntity.status(500).body(null);
-    // }
-
-    // }
-    // private static final // Change this as needed
-
     @PostMapping("/compress-video")
     public ResponseEntity<?> compressVideoandUpload(
             @RequestParam("data") MultipartFile chunk,
@@ -253,7 +141,7 @@ public class MeetingMinutesController {
 
         try {
             // Step 1: Save incoming chunk
-            File uploadDir = new File(STORAGE_DIR + uploadId);
+            File uploadDir = new File(STORAGE_DIR);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
