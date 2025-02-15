@@ -120,6 +120,7 @@ public class MeetingMinutesController {
 
         return ResponseEntity.ok(response);
     }
+
     @PostMapping("/compress-video")
     public ResponseEntity<?> compressVideoandUpload(
             @RequestParam("data") MultipartFile chunk,
@@ -137,7 +138,7 @@ public class MeetingMinutesController {
                     .body(new MessageResponse("The current user is unavailable!"));
         }
 
-        String STORAGE_DIR = videoUploadDir + "/";
+        String STORAGE_DIR = "." + videoUploadDir + "/";
 
         try {
             // Step 1: Save incoming chunk
