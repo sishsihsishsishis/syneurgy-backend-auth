@@ -21,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.http.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.*;
 
 import java.util.*;
@@ -138,11 +140,12 @@ public class MeetingMinutesController {
                     .body(new MessageResponse("The current user is unavailable!"));
         }
 
-        String STORAGE_DIR = "." + videoUploadDir + "/";
+        // String STORAGE_DIR = "." + videoUploadDir + "/";
+        Path siblingPath = Paths.get(System.getProperty("user.dir"), "..", "videos");
 
         try {
             // Step 1: Save incoming chunk
-            File uploadDir = new File(STORAGE_DIR);
+            File uploadDir = siblingPath.toFile();
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
@@ -158,7 +161,7 @@ public class MeetingMinutesController {
             }
 
             // Step 2: Merge chunks into one .mov file
-            File mergedFile = new File(STORAGE_DIR + uploadId + "/merged.mov");
+            File mergedFile = new File(uploadDir, "merged.mov");
             try (FileOutputStream fos = new FileOutputStream(mergedFile)) {
                 Arrays.sort(chunkFiles, Comparator.comparingInt(f -> Integer.parseInt(f.getName().split("-")[1])));
                 for (File chunkPart : chunkFiles) {
@@ -168,7 +171,9 @@ public class MeetingMinutesController {
             }
 
             // Step 3: Convert the merged .mov to .mp4 using FFmpeg
-            File outputMp4 = new File(STORAGE_DIR + uploadId + "/converted.mp4");
+            // File outputMp4 = new File(STORAGE_DIR + uploadId + "/converted.mp4");
+            File outputMp4 = new File(uploadDir, "converted.mov");
+
 
             // ProcessBuilder processBuilder = new ProcessBuilder(
             // "ffmpeg", "-i", mergedFile.getAbsolutePath(), "-c:v", "libx264", "-preset",
