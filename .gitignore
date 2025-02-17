@@ -2,6 +2,7 @@ HELP.md
 target/
 src/main/uploads/*
 src/main/reports/*
+src/main/videos/*
 !src/main/uploads/.gitkeep
 uploads/*
 !uploads/.gitkeep
