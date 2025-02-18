@@ -121,6 +121,29 @@ public class MeetingMinutesController {
         return ResponseEntity.ok(response);
     }
 
+    public void extractThumbnail(String videoPath, String thumbnailPath, String timestamp) throws IOException {
+        // Construct the FFmpeg command
+        String command = String.format(
+                "ffmpeg -i %s -ss %s -vframes 1 -q:v 2 %s",
+                videoPath, timestamp, thumbnailPath);
+
+        // Execute the command
+        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
+
+        try {
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println("Thumbnail extracted successfully.");
+            } else {
+                System.err.println("Error extracting thumbnail.");
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     @PostMapping("/compress-video")
     public ResponseEntity<?> compressVideoandUpload(
             @RequestParam("data") MultipartFile chunk,
@@ -138,7 +161,7 @@ public class MeetingMinutesController {
                     .body(new MessageResponse("The current user is unavailable!"));
         }
 
-        String STORAGE_DIR =  System.getProperty("user.dir") + videoUploadDir + "/";
+        String STORAGE_DIR = System.getProperty("user.dir") + videoUploadDir + "/";
 
         try {
             // Step 1: Save incoming chunk
@@ -246,15 +269,51 @@ public class MeetingMinutesController {
 
                     partNumberForUpload++;
                 }
+
+                // Seek to 10 seconds from the start to capture the thumbnail
+                String timestamp = "00:00:10"; // 10 seconds from the start
+
+                // Extract thumbnail from the 10-second mark
+                File tempFile = File.createTempFile("thumbnail_", ".jpg");
+                
+                if(tempFile.exists())
+                    tempFile.delete();
+
+                processBuilder = new ProcessBuilder("ffmpeg", "-i", outputMp4.toString(), "-ss", timestamp, "-vframes", "1", "-q:v", "2", tempFile.getAbsolutePath());
+                processBuilder.inheritIO(); // This will allow you to see FFmpeg output in the console
+                process = processBuilder.start();
+                exitCode = process.waitFor();
+
+                if (exitCode != 0) {
+                    System.out.println("FFmpeg command failed with exit code " + exitCode);
+                } else {
+                    System.out.println("FFmpeg command executed successfully");
+               
+                    // Read the thumbnail file into a byte array
+                    byte[] thumbnailBytes = new byte[(int) tempFile.length()];
+                    try (FileInputStream fis = new FileInputStream(tempFile)) {
+                        fis.read(thumbnailBytes);
+                    }
+                    tempFile.delete(); // Clean up the temp file
+                    outputMp4.delete();
+
+                    // Encode the thumbnail bytes as Base64
+                    String base64Thumbnail = Base64.getEncoder().encodeToString(thumbnailBytes);
+                    // Prepare the JSON response data
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("status", "success");
+                    response.put("etags", tag_list);
+                    response.put("thumbnail", base64Thumbnail);
+                    response.put("timestamp", timestamp); // Send the timestamp too if needed
+                    // Return the response as JSON
+                    return ResponseEntity.ok(response);
+                }
             }
-            outputMp4.delete();
-            return ResponseEntity.ok(tag_list);
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("An error occurred during video processing.");
         }
-
+        return ResponseEntity.status(500).body("An error occurred during video processing.");
     }
 
 }
