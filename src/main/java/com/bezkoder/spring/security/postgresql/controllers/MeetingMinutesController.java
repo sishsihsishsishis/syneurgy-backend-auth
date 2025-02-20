@@ -121,116 +121,28 @@ public class MeetingMinutesController {
         return ResponseEntity.ok(response);
     }
 
-    // @PostMapping("/compress-video")
-    // public ResponseEntity<?> compressVideoandUpload(
-    // @RequestParam("data") MultipartFile chunk,
-    // @RequestParam("uploadId") String uploadId,
-    // @RequestParam("upload-path") String uploadPath,
-    // @RequestParam("partNumber") String partNumber,
-    // @RequestHeader(name = "Authorization") String token) {
-    // String username = jwtUtils.getExistingUsername(token);
-    // Optional<User> existingUser1 = userRepository.findByUsername(username);
-    // if (!existingUser1.isPresent()) {
-    // return ResponseEntity
-    // .badRequest()
-    // .body(new MessageResponse("The current user is unavailable!"));
-    // }
-    // try {
-    // // Create a temporary file for the input chunk with a generic extension
-    // File inputFile = File.createTempFile("chunk", ".mov"); // Use ".mov" for the
-    // input
-    // chunk.transferTo(inputFile); // Save the blob to a temporary file
+    public void extractThumbnail(String videoPath, String thumbnailPath, String timestamp) throws IOException {
+        // Construct the FFmpeg command
+        String command = String.format(
+                "ffmpeg -i %s -ss %s -vframes 1 -q:v 2 %s",
+                videoPath, timestamp, thumbnailPath);
 
-    // File outputFile = File.createTempFile("chunk", ".mp4"); // Create a temp file
-    // for the converted chunk
+        // Execute the command
+        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
 
-    // // Convert the blob to a valid .mp4 format using FFmpeg
-    // ProcessBuilder processBuilder = new ProcessBuilder(
-    // "ffmpeg", "-i", inputFile.getAbsolutePath(), "-c:v", "libx264", "-preset",
-    // "ultrafast",
-    // "-movflags", "frag_keyframe+empty_moov", outputFile.getAbsolutePath());
-
-    // processBuilder.redirectErrorStream(true);
-    // Process process = processBuilder.start();
-
-    // // Capture FFmpeg output for debugging
-    // try (BufferedReader reader = new BufferedReader(new
-    // InputStreamReader(process.getInputStream()))) {
-    // String line;
-    // while ((line = reader.readLine()) != null) {
-    // System.out.println(line); // Log FFmpeg output
-    // }
-    // }
-
-    // int exitCode = process.waitFor();
-    // if (exitCode != 0) {
-    // System.err.println("FFmpeg process failed with exit code: " + exitCode);
-    // return ResponseEntity.status(500).body("FFmpeg conversion failed.");
-    // }
-
-    // // Check if the output file is valid
-    // if (outputFile.length() == 0) {
-    // System.err.println("Converted chunk is empty.");
-    // return ResponseEntity.status(500).body("Converted chunk is empty.");
-    // }
-
-    // // Read the converted file into a byte array
-    // byte[] convertedChunk = Files.readAllBytes(outputFile.toPath());
-
-    // // Create a ByteArrayResource for sending the chunk
-    // ByteArrayResource resource = new ByteArrayResource(convertedChunk) {
-    // @Override
-    // public String getFilename() {
-    // return partNumber; // Set the filename for the chunk
-    // }
-    // };
-
-    // // Prepare headers and body for the multipart request
-    // HttpHeaders headers = new HttpHeaders();
-    // headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-    // // Create a MultiValueMap for form data (file + additional fields)
-    // MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-    // body.add("data", resource); // Add the blob as a file
-    // body.add("uploadId", uploadId);
-    // body.add("partNumber", partNumber);
-
-    // // Create the HTTP request entity
-    // HttpEntity<MultiValueMap<String, Object>> requestEntity = new
-    // HttpEntity<>(body, headers);
-    // // Define the target server URL
-    // String targetServerUrl = uploadPath; // Replace with the actual server URL
-    // // Send the request using RestTemplate
-    // RestTemplate restTemplate = new RestTemplate();
-    // ResponseEntity<String> res1 = restTemplate.postForEntity(targetServerUrl,
-    // requestEntity, String.class);
-
-    // // Clean up temporary files
-    // inputFile.delete();
-    // outputFile.delete();
-
-    // // Handle the response
-    // if (res1.getStatusCode().is2xxSuccessful()) {
-    // System.out.println("Blob and additional data sent successfully: " +
-    // res1.getBody());
-    // } else {
-    // System.out.println("Failed to send blob. Response: " + res1.getStatusCode());
-    // }
-
-    // // return ResponseEntity.ok().headers(headers).body(convertedChunk);
-    // // Step 4: Return the updated user_minutes details
-    // // Map<String, Object> response = new HashMap<>();
-    // // response.put("data", res1.getBody());
-
-    // return ResponseEntity.ok(res1.getBody());
-
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // return ResponseEntity.status(500).body(null);
-    // }
-
-    // }
-    // private static final // Change this as needed
+        try {
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println("Thumbnail extracted successfully.");
+            } else {
+                System.err.println("Error extracting thumbnail.");
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     @PostMapping("/compress-video")
     public ResponseEntity<?> compressVideoandUpload(
@@ -249,7 +161,7 @@ public class MeetingMinutesController {
                     .body(new MessageResponse("The current user is unavailable!"));
         }
 
-        String STORAGE_DIR = videoUploadDir + "/";
+        String STORAGE_DIR = System.getProperty("user.dir") + videoUploadDir + "/";
 
         try {
             // Step 1: Save incoming chunk
@@ -280,12 +192,6 @@ public class MeetingMinutesController {
 
             // Step 3: Convert the merged .mov to .mp4 using FFmpeg
             File outputMp4 = new File(STORAGE_DIR + uploadId + "/converted.mp4");
-
-            // ProcessBuilder processBuilder = new ProcessBuilder(
-            // "ffmpeg", "-i", mergedFile.getAbsolutePath(), "-c:v", "libx264", "-preset",
-            // "ultrafast",
-            // "-movflags", "faststart", outputMp4.getAbsolutePath());
-
             ProcessBuilder processBuilder = new ProcessBuilder(
                     "ffmpeg", "-y", // Overwrite output if exists
                     "-i", mergedFile.toString(), // Read from saved file
@@ -363,15 +269,51 @@ public class MeetingMinutesController {
 
                     partNumberForUpload++;
                 }
+
+                // Seek to 10 seconds from the start to capture the thumbnail
+                String timestamp = "00:00:10"; // 10 seconds from the start
+
+                // Extract thumbnail from the 10-second mark
+                File tempFile = File.createTempFile("thumbnail_", ".jpg");
+                
+                if(tempFile.exists())
+                    tempFile.delete();
+
+                processBuilder = new ProcessBuilder("ffmpeg", "-i", outputMp4.toString(), "-ss", timestamp, "-vframes", "1", "-q:v", "2", tempFile.getAbsolutePath());
+                processBuilder.inheritIO(); // This will allow you to see FFmpeg output in the console
+                process = processBuilder.start();
+                exitCode = process.waitFor();
+
+                if (exitCode != 0) {
+                    System.out.println("FFmpeg command failed with exit code " + exitCode);
+                } else {
+                    System.out.println("FFmpeg command executed successfully");
+               
+                    // Read the thumbnail file into a byte array
+                    byte[] thumbnailBytes = new byte[(int) tempFile.length()];
+                    try (FileInputStream fis = new FileInputStream(tempFile)) {
+                        fis.read(thumbnailBytes);
+                    }
+                    tempFile.delete(); // Clean up the temp file
+                    outputMp4.delete();
+
+                    // Encode the thumbnail bytes as Base64
+                    String base64Thumbnail = Base64.getEncoder().encodeToString(thumbnailBytes);
+                    // Prepare the JSON response data
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("status", "success");
+                    response.put("etags", tag_list);
+                    response.put("thumbnail", base64Thumbnail);
+                    response.put("timestamp", timestamp); // Send the timestamp too if needed
+                    // Return the response as JSON
+                    return ResponseEntity.ok(response);
+                }
             }
-            outputMp4.delete();
-            return ResponseEntity.ok(tag_list);
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("An error occurred during video processing.");
         }
-
+        return ResponseEntity.status(500).body("An error occurred during video processing.");
     }
 
 }

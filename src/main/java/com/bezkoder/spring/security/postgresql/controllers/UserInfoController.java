@@ -170,8 +170,6 @@ public class UserInfoController {
 
     public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/src/main/uploads";
 
-    // public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") +
-    // "/uploads";
     @PostMapping("/photo")
     public ResponseEntity<?> uploadProfiePhoto(@RequestParam("file") MultipartFile multipartFile,
             @RequestHeader(name = "Authorization") String token) throws IOException {
